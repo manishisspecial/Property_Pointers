@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -48,7 +48,9 @@ export default function LoginPage() {
         <div className="absolute top-20 left-10 w-72 h-72 bg-gold-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
         <div className="relative text-center">
-          <Image src="/logo.jpeg" alt="Property Pointers" width={250} height={60} className="mx-auto mb-8 rounded-lg" />
+          <div className="mb-8">
+            <Logo variant="light" size="xl" />
+          </div>
           <h2 className="text-3xl font-bold text-white mb-4">Welcome Back!</h2>
           <p className="text-gray-300 text-lg max-w-md">
             Access your dashboard, manage listings, and find your next property investment opportunity.
@@ -59,7 +61,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-gray-50">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8 text-center">
-            <Image src="/logo.jpeg" alt="Property Pointers" width={180} height={45} className="mx-auto rounded-lg" />
+            <Logo variant="dark" size="lg" />
           </div>
 
           <h1 className="text-3xl font-bold text-navy-900 mb-2">Sign In</h1>

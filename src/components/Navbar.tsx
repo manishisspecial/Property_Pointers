@@ -15,6 +15,7 @@ import {
   Search,
   Plus,
 } from "lucide-react";
+import Logo from "@/components/Logo";
 
 interface UserSession {
   userId: string;
@@ -63,14 +64,8 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-18">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <img
-              src="/logo.jpeg"
-              alt="Property Pointers"
-              width={160}
-              height={40}
-              className="h-9 w-auto rounded"
-            />
+          <Link href="/" className="shrink-0">
+            <Logo variant={scrolled ? "dark" : "light"} size="md" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">

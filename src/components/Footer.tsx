@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, ArrowRight } from "lucide-react";
+import Logo from "@/components/Logo";
 
 export default function Footer() {
   return (
@@ -7,7 +8,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
-            <img src="/logo.jpeg" alt="Property Pointers" width={180} height={45} className="h-10 w-auto rounded mb-4" />
+            <div className="mb-4">
+              <Logo variant="light" size="lg" />
+            </div>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
               India&apos;s most trusted real estate platform. Find your dream property with verified listings, virtual tours, and zero brokerage options.
             </p>
