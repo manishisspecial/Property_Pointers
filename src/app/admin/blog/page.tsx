@@ -1,0 +1,293 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { formatDate, timeAgo } from "@/lib/utils";
+import {
+  BookOpen, Plus, Edit, Trash2, Eye, EyeOff, CheckCircle, X, Save, Calendar
+} from "lucide-react";
+
+export default function AdminBlogPage() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editingPost, setEditingPost] = useState<any>(null);
+  const [form, setForm] = useState({
+    title: "",
+    excerpt: "",
+    content: "",
+    coverImage: "",
+    category: "general",
+    tags: "",
+    published: false,
+  });
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  async function fetchPosts() {
+    try {
+      const res = await fetch("/api/blog?all=true&limit=100");
+      const data = await res.json();
+      setPosts(data.posts || []);
+    } catch {}
+    setLoading(false);
+  }
+
+  function openEditor(post?: any) {
+    if (post) {
+      setEditingPost(post);
+      setForm({
+        title: post.title,
+        excerpt: post.excerpt,
+        content: post.content,
+        coverImage: post.coverImage || "",
+        category: post.category,
+        tags: JSON.parse(post.tags || "[]").join(", "),
+        published: post.published,
+      });
+    } else {
+      setEditingPost(null);
+      setForm({
+        title: "",
+        excerpt: "",
+        content: "",
+        coverImage: "",
+        category: "general",
+        tags: "",
+        published: false,
+      });
+    }
+    setShowEditor(true);
+  }
+
+  async function savePost() {
+    const tags = form.tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    const body = { ...form, tags };
+
+    try {
+      if (editingPost) {
+        await fetch(`/api/blog/${editingPost.slug}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      } else {
+        await fetch("/api/blog", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      }
+      setShowEditor(false);
+      fetchPosts();
+    } catch {}
+  }
+
+  async function deletePost(slug: string) {
+    if (!confirm("Delete this blog post?")) return;
+    try {
+      await fetch(`/api/blog/${slug}`, { method: "DELETE" });
+      fetchPosts();
+    } catch {}
+  }
+
+  async function togglePublish(slug: string, published: boolean) {
+    try {
+      await fetch(`/api/blog/${slug}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published: !published }),
+      });
+      fetchPosts();
+    } catch {}
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-navy-900">Blog Management</h1>
+          <p className="text-sm text-gray-500">{posts.length} blog posts</p>
+        </div>
+        <button onClick={() => openEditor()} className="btn-primary flex items-center gap-2">
+          <Plus size={18} /> New Post
+        </button>
+      </div>
+
+      {/* Editor Modal */}
+      {showEditor && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto pt-20 pb-10 px-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-bold text-navy-900">
+                {editingPost ? "Edit Post" : "New Blog Post"}
+              </h2>
+              <button onClick={() => setShowEditor(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Title</label>
+                <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="input-field" placeholder="Enter blog post title" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Excerpt (SEO Description)</label>
+                <textarea value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+                  className="input-field resize-none" rows={2} placeholder="Brief summary for SEO and previews..." />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+                  <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input-field">
+                    <option value="general">General</option>
+                    <option value="buying-guide">Buying Guide</option>
+                    <option value="selling-tips">Selling Tips</option>
+                    <option value="market-trends">Market Trends</option>
+                    <option value="investment">Investment</option>
+                    <option value="home-loans">Home Loans</option>
+                    <option value="legal">Legal & RERA</option>
+                    <option value="interior">Interior & Vastu</option>
+                    <option value="nri">NRI Guide</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Tags (comma-separated)</label>
+                  <input type="text" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                    className="input-field" placeholder="real estate, noida, tips" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Cover Image URL</label>
+                <input type="url" value={form.coverImage} onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
+                  className="input-field" placeholder="https://images.unsplash.com/..." />
+                {form.coverImage && (
+                  <img src={form.coverImage} alt="Preview" className="mt-2 h-32 rounded-lg object-cover" />
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Content</label>
+                <textarea value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })}
+                  className="input-field resize-none font-mono text-sm" rows={12}
+                  placeholder="Write your blog post content here..." />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={form.published}
+                    onChange={(e) => setForm({ ...form, published: e.target.checked })}
+                    className="w-4 h-4 accent-gold-500" />
+                  <span className="text-sm font-medium text-gray-700">Publish immediately</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 p-6 border-t">
+              <button onClick={() => setShowEditor(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                Cancel
+              </button>
+              <button onClick={savePost} className="btn-primary flex items-center gap-2">
+                <Save size={16} /> {editingPost ? "Update Post" : "Create Post"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Posts Table */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">Post</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">Category</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">Status</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">Views</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">Date</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {posts.map((post) => (
+                <tr key={post.id} className="border-b border-gray-50 hover:bg-gray-50">
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-10 rounded bg-gray-200 overflow-hidden shrink-0">
+                        {post.coverImage ? (
+                          <img src={post.coverImage} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <BookOpen size={16} className="text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-navy-800 line-clamp-1">{post.title}</p>
+                        <p className="text-xs text-gray-400">/{post.slug}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs capitalize">
+                      {post.category.replace("-", " ")}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                      post.published ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                    }`}>
+                      {post.published ? "Published" : "Draft"}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-gray-500">
+                    <Eye size={14} className="inline mr-1" />{post.views}
+                  </td>
+                  <td className="py-3 px-4 text-xs text-gray-400">
+                    <Calendar size={12} className="inline mr-1" />{formatDate(post.createdAt)}
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => openEditor(post)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100" title="Edit">
+                        <Edit size={14} />
+                      </button>
+                      <button onClick={() => togglePublish(post.slug, post.published)}
+                        className={`p-1.5 rounded-lg ${post.published ? "bg-yellow-50 text-yellow-600 hover:bg-yellow-100" : "bg-green-50 text-green-600 hover:bg-green-100"}`}
+                        title={post.published ? "Unpublish" : "Publish"}>
+                        {post.published ? <EyeOff size={14} /> : <CheckCircle size={14} />}
+                      </button>
+                      <button onClick={() => deletePost(post.slug)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100" title="Delete">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {posts.length === 0 && !loading && (
+          <div className="p-12 text-center">
+            <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Blog Posts Yet</h3>
+            <p className="text-gray-500 mb-4">Create your first blog post to drive SEO traffic</p>
+            <button onClick={() => openEditor()} className="btn-primary inline-flex items-center gap-2">
+              <Plus size={16} /> Create First Post
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
