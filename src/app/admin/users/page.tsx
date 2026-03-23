@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { formatDate, timeAgo } from "@/lib/utils";
-import { Users, MapPin, Shield, Building2, Heart, MessageCircle, Clock, Globe } from "lucide-react";
+import { Users, MapPin, Shield, Building2, Heart, MessageCircle, Clock, Globe, Lock, X, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState("");
+  const [passwordModal, setPasswordModal] = useState<{ id: string; name: string } | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordMsg, setPasswordMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => { fetchUsers(); }, [roleFilter]);
 
@@ -35,6 +39,33 @@ export default function AdminUsersPage() {
       });
       fetchUsers();
     } catch {}
+  }
+
+  async function handleResetPassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (!passwordModal || newPassword.length < 6) {
+      setPasswordMsg({ type: "error", text: "Password must be at least 6 characters" });
+      return;
+    }
+    setResetting(true);
+    setPasswordMsg(null);
+    try {
+      const res = await fetch("/api/admin/change-password", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: passwordModal.id, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPasswordMsg({ type: "error", text: data.error });
+      } else {
+        setPasswordMsg({ type: "success", text: data.message });
+        setTimeout(() => { setPasswordModal(null); setNewPassword(""); setPasswordMsg(null); }, 2000);
+      }
+    } catch {
+      setPasswordMsg({ type: "error", text: "Something went wrong" });
+    }
+    setResetting(false);
   }
 
   return (
@@ -119,7 +150,7 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="py-3 px-4 text-xs text-gray-400">{formatDate(user.createdAt)}</td>
                   <td className="py-3 px-4">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 flex-wrap">
                       <select
                         value={user.role}
                         onChange={(e) => updateUser(user.id, { role: e.target.value })}
@@ -138,6 +169,12 @@ export default function AdminUsersPage() {
                       >
                         {user.verified ? "Unverify" : "Verify"}
                       </button>
+                      <button
+                        onClick={() => { setPasswordModal({ id: user.id, name: user.name }); setNewPassword(""); setPasswordMsg(null); }}
+                        className="px-2 py-1 rounded text-xs font-medium bg-navy-50 text-navy-700 hover:bg-navy-100 flex items-center gap-1"
+                      >
+                        <Lock size={10} /> Password
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -149,6 +186,55 @@ export default function AdminUsersPage() {
           <div className="p-12 text-center text-gray-500">No users found</div>
         )}
       </div>
+
+      {/* Reset Password Modal */}
+      {passwordModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-navy-800">Reset Password</h3>
+              <button onClick={() => { setPasswordModal(null); setPasswordMsg(null); }} className="p-1 hover:bg-gray-100 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">
+              Set a new password for <span className="font-semibold text-navy-800">{passwordModal.name}</span>
+            </p>
+            {passwordMsg && (
+              <div className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm mb-4 ${
+                passwordMsg.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
+              }`}>
+                {passwordMsg.type === "success" ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+                {passwordMsg.text}
+              </div>
+            )}
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="input-field"
+                  placeholder="Minimum 6 characters"
+                  required
+                  minLength={6}
+                />
+              </div>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => { setPasswordModal(null); setPasswordMsg(null); }}
+                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  Cancel
+                </button>
+                <button type="submit" disabled={resetting}
+                  className="flex-1 btn-primary disabled:opacity-50">
+                  {resetting ? "Updating..." : "Reset Password"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

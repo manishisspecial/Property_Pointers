@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { formatDate, timeAgo } from "@/lib/utils";
 import {
-  BookOpen, Plus, Edit, Trash2, Eye, EyeOff, CheckCircle, X, Save, Calendar
+  BookOpen, Plus, Edit, Trash2, Eye, EyeOff, CheckCircle, X, Save, Calendar,
+  Upload, Loader2
 } from "lucide-react";
 
 export default function AdminBlogPage() {
@@ -168,12 +169,11 @@ export default function AdminBlogPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Cover Image URL</label>
-                <input type="url" value={form.coverImage} onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
-                  className="input-field" placeholder="https://images.unsplash.com/..." />
-                {form.coverImage && (
-                  <img src={form.coverImage} alt="Preview" className="mt-2 h-32 rounded-lg object-cover" />
-                )}
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Cover Image</label>
+                <BlogCoverUploader
+                  image={form.coverImage}
+                  onChange={(url) => setForm({ ...form, coverImage: url })}
+                />
               </div>
 
               <div>
@@ -288,6 +288,56 @@ export default function AdminBlogPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function BlogCoverUploader({ image, onChange }: { image: string; onChange: (url: string) => void }) {
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", "blog");
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) onChange(data.url);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+    setUploading(false);
+  }
+
+  return (
+    <div>
+      {image ? (
+        <div className="relative inline-block">
+          <img src={image} alt="Cover" className="h-32 rounded-lg object-cover" />
+          <button type="button" onClick={() => onChange("")}
+            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600">
+            <X size={12} />
+          </button>
+        </div>
+      ) : (
+        <label
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }}
+          className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gold-400 hover:bg-gray-50 transition-colors"
+        >
+          {uploading ? (
+            <Loader2 size={24} className="animate-spin text-gold-500" />
+          ) : (
+            <>
+              <Upload size={24} className="text-gray-400 mb-1" />
+              <span className="text-sm text-gray-500">Click or drag to upload cover image</span>
+            </>
+          )}
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} disabled={uploading} />
+        </label>
+      )}
     </div>
   );
 }

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     if (type) where.type = type;
     if (category && category !== "all") where.category = category;
-    if (city) where.city = { contains: city };
+    if (city) where.city = { contains: city, mode: "insensitive" };
     if (ownerId) where.ownerId = ownerId;
     if (featured === "true") where.featured = true;
     if (verified === "true") where.verified = true;
@@ -37,11 +37,11 @@ export async function GET(req: NextRequest) {
     }
     if (q) {
       where.OR = [
-        { title: { contains: q } },
-        { locality: { contains: q } },
-        { city: { contains: q } },
-        { address: { contains: q } },
-        { description: { contains: q } },
+        { title: { contains: q, mode: "insensitive" } },
+        { locality: { contains: q, mode: "insensitive" } },
+        { city: { contains: q, mode: "insensitive" } },
+        { address: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } },
       ];
     }
 

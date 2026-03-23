@@ -3,18 +3,18 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   email       String   @unique
   password    String
   phone       String?
   avatar      String?
-  role        String   @default("user") // user, agent, owner, admin
+  role        String   @default("user")
   verified    Boolean  @default(false)
   latitude    Float?
   longitude   Float?
@@ -35,13 +35,13 @@ model User {
 }
 
 model Property {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
   price       Float
-  type        String   // sale, rent, pg
-  category    String   // apartment, house, villa, plot, commercial, office, shop
-  status      String   @default("active") // active, inactive, sold, rented
+  type        String
+  category    String
+  status      String   @default("active")
   bedrooms    Int?
   bathrooms   Int?
   balconies   Int?
@@ -50,7 +50,7 @@ model Property {
   floor       String?
   totalFloors String?
   facing      String?
-  furnishing  String?  // furnished, semi-furnished, unfurnished
+  furnishing  String?
   age         String?
   address     String
   locality    String
@@ -59,14 +59,14 @@ model Property {
   pincode     String
   latitude    Float?
   longitude   Float?
-  images      String   @default("[]") // JSON array of image URLs
-  amenities   String   @default("[]") // JSON array
+  images      String   @default("[]")
+  amenities   String   @default("[]")
   verified    Boolean  @default(false)
   featured    Boolean  @default(false)
   premium     Boolean  @default(false)
   views       Int      @default(0)
-  ownerId     String
-  ownerType   String   @default("owner") // owner, agent, builder
+  ownerId     String   @db.ObjectId
+  ownerType   String   @default("owner")
 
   owner     User       @relation(fields: [ownerId], references: [id])
   inquiries Inquiry[]
@@ -78,11 +78,11 @@ model Property {
 }
 
 model Inquiry {
-  id         String   @id @default(cuid())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   message    String
-  status     String   @default("pending") // pending, responded, closed
-  propertyId String
-  userId     String
+  status     String   @default("pending")
+  propertyId String   @db.ObjectId
+  userId     String   @db.ObjectId
   userName   String
   userEmail  String
   userPhone  String?
@@ -95,9 +95,9 @@ model Inquiry {
 }
 
 model Favorite {
-  id         String @id @default(cuid())
-  userId     String
-  propertyId String
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String @db.ObjectId
+  propertyId String @db.ObjectId
 
   user     User     @relation(fields: [userId], references: [id])
   property Property @relation(fields: [propertyId], references: [id])
@@ -108,11 +108,11 @@ model Favorite {
 }
 
 model Review {
-  id         String @id @default(cuid())
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
   rating     Int
   comment    String
-  userId     String
-  propertyId String
+  userId     String @db.ObjectId
+  propertyId String @db.ObjectId
 
   user     User     @relation(fields: [userId], references: [id])
   property Property @relation(fields: [propertyId], references: [id])
@@ -121,16 +121,16 @@ model Review {
 }
 
 model ActivityLog {
-  id          String  @id @default(cuid())
-  userId      String?
-  action      String
-  details     String?
-  ip          String?
-  userAgent   String?
-  latitude    Float?
-  longitude   Float?
-  city        String?
-  page        String?
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String? @db.ObjectId
+  action    String
+  details   String?
+  ip        String?
+  userAgent String?
+  latitude  Float?
+  longitude Float?
+  city      String?
+  page      String?
 
   user User? @relation(fields: [userId], references: [id])
 
@@ -138,10 +138,10 @@ model ActivityLog {
 }
 
 model ChatMessage {
-  id       String @id @default(cuid())
-  userId   String?
-  message  String
-  response String
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String? @db.ObjectId
+  message   String
+  response  String
   sessionId String
 
   user User? @relation(fields: [userId], references: [id])
@@ -150,17 +150,17 @@ model ChatMessage {
 }
 
 model BlogPost {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  excerpt     String
-  content     String
-  coverImage  String?
-  category    String   @default("general")
-  tags        String   @default("[]") // JSON array
-  authorId    String
-  published   Boolean  @default(false)
-  views       Int      @default(0)
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  slug       String   @unique
+  excerpt    String
+  content    String
+  coverImage String?
+  category   String   @default("general")
+  tags       String   @default("[]")
+  authorId   String   @db.ObjectId
+  published  Boolean  @default(false)
+  views      Int      @default(0)
 
   author User @relation(fields: [authorId], references: [id])
 
@@ -168,8 +168,41 @@ model BlogPost {
   updatedAt DateTime @updatedAt
 }
 
+model Project {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  title              String
+  slug               String   @unique
+  description        String
+  highlights         String   @default("[]")
+  builderName        String
+  builderLogo        String?
+  location           String
+  city               String
+  state              String
+  reraNumber         String?
+  projectStatus      String   @default("under-construction")
+  possessionDate     String?
+  startingPrice      Float
+  priceUnit          String   @default("Lac")
+  propertyType       String   @default("residential")
+  configurations     String   @default("[]")
+  totalArea          String?
+  totalUnits         Int?
+  images             String   @default("[]")
+  amenities          String   @default("[]")
+  floorPlans         String   @default("[]")
+  locationAdvantages String   @default("[]")
+  brochureUrl        String?
+  featured           Boolean  @default(false)
+  verified           Boolean  @default(false)
+  views              Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model SiteSettings {
-  id              String  @id @default("default")
+  id              String  @id @map("_id")
   siteName        String  @default("Property Pointers")
   siteDescription String  @default("India's #1 Real Estate Platform")
   contactEmail    String  @default("info@propertypointers.com")

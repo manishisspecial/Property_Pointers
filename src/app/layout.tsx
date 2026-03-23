@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import LayoutShell from "@/components/LayoutShell";
 import ChatBot from "@/components/ChatBot";
 import GeoTracker from "@/components/GeoTracker";
 
@@ -21,9 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col bg-gray-50">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LayoutShell>{children}</LayoutShell>
         <ChatBot />
         <GeoTracker />
       </body>

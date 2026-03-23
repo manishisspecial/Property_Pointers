@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2, MapPin, IndianRupee, Bed, Bath, Maximize, ArrowRight, ArrowLeft,
-  CheckCircle, Image as ImageIcon, Sparkles, Plus, X
+  CheckCircle, Image as ImageIcon, Sparkles, Plus, X, Upload, Loader2
 } from "lucide-react";
 
 const AMENITIES = [
@@ -28,7 +28,8 @@ export default function PostPropertyPage() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
+
+  const [uploading, setUploading] = useState(false);
 
   const [form, setForm] = useState({
     title: "", description: "", price: "", type: "sale", category: "apartment",
@@ -50,13 +51,6 @@ export default function PostPropertyPage() {
         ? prev.amenities.filter((a) => a !== amenity)
         : [...prev.amenities, amenity],
     }));
-  }
-
-  function addImage() {
-    if (imageUrl.trim()) {
-      update("images", [...form.images, imageUrl.trim()]);
-      setImageUrl("");
-    }
   }
 
   function removeImage(index: number) {
@@ -320,26 +314,89 @@ export default function PostPropertyPage() {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-navy-800 mb-4">Photos & Amenities</h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Property Photos (Image URLs)</label>
-                <div className="flex gap-2 mb-3">
-                  <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="Paste image URL here..." className="input-field flex-1" />
-                  <button type="button" onClick={addImage} className="btn-primary px-4 py-2 shrink-0">
-                    <Plus size={18} />
-                  </button>
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Property Photos</label>
+
                 {form.images.length > 0 && (
-                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mb-3">
                     {form.images.map((img, i) => (
-                      <div key={i} className="relative h-24 rounded-lg overflow-hidden bg-gray-100">
+                      <div key={i} className="relative h-24 rounded-lg overflow-hidden bg-gray-100 group">
                         <img src={img} alt="" className="w-full h-full object-cover" />
-                        <button onClick={() => removeImage(i)} className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center">
+                        <button type="button" onClick={() => removeImage(i)}
+                          className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <X size={12} />
                         </button>
+                        {i === 0 && (
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-gold-500 text-white text-[10px] rounded font-bold">COVER</span>
+                        )}
                       </div>
                     ))}
                   </div>
                 )}
+
+                <label
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    const files = e.dataTransfer.files;
+                    if (!files.length) return;
+                    setUploading(true);
+                    const newImages = [...form.images];
+                    for (let i = 0; i < files.length && newImages.length < 10; i++) {
+                      if (!files[i].type.startsWith("image/")) continue;
+                      const fd = new FormData();
+                      fd.append("file", files[i]);
+                      fd.append("folder", "properties");
+                      try {
+                        const res = await fetch("/api/upload", { method: "POST", body: fd });
+                        const data = await res.json();
+                        if (data.url) newImages.push(data.url);
+                      } catch {}
+                    }
+                    update("images", newImages);
+                    setUploading(false);
+                  }}
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-gold-400 hover:bg-gray-50 transition-colors"
+                >
+                  {uploading ? (
+                    <div className="flex flex-col items-center">
+                      <Loader2 size={28} className="animate-spin text-gold-500 mb-2" />
+                      <span className="text-sm text-gray-500">Uploading...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload size={28} className="text-gray-400 mb-2" />
+                      <span className="text-sm text-gray-600 font-medium">Click to upload or drag & drop</span>
+                      <span className="text-xs text-gray-400 mt-1">{form.images.length}/10 images uploaded. Max 10MB each.</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={async (e) => {
+                      const files = e.target.files;
+                      if (!files?.length) return;
+                      setUploading(true);
+                      const newImages = [...form.images];
+                      for (let i = 0; i < files.length && newImages.length < 10; i++) {
+                        if (!files[i].type.startsWith("image/")) continue;
+                        const fd = new FormData();
+                        fd.append("file", files[i]);
+                        fd.append("folder", "properties");
+                        try {
+                          const res = await fetch("/api/upload", { method: "POST", body: fd });
+                          const data = await res.json();
+                          if (data.url) newImages.push(data.url);
+                        } catch {}
+                      }
+                      update("images", newImages);
+                      setUploading(false);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>

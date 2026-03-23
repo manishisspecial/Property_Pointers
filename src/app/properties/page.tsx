@@ -29,6 +29,21 @@ function PropertiesContent() {
     page: searchParams.get("page") || "1",
   });
 
+  useEffect(() => {
+    setFilters({
+      type: searchParams.get("type") || "",
+      category: searchParams.get("category") || "",
+      city: searchParams.get("city") || "",
+      q: searchParams.get("q") || "",
+      minPrice: searchParams.get("minPrice") || "",
+      maxPrice: searchParams.get("maxPrice") || "",
+      bedrooms: searchParams.get("bedrooms") || "",
+      furnished: searchParams.get("furnished") || "",
+      sort: searchParams.get("sort") || "newest",
+      page: searchParams.get("page") || "1",
+    });
+  }, [searchParams]);
+
   const fetchProperties = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
