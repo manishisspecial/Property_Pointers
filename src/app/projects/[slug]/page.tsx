@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MapPin, Building2, CheckCircle, Star, Calendar, Eye, ArrowRight,
-  ChevronLeft, ChevronRight, X, Share2, Phone, Mail, IndianRupee,
-  Shield, Loader2, Download, Clock, Maximize2, Home, Landmark,
-  Ruler, Users, ArrowLeft, ExternalLink, Copy, Check
+  MapPin, Building2, CheckCircle, Star, ArrowRight,
+  ChevronLeft, ChevronRight, X, Share2, Phone, IndianRupee,
+  Shield, Loader2, Download, Clock, Maximize2,
+  Ruler, Users, ExternalLink, Check
 } from "lucide-react";
+import FAQAccordion from "@/components/FAQAccordion";
+import ProjectReviewsForum from "@/components/ProjectReviewsForum";
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
   "upcoming": { label: "Upcoming", color: "text-blue-700", bg: "bg-blue-100" },
@@ -41,6 +43,8 @@ export default function ProjectDetailPage() {
   const [copied, setCopied] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [similarProjects, setSimilarProjects] = useState<any[]>([]);
+  const [leadLoading, setLeadLoading] = useState(false);
+  const [leadStatus, setLeadStatus] = useState<{ ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
     if (slug) fetchProject();
@@ -78,6 +82,38 @@ export default function ProjectDetailPage() {
     }
   }
 
+  async function handleLeadSubmit(e: FormEvent<HTMLFormElement>, action: string) {
+    e.preventDefault();
+    setLeadStatus(null);
+    const form = new FormData(e.currentTarget);
+    const name = String(form.get("name") || "");
+    const email = String(form.get("email") || "");
+    const phone = String(form.get("phone") || "");
+    if (!name || !phone) {
+      setLeadStatus({ ok: false, text: "Please add your name and phone." });
+      return;
+    }
+    setLeadLoading(true);
+    try {
+      const res = await fetch("/api/activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          page: `/projects/${slug}`,
+          details: JSON.stringify({ project: project?.title, name, email, phone }),
+        }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setLeadStatus({ ok: true, text: "Request submitted. Our team will contact you shortly." });
+      e.currentTarget.reset();
+    } catch {
+      setLeadStatus({ ok: false, text: "Could not submit right now. Please try again." });
+    } finally {
+      setLeadLoading(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-16">
@@ -95,6 +131,23 @@ export default function ProjectDetailPage() {
   const locationAdvantages = safeParseJSON(project.locationAdvantages);
   const floorPlans = safeParseJSON(project.floorPlans);
   const statusInfo = STATUS_MAP[project.projectStatus] || STATUS_MAP["under-construction"];
+  const paymentPlans = [
+    { title: "Down Payment Plan", detail: "10% booking, 80% during construction, 10% on possession" },
+    { title: "Construction Linked Plan", detail: "Pay in stages as construction milestones are achieved" },
+    { title: "Flexible Plan", detail: "Custom payment schedule available on request" },
+  ];
+  const projectReviews = [
+    { author: "Rohit Sharma", rating: 4.5, text: "Good construction quality and transparent communication.", tag: "Verified Buyer" },
+    { author: "Aditi Mehra", rating: 4.2, text: "Location is strong and pricing is competitive for this micro-market.", tag: "Investor" },
+  ];
+  const localityReviews = [
+    { author: "Neha Arora", rating: 4.3, text: "Great connectivity to schools and metro routes.", tag: "Local Resident" },
+    { author: "Kunal Bhatia", rating: 4.0, text: "Good social infrastructure, traffic gets busy during peak hours.", tag: "Commuter" },
+  ];
+  const forumThreads = [
+    { title: "How is the builder's possession track record?", replies: 18, lastActive: "2 days ago" },
+    { title: "Any feedback on maintenance and amenities quality?", replies: 12, lastActive: "5 days ago" },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
@@ -270,6 +323,38 @@ export default function ProjectDetailPage() {
               </div>
             </motion.div>
 
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18 }}
+              className="bg-white rounded-2xl p-6 shadow-sm"
+            >
+              <h2 className="text-xl font-bold text-navy-900 mb-4">Price Range</h2>
+              <p className="text-gray-700">
+                Starting at <span className="font-semibold text-navy-900">₹{project.startingPrice} {project.priceUnit}+</span>.
+                Final pricing can vary by tower, view, and configuration.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl p-6 shadow-sm"
+            >
+              <h2 className="text-xl font-bold text-navy-900 mb-4">Possession & RERA</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Possession</p>
+                  <p className="text-base font-semibold text-navy-900 mt-1">{project.possessionDate || "To be announced"}</p>
+                </div>
+                <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">RERA</p>
+                  <p className="text-base font-semibold text-navy-900 mt-1">{project.reraNumber || "RERA details on request"}</p>
+                </div>
+              </div>
+            </motion.div>
+
             {/* Description */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -413,6 +498,78 @@ export default function ProjectDetailPage() {
                 </div>
               </motion.div>
             )}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.43 }}
+              className="bg-white rounded-2xl p-6 shadow-sm"
+            >
+              <h2 className="text-xl font-bold text-navy-900 mb-4">Payment Plans</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {paymentPlans.map((plan) => (
+                  <div key={plan.title} className="rounded-xl border border-gray-200 p-4 bg-gray-50">
+                    <p className="font-semibold text-navy-900">{plan.title}</p>
+                    <p className="text-sm text-gray-600 mt-1">{plan.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="bg-white rounded-2xl p-6 shadow-sm"
+            >
+              <h2 className="text-xl font-bold text-navy-900 mb-4">About Developer</h2>
+              <p className="text-gray-700 leading-relaxed">
+                <span className="font-semibold text-navy-900">{project.builderName}</span> has an active footprint in {project.city}
+                {" "}with a focus on timely delivery, transparent documentation, and quality-focused execution.
+              </p>
+            </motion.div>
+
+            <ProjectReviewsForum
+              projectSlug={slug}
+              initialProjectReviews={projectReviews}
+              initialLocalityReviews={localityReviews}
+              initialThreads={forumThreads}
+            />
+
+            <FAQAccordion
+              title="Project FAQs"
+              items={[
+                {
+                  question: "What is the current possession timeline?",
+                  answer: `Current expected possession is ${project.possessionDate || "to be announced by the developer"}.`,
+                },
+                {
+                  question: "Can I get updated price details by configuration?",
+                  answer: "Yes. Use Get Price Details and our advisor will share current tower-wise inventory and pricing.",
+                },
+                {
+                  question: "Is this project RERA registered?",
+                  answer: project.reraNumber ? `Yes, RERA number is ${project.reraNumber}.` : "RERA details can be requested from our team.",
+                },
+              ]}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-gradient-to-r from-navy-900 to-navy-800 rounded-2xl p-6 text-white"
+            >
+              <h2 className="text-xl font-bold">Ready to take the next step?</h2>
+              <p className="text-gray-200 mt-1">Choose an action and our team will assist you with complete project details.</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <a href="#lead-form" className="btn-secondary">Book Site Visit</a>
+                <a href={project.brochureUrl || "#"} target={project.brochureUrl ? "_blank" : undefined} rel="noopener noreferrer" className="btn-outline border-white/30 text-white hover:bg-white/10">
+                  Download Brochure
+                </a>
+                <a href="#lead-form" className="btn-primary">Get Price Details</a>
+              </div>
+            </motion.div>
           </div>
 
           {/* Right Sidebar */}
@@ -429,14 +586,15 @@ export default function ProjectDetailPage() {
                 <p className="text-sm text-gray-500">Get expert advice & best deals</p>
               </div>
 
-              <div className="space-y-3">
-                <input placeholder="Your Name" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
-                <input placeholder="Email Address" type="email" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
-                <input placeholder="Phone Number" type="tel" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
-                <button className="w-full bg-gold-500 hover:bg-gold-600 text-white py-3 rounded-xl text-sm font-bold transition-colors">
-                  Get Free Consultation
+              <form id="lead-form" className="space-y-3" onSubmit={(e) => handleLeadSubmit(e, "project_get_price_details")}>
+                <input name="name" placeholder="Your Name" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
+                <input name="email" placeholder="Email Address" type="email" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
+                <input name="phone" placeholder="Phone Number" type="tel" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
+                <button disabled={leadLoading} className="w-full bg-gold-500 hover:bg-gold-600 text-white py-3 rounded-xl text-sm font-bold transition-colors disabled:opacity-60">
+                  {leadLoading ? "Submitting..." : "Get Price Details"}
                 </button>
-              </div>
+              </form>
+              {leadStatus && <p className={`mt-3 text-sm ${leadStatus.ok ? "text-emerald-600" : "text-red-600"}`}>{leadStatus.text}</p>}
 
               <div className="flex items-center gap-2 mt-4 text-xs text-gray-400 justify-center">
                 <Shield size={12} /> Your information is safe with us

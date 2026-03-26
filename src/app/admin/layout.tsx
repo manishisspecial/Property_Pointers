@@ -15,6 +15,7 @@ const SIDEBAR_ITEMS = [
   { href: "/admin/projects", icon: Landmark, label: "Projects" },
   { href: "/admin/users", icon: Users, label: "Users" },
   { href: "/admin/inquiries", icon: MessageCircle, label: "Inquiries" },
+  { href: "/admin/community", icon: MessageCircle, label: "Community" },
   { href: "/admin/blog", icon: BookOpen, label: "Blog" },
   { href: "/admin/performance", icon: Gauge, label: "Performance" },
   { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },

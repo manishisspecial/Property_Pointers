@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 
+function toSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -50,12 +58,10 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await req.json();
-    const slug =
-      data.slug ||
-      data.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+    const slug = toSlug(data.slug || data.title || "");
+    const tags = Array.isArray(data.tags) ? data.tags : [];
+    const metaTags = Array.isArray(data.metaTags) ? data.metaTags : [];
+    const faqs = Array.isArray(data.faqs) ? data.faqs : [];
 
     const post = await prisma.blogPost.create({
       data: {
@@ -63,9 +69,14 @@ export async function POST(req: NextRequest) {
         slug,
         excerpt: data.excerpt,
         content: data.content,
+        metaTitle: data.metaTitle || null,
+        metaDescription: data.metaDescription || null,
+        metaTags: JSON.stringify(metaTags),
+        schemaJson: data.schemaJson || null,
+        faqs: JSON.stringify(faqs),
         coverImage: data.coverImage || null,
         category: data.category || "general",
-        tags: JSON.stringify(data.tags || []),
+        tags: JSON.stringify(tags),
         authorId: session.userId,
         published: data.published ?? false,
       },

@@ -24,7 +24,18 @@ export async function GET(req: NextRequest) {
 
     if (type) where.type = type;
     if (category && category !== "all") where.category = category;
-    if (city) where.city = { contains: city, mode: "insensitive" };
+    if (city) {
+      const cityAliases: Record<string, string[]> = {
+        gurugram: ["Gurugram", "Gurgaon"],
+        gurgaon: ["Gurugram", "Gurgaon"],
+      };
+      const aliases = cityAliases[city.toLowerCase()];
+      if (aliases) {
+        where.city = { in: aliases };
+      } else {
+        where.city = { contains: city, mode: "insensitive" };
+      }
+    }
     if (ownerId) where.ownerId = ownerId;
     if (featured === "true") where.featured = true;
     if (verified === "true") where.verified = true;

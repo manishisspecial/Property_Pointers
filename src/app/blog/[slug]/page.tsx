@@ -14,80 +14,37 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+function parseJsonArray(value: string, fallback: any[] = []) {
+  try {
+    const parsed = JSON.parse(value || "[]");
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await prisma.blogPost.findUnique({ where: { slug } });
   if (!post) return { title: "Post Not Found" };
+  const tags = parseJsonArray(post.metaTags || post.tags || "[]");
+  const metaTitle = post.metaTitle || `${post.title} | Property Pointers Blog`;
+  const metaDescription = post.metaDescription || post.excerpt;
   return {
-    title: `${post.title} | Property Pointers Blog`,
-    description: post.excerpt,
-    keywords: JSON.parse(post.tags || "[]").join(", "),
+    title: metaTitle,
+    description: metaDescription,
+    keywords: tags.join(", "),
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: metaTitle,
+      description: metaDescription,
       images: post.coverImage ? [post.coverImage] : [],
     },
   };
-}
-
-function renderContent(content: string) {
-  const paragraphs = content.split(/\n\n+/);
-  return paragraphs.map((para, i) => {
-    const trimmed = para.trim();
-    if (!trimmed) return null;
-
-    if (trimmed.startsWith("# ")) {
-      return <h2 key={i} className="text-2xl font-bold text-navy-900 mt-10 mb-4">{trimmed.slice(2)}</h2>;
-    }
-    if (trimmed.startsWith("## ")) {
-      return <h3 key={i} className="text-xl font-bold text-navy-900 mt-8 mb-3">{trimmed.slice(3)}</h3>;
-    }
-    if (trimmed.startsWith("### ")) {
-      return <h4 key={i} className="text-lg font-semibold text-navy-800 mt-6 mb-2">{trimmed.slice(4)}</h4>;
-    }
-    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-      const items = trimmed.split(/\n/).filter(Boolean);
-      return (
-        <ul key={i} className="my-4 space-y-2 pl-6">
-          {items.map((item, j) => (
-            <li key={j} className="text-gray-700 leading-relaxed list-disc">
-              {item.replace(/^[-*]\s*/, "")}
-            </li>
-          ))}
-        </ul>
-      );
-    }
-    if (/^\d+\.\s/.test(trimmed)) {
-      const items = trimmed.split(/\n/).filter(Boolean);
-      return (
-        <ol key={i} className="my-4 space-y-2 pl-6">
-          {items.map((item, j) => (
-            <li key={j} className="text-gray-700 leading-relaxed list-decimal">
-              {item.replace(/^\d+\.\s*/, "")}
-            </li>
-          ))}
-        </ol>
-      );
-    }
-    if (trimmed.startsWith("> ")) {
-      return (
-        <blockquote key={i} className="my-6 border-l-4 border-gold-500 bg-gold-50 px-6 py-4 rounded-r-lg italic text-gray-700">
-          {trimmed.replace(/^>\s*/gm, "")}
-        </blockquote>
-      );
-    }
-
-    return (
-      <p key={i} className="text-gray-700 leading-relaxed mb-4">
-        {trimmed.split("\n").map((line, j) => (
-          <span key={j}>
-            {j > 0 && <br />}
-            {line}
-          </span>
-        ))}
-      </p>
-    );
-  });
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -102,7 +59,24 @@ export default async function BlogPostPage({ params }: Props) {
 
   await prisma.blogPost.update({ where: { slug }, data: { views: { increment: 1 } } });
 
-  const tags: string[] = JSON.parse(post.tags || "[]");
+  const tags: string[] = parseJsonArray(post.tags || "[]");
+  const faqs: FaqItem[] = parseJsonArray(post.faqs || "[]");
+  const autoFaqSchema =
+    faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
+        }
+      : null;
+  const customSchema = post.schemaJson ? post.schemaJson.trim() : "";
 
   const relatedPosts = await prisma.blogPost.findMany({
     where: { published: true, category: post.category, id: { not: post.id } },
@@ -150,6 +124,19 @@ export default async function BlogPostPage({ params }: Props) {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <article className="bg-white rounded-2xl shadow-sm p-6 md:p-10">
+              {customSchema && (
+                <script
+                  type="application/ld+json"
+                  dangerouslySetInnerHTML={{ __html: customSchema }}
+                />
+              )}
+              {autoFaqSchema && (
+                <script
+                  type="application/ld+json"
+                  dangerouslySetInnerHTML={{ __html: JSON.stringify(autoFaqSchema) }}
+                />
+              )}
+
               {/* Meta */}
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 {!post.coverImage && (
@@ -223,8 +210,26 @@ export default async function BlogPostPage({ params }: Props) {
 
               {/* Content */}
               <div className="blog-content">
-                {renderContent(post.content)}
+                <div
+                  className="prose prose-gray max-w-none prose-headings:text-navy-900 prose-a:text-gold-600"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
               </div>
+
+              {/* FAQs */}
+              {faqs.length > 0 && (
+                <div className="mt-10 pt-8 border-t border-gray-100">
+                  <h2 className="text-2xl font-bold text-navy-900 mb-5">Frequently Asked Questions</h2>
+                  <div className="space-y-4">
+                    {faqs.map((faq, index) => (
+                      <div key={`${faq.question}-${index}`} className="rounded-xl border border-gray-200 p-4">
+                        <h3 className="font-semibold text-navy-900 mb-2">{faq.question}</h3>
+                        <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Tags */}
               {tags.length > 0 && (

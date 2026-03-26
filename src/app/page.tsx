@@ -1,60 +1,74 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Building2, Home, MapPin, TrendingUp, Shield, Users, Star, ArrowRight,
-  Search, Landmark, Building, TreePine, Phone, CheckCircle, Zap, Globe, Calculator
+  Search, Landmark, Building, TreePine, Phone, CheckCircle, Zap, Globe, Calculator,
+  BookOpen, Clock
 } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
-import prisma from "@/lib/prisma";
 import PropertyCard from "@/components/PropertyCard";
+import { useCity } from "@/context/CityContext";
+import { PropertyType } from "@/types";
 
-export const dynamic = "force-dynamic";
+const SERVICE_CITIES = [
+  { name: "Delhi", img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=400&h=300&fit=crop" },
+  { name: "Noida", img: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&h=300&fit=crop" },
+  { name: "Greater Noida", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop" },
+  { name: "Gurugram", img: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&h=300&fit=crop" },
+  { name: "Ghaziabad", img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop" },
+  { name: "Jaipur", img: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&h=300&fit=crop" },
+  { name: "Pune", img: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=300&fit=crop" },
+];
 
-async function getFeaturedProperties() {
-  try {
-    return await prisma.property.findMany({
-      where: { status: "active", featured: true },
-      include: { owner: { select: { id: true, name: true, email: true, phone: true, role: true, avatar: true } } },
-      orderBy: { createdAt: "desc" },
-      take: 8,
-    });
-  } catch {
-    return [];
-  }
-}
+const categories = [
+  { icon: Building2, label: "Apartments", href: "/properties?category=apartment", color: "bg-blue-500", count: "2500+" },
+  { icon: Home, label: "Houses", href: "/properties?category=house", color: "bg-green-500", count: "1200+" },
+  { icon: Landmark, label: "Villas", href: "/properties?category=villa", color: "bg-purple-500", count: "800+" },
+  { icon: TreePine, label: "Plots/Land", href: "/properties?category=plot", color: "bg-emerald-500", count: "950+" },
+  { icon: Building, label: "Commercial", href: "/properties?category=commercial", color: "bg-orange-500", count: "650+" },
+  { icon: Building2, label: "Office Space", href: "/properties?category=office", color: "bg-cyan-500", count: "420+" },
+];
 
-async function getStats() {
-  try {
-    const [properties, users, cities] = await Promise.all([
-      prisma.property.count({ where: { status: "active" } }),
-      prisma.user.count(),
-      prisma.property.groupBy({ by: ["city"], _count: true }),
-    ]);
-    return { properties, users, cities: cities.length };
-  } catch {
-    return { properties: 0, users: 0, cities: 0 };
-  }
-}
+export default function HomePage() {
+  const { selectedCity, isLoaded } = useCity();
+  const [featured, setFeatured] = useState<PropertyType[]>([]);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [stats, setStats] = useState({ properties: 0, users: 0, cities: 7 });
+  const [loading, setLoading] = useState(true);
 
-export default async function HomePage() {
-  const [featured, stats] = await Promise.all([getFeaturedProperties(), getStats()]);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set("featured", "true");
+      params.set("limit", "8");
+      if (selectedCity) params.set("city", selectedCity.name);
 
-  const categories = [
-    { icon: Building2, label: "Apartments", href: "/properties?category=apartment", color: "bg-blue-500", count: "2500+" },
-    { icon: Home, label: "Houses", href: "/properties?category=house", color: "bg-green-500", count: "1200+" },
-    { icon: Landmark, label: "Villas", href: "/properties?category=villa", color: "bg-purple-500", count: "800+" },
-    { icon: TreePine, label: "Plots/Land", href: "/properties?category=plot", color: "bg-emerald-500", count: "950+" },
-    { icon: Building, label: "Commercial", href: "/properties?category=commercial", color: "bg-orange-500", count: "650+" },
-    { icon: Building2, label: "Office Space", href: "/properties?category=office", color: "bg-cyan-500", count: "420+" },
-  ];
+      const [propRes, blogRes] = await Promise.all([
+        fetch(`/api/properties?${params.toString()}`),
+        fetch("/api/blog?limit=3"),
+      ]);
+      const propData = await propRes.json();
+      const blogData = await blogRes.json();
+      setFeatured(propData.properties || []);
+      setBlogPosts(blogData.posts || []);
+      setStats((prev) => ({ ...prev, properties: propData.total || prev.properties }));
+    } catch {
+      setFeatured([]);
+    }
+    setLoading(false);
+  }, [selectedCity]);
 
-  const cities = [
-    { name: "Noida", img: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&h=300&fit=crop", count: "3200+" },
-    { name: "Delhi", img: "https://images.unsplash.com/photo-1597040663342-45b6ba68c88a?w=400&h=300&fit=crop", count: "5400+" },
-    { name: "Gurgaon", img: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&h=300&fit=crop", count: "4100+" },
-    { name: "Mumbai", img: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=300&fit=crop", count: "6800+" },
-    { name: "Bangalore", img: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=400&h=300&fit=crop", count: "5200+" },
-    { name: "Hyderabad", img: "https://images.unsplash.com/photo-1572883454114-1cf0031ede2a?w=400&h=300&fit=crop", count: "3900+" },
-  ];
+  useEffect(() => {
+    if (isLoaded) fetchData();
+  }, [isLoaded, fetchData]);
+
+  const cityLabel = selectedCity?.name || "India";
+  const displayCities = selectedCity
+    ? SERVICE_CITIES.filter((c) => c.name !== selectedCity.name)
+    : SERVICE_CITIES;
 
   return (
     <>
@@ -70,15 +84,25 @@ export default async function HomePage() {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-gold-500/10 border border-gold-500/20 px-4 py-2 rounded-full mb-6">
               <Zap size={16} className="text-gold-400" />
-              <span className="text-gold-400 text-sm font-medium">India&apos;s #1 Trusted Real Estate Platform</span>
+              <span className="text-gold-400 text-sm font-medium">
+                {selectedCity
+                  ? `Exploring properties in ${selectedCity.name}`
+                  : "India's #1 Trusted Real Estate Platform"}
+              </span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Find Your Dream<br />
-              <span className="text-gradient">Property</span> Today
+              <span className="text-gradient">Property</span>{" "}
+              {selectedCity ? (
+                <>in <span className="text-gold-400">{selectedCity.name}</span></>
+              ) : (
+                "Today"
+              )}
             </h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-8">
-              Discover verified properties across India. Buy, sell, or rent with zero brokerage.
-              Trusted by 1M+ happy customers.
+              {selectedCity
+                ? `Discover verified properties in ${selectedCity.name}, ${selectedCity.state}. Buy, sell, or rent with zero brokerage.`
+                : "Discover verified properties across Delhi NCR, Jaipur & Pune. Buy, sell, or rent with zero brokerage."}
             </p>
           </div>
 
@@ -87,8 +111,8 @@ export default async function HomePage() {
           <div className="flex flex-wrap justify-center gap-6 mt-12">
             {[
               { value: `${stats.properties || "10,000"}+`, label: "Listed Properties" },
-              { value: `${stats.users || "50,000"}+`, label: "Happy Customers" },
-              { value: `${stats.cities || "50"}+`, label: "Cities Covered" },
+              { value: "50,000+", label: "Happy Customers" },
+              { value: `${stats.cities}`, label: "Cities Served" },
               { value: "100%", label: "Verified Listings" },
             ].map((stat) => (
               <div key={stat.label} className="text-center px-6">
@@ -106,7 +130,7 @@ export default async function HomePage() {
           <div className="text-center mb-12">
             <span className="text-gold-500 font-semibold text-sm uppercase tracking-wider">Explore by Category</span>
             <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mt-2">
-              Get Started with Exploring
+              {selectedCity ? `Properties in ${selectedCity.name}` : "Get Started with Exploring"}
             </h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">
               Browse through our diverse categories to find exactly what you&apos;re looking for
@@ -114,66 +138,103 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((cat) => (
-              <Link key={cat.label} href={cat.href}
-                className="group p-6 rounded-2xl bg-gray-50 hover:bg-white border border-transparent hover:border-gray-200 hover:shadow-xl transition-all duration-300 text-center">
-                <div className={`w-14 h-14 ${cat.color} bg-opacity-10 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
-                  <cat.icon size={24} className={cat.color.replace("bg-", "text-")} />
-                </div>
-                <h3 className="font-semibold text-navy-800 text-sm">{cat.label}</h3>
-                <p className="text-xs text-gray-400 mt-1">{cat.count} Properties</p>
-              </Link>
-            ))}
+            {categories.map((cat) => {
+              const href = selectedCity
+                ? `${cat.href}&city=${selectedCity.name}`
+                : cat.href;
+              return (
+                <Link key={cat.label} href={href}
+                  className="group p-6 rounded-2xl bg-gray-50 hover:bg-white border border-transparent hover:border-gray-200 hover:shadow-xl transition-all duration-300 text-center">
+                  <div className={`w-14 h-14 ${cat.color} bg-opacity-10 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
+                    <cat.icon size={24} className={cat.color.replace("bg-", "text-")} />
+                  </div>
+                  <h3 className="font-semibold text-navy-800 text-sm">{cat.label}</h3>
+                  <p className="text-xs text-gray-400 mt-1">{cat.count} Properties</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Featured Properties */}
-      {featured.length > 0 && (
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-end justify-between mb-12">
-              <div>
-                <span className="text-gold-500 font-semibold text-sm uppercase tracking-wider">Handpicked for You</span>
-                <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mt-2">Featured Properties</h2>
-              </div>
-              <Link href="/properties?featured=true" className="hidden md:flex items-center gap-1 text-gold-500 hover:text-gold-600 font-semibold">
-                View All <ArrowRight size={18} />
-              </Link>
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <span className="text-gold-500 font-semibold text-sm uppercase tracking-wider">
+                {selectedCity ? `Top in ${selectedCity.name}` : "Handpicked for You"}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mt-2">
+                Featured Properties
+              </h2>
             </div>
+            <Link
+              href={selectedCity ? `/properties?featured=true&city=${selectedCity.name}` : "/properties?featured=true"}
+              className="hidden md:flex items-center gap-1 text-gold-500 hover:text-gold-600 font-semibold"
+            >
+              View All <ArrowRight size={18} />
+            </Link>
+          </div>
 
+          {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featured.map((property: any) => (
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm animate-pulse">
+                  <div className="h-52 bg-gray-200" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-5 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                    <div className="h-6 bg-gray-200 rounded w-1/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : featured.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featured.map((property) => (
                 <PropertyCard key={property.id} property={property} />
               ))}
             </div>
-
-            <div className="md:hidden text-center mt-8">
-              <Link href="/properties?featured=true" className="btn-primary inline-flex items-center gap-2">
-                View All Properties <ArrowRight size={18} />
+          ) : (
+            <div className="text-center py-16">
+              <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                {selectedCity ? `No featured properties in ${selectedCity.name} yet` : "No featured properties yet"}
+              </h3>
+              <p className="text-gray-500 mb-4">Check back soon or browse all listings</p>
+              <Link href="/properties" className="btn-primary inline-flex items-center gap-2">
+                Browse All Properties <ArrowRight size={18} />
               </Link>
             </div>
+          )}
+
+          <div className="md:hidden text-center mt-8">
+            <Link href="/properties?featured=true" className="btn-primary inline-flex items-center gap-2">
+              View All Properties <ArrowRight size={18} />
+            </Link>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Cities */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-gold-500 font-semibold text-sm uppercase tracking-wider">Popular Locations</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mt-2">Explore Top Cities</h2>
+            <span className="text-gold-500 font-semibold text-sm uppercase tracking-wider">We Serve</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mt-2">
+              {selectedCity ? "Explore Other Cities" : "Our Service Areas"}
+            </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {cities.map((city) => (
+          <div className="flex flex-wrap justify-center gap-4">
+            {displayCities.map((city) => (
               <Link key={city.name} href={`/properties?city=${city.name}`}
-                className="group relative h-48 rounded-2xl overflow-hidden">
+                className="group relative h-48 w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.75rem)] lg:w-[calc(14.285%-0.875rem)] min-w-[140px] rounded-2xl overflow-hidden">
                 <img src={city.img} alt={city.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <h3 className="text-white font-bold text-lg">{city.name}</h3>
-                  <p className="text-white/70 text-xs">{city.count} Properties</p>
                 </div>
               </Link>
             ))}
@@ -240,6 +301,85 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Blog / Insights */}
+      {blogPosts.length > 0 && (
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-end justify-between mb-12">
+              <div>
+                <span className="text-gold-500 font-semibold text-sm uppercase tracking-wider">From Our Blog</span>
+                <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mt-2">
+                  Latest Insights &amp; Guides
+                </h2>
+                <p className="text-gray-500 mt-3 max-w-xl">
+                  Expert tips, market trends, and buying guides to help you make smarter property decisions.
+                </p>
+              </div>
+              <Link
+                href="/blog"
+                className="hidden md:flex items-center gap-1 text-gold-500 hover:text-gold-600 font-semibold"
+              >
+                View All Articles <ArrowRight size={18} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {blogPosts.map((post) => {
+                const readTime = Math.max(1, Math.ceil((post.content || "").split(/\s+/).length / 200));
+                return (
+                  <Link
+                    key={post.id}
+                    href={`/blog/${post.slug}`}
+                    className="group bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300"
+                  >
+                    <div className="h-48 bg-gray-200 overflow-hidden relative">
+                      {post.coverImage ? (
+                        <img
+                          src={post.coverImage}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-navy-100 to-navy-200">
+                          <BookOpen size={40} className="text-navy-400" />
+                        </div>
+                      )}
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2.5 py-1 bg-gold-500 text-white text-xs font-bold rounded-lg capitalize">
+                          {(post.category || "general").replace("-", " ")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
+                        <span className="flex items-center gap-1">
+                          <Clock size={12} /> {readTime} min read
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-navy-800 text-lg mb-2 group-hover:text-gold-600 transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                      <span className="inline-flex items-center gap-1 text-gold-500 text-sm font-semibold mt-4 group-hover:gap-2 transition-all">
+                        Read More <ArrowRight size={14} />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="md:hidden text-center mt-8">
+              <Link href="/blog" className="btn-primary inline-flex items-center gap-2">
+                View All Articles <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Testimonials */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -251,8 +391,8 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { name: "Rahul Sharma", location: "Noida", text: "Found my dream apartment through Property Pointers. The verified listing feature gave me confidence, and I saved lakhs on brokerage!", rating: 5 },
-              { name: "Priya Patel", location: "Mumbai", text: "Listed my property and got genuine inquiries within hours. The platform is incredibly easy to use. Highly recommended for property owners!", rating: 5 },
-              { name: "Amit Kumar", location: "Bangalore", text: "The EMI calculator and market insights helped me make an informed decision. Best real estate platform I've used. Professional and trustworthy.", rating: 5 },
+              { name: "Priya Patel", location: "Gurugram", text: "Listed my property and got genuine inquiries within hours. The platform is incredibly easy to use. Highly recommended for property owners!", rating: 5 },
+              { name: "Amit Kumar", location: "Jaipur", text: "The EMI calculator and market insights helped me make an informed decision. Best real estate platform I've used. Professional and trustworthy.", rating: 5 },
             ].map((review) => (
               <div key={review.name} className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex gap-1 mb-4">

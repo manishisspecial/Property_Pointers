@@ -44,9 +44,9 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Popular Cities</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">Our Service Areas</h3>
             <ul className="space-y-3">
-              {["Noida", "Delhi", "Gurgaon", "Mumbai", "Bangalore", "Hyderabad", "Pune", "Chennai"].map((city) => (
+              {["Delhi", "Noida", "Greater Noida", "Gurugram", "Ghaziabad", "Jaipur", "Pune"].map((city) => (
                 <li key={city}>
                   <Link href={`/properties?city=${city}`} className="text-sm hover:text-gold-400 transition-colors flex items-center gap-1">
                     <ArrowRight size={12} /> Properties in {city}

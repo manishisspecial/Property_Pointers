@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CityPickerModal from "@/components/CityPickerModal";
+import { CityProvider } from "@/context/CityContext";
 
 const EXCLUDED_PREFIXES = ["/admin", "/dashboard", "/auth"];
 
@@ -15,10 +17,11 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   }
 
   return (
-    <>
+    <CityProvider>
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
-    </>
+      <CityPickerModal />
+    </CityProvider>
   );
 }

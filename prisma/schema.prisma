@@ -155,6 +155,11 @@ model BlogPost {
   slug       String   @unique
   excerpt    String
   content    String
+  metaTitle  String?
+  metaDescription String?
+  metaTags   String   @default("[]")
+  schemaJson String?
+  faqs       String   @default("[]")
   coverImage String?
   category   String   @default("general")
   tags       String   @default("[]")
@@ -196,6 +201,22 @@ model Project {
   featured           Boolean  @default(false)
   verified           Boolean  @default(false)
   views              Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model City {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String   @unique
+  slug          String   @unique
+  state         String
+  isPopular     Boolean  @default(false)
+  latitude      Float?
+  longitude     Float?
+  imageUrl      String?
+  displayOrder  Int      @default(0)
+  isServiceable Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

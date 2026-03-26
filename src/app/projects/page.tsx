@@ -10,6 +10,7 @@ import {
   LayoutGrid, List, ChevronLeft, ChevronRight, Loader2, Landmark,
   TrendingUp, Shield
 } from "lucide-react";
+import { useCity } from "@/context/CityContext";
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   "upcoming": { label: "Upcoming", color: "bg-blue-100 text-blue-700" },
@@ -24,7 +25,7 @@ const TYPE_MAP: Record<string, string> = {
   plots: "Plots / Land",
 };
 
-const CITIES = ["Noida", "Delhi", "Gurgaon", "Mumbai", "Bangalore", "Greater Noida", "Lucknow"];
+const CITIES = ["Delhi", "Noida", "Greater Noida", "Gurugram", "Ghaziabad", "Jaipur", "Pune"];
 
 function safeParseJSON(str: string): any[] {
   try {
@@ -36,6 +37,7 @@ function safeParseJSON(str: string): any[] {
 function ProjectsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { selectedCity } = useCity();
   const [projects, setProjects] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -43,9 +45,12 @@ function ProjectsContent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
 
+  const urlCity = searchParams.get("city") || "";
+  const effectiveCity = urlCity || selectedCity?.name || "";
+
   const [filters, setFilters] = useState({
     q: searchParams.get("q") || "",
-    city: searchParams.get("city") || "",
+    city: effectiveCity,
     propertyType: searchParams.get("propertyType") || "",
     status: searchParams.get("status") || "",
     sort: searchParams.get("sort") || "newest",
@@ -53,15 +58,17 @@ function ProjectsContent() {
   });
 
   useEffect(() => {
+    const newUrlCity = searchParams.get("city") || "";
+    const newEffectiveCity = newUrlCity || selectedCity?.name || "";
     setFilters({
       q: searchParams.get("q") || "",
-      city: searchParams.get("city") || "",
+      city: newEffectiveCity,
       propertyType: searchParams.get("propertyType") || "",
       status: searchParams.get("status") || "",
       sort: searchParams.get("sort") || "newest",
       page: searchParams.get("page") || "1",
     });
-  }, [searchParams]);
+  }, [searchParams, selectedCity]);
 
   const fetchProjects = useCallback(async () => {
     setLoading(true);

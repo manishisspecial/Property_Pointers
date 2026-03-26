@@ -16,7 +16,24 @@ async function main() {
   await prisma.property.deleteMany();
   await prisma.project.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.city.deleteMany();
   console.log("  Done.\n");
+
+  // ===================== CITIES =====================
+  console.log("Seeding cities...");
+  const citiesData = [
+    { name: "Delhi", slug: "delhi", state: "Delhi", isPopular: true, latitude: 28.6139, longitude: 77.2090, imageUrl: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=400&h=300&fit=crop", displayOrder: 1, isServiceable: true },
+    { name: "Noida", slug: "noida", state: "Uttar Pradesh", isPopular: true, latitude: 28.5355, longitude: 77.3910, imageUrl: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&h=300&fit=crop", displayOrder: 2, isServiceable: true },
+    { name: "Greater Noida", slug: "greater-noida", state: "Uttar Pradesh", isPopular: true, latitude: 28.4744, longitude: 77.5040, imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop", displayOrder: 3, isServiceable: true },
+    { name: "Gurugram", slug: "gurugram", state: "Haryana", isPopular: true, latitude: 28.4595, longitude: 77.0266, imageUrl: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&h=300&fit=crop", displayOrder: 4, isServiceable: true },
+    { name: "Ghaziabad", slug: "ghaziabad", state: "Uttar Pradesh", isPopular: true, latitude: 28.6692, longitude: 77.4538, imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop", displayOrder: 5, isServiceable: true },
+    { name: "Jaipur", slug: "jaipur", state: "Rajasthan", isPopular: true, latitude: 26.9124, longitude: 75.7873, imageUrl: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&h=300&fit=crop", displayOrder: 6, isServiceable: true },
+    { name: "Pune", slug: "pune", state: "Maharashtra", isPopular: true, latitude: 18.5204, longitude: 73.8567, imageUrl: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=300&fit=crop", displayOrder: 7, isServiceable: true },
+  ];
+  for (const city of citiesData) {
+    await prisma.city.create({ data: city });
+  }
+  console.log(`  Created ${citiesData.length} cities.\n`);
 
   // ===================== USERS =====================
   console.log("Seeding users...");
@@ -40,7 +57,7 @@ async function main() {
     prisma.user.create({ data: { name: "Rahul Sharma", email: "user@propertypointers.com", password: hashedUser, phone: "+91-9876543211", role: "user", verified: true, city: "Noida", state: "Uttar Pradesh" } }),
     prisma.user.create({ data: { name: "Priya Patel", email: "priya@propertypointers.com", password: hashedUser, phone: "+91-9876543212", role: "owner", verified: true, city: "Mumbai", state: "Maharashtra" } }),
     prisma.user.create({ data: { name: "Amit Kumar", email: "amit@propertypointers.com", password: hashedUser, phone: "+91-9876543213", role: "agent", verified: true, city: "Delhi", state: "Delhi" } }),
-    prisma.user.create({ data: { name: "Sneha Gupta", email: "sneha@propertypointers.com", password: hashedUser, phone: "+91-9876543214", role: "owner", verified: false, city: "Gurgaon", state: "Haryana" } }),
+    prisma.user.create({ data: { name: "Sneha Gupta", email: "sneha@propertypointers.com", password: hashedUser, phone: "+91-9876543214", role: "owner", verified: false, city: "Gurugram", state: "Haryana" } }),
     prisma.user.create({ data: { name: "Vikram Singh", email: "vikram@propertypointers.com", password: hashedUser, phone: "+91-9876543215", role: "user", city: "Bangalore", state: "Karnataka" } }),
     prisma.user.create({ data: { name: "Deepak Verma", email: "deepak@propertypointers.com", password: hashedUser, phone: "+91-9876543216", role: "agent", verified: true, city: "Noida", state: "Uttar Pradesh" } }),
     prisma.user.create({ data: { name: "Meera Reddy", email: "meera@propertypointers.com", password: hashedUser, phone: "+91-9876543217", role: "owner", verified: true, city: "Hyderabad", state: "Telangana" } }),
@@ -60,32 +77,215 @@ async function main() {
   };
   const o = (i: number) => users[i % users.length].id;
 
-  const properties: any[] = [
-    { title: "Luxury 3BHK Apartment in Sector 150, Noida", description: "Spacious 3BHK apartment with modern amenities in one of Noida's prime locations.", price: 9500000, type: "sale", category: "apartment", bedrooms: 3, bathrooms: 2, balconies: 2, area: 1450, floor: "12", totalFloors: "24", facing: "East", furnishing: "semi-furnished", age: "1-3 years", address: "Gaur City 2, Sector 150", locality: "Sector 150", city: "Noida", state: "Uttar Pradesh", pincode: "201310", images: JSON.stringify(img.apt), amenities: JSON.stringify(["Parking", "Lift", "Security", "Power Backup", "Swimming Pool", "Gym", "Club House"]), verified: true, featured: true, ownerId: o(1), ownerType: "owner", views: 342 },
-    { title: "4BHK Penthouse in Powai, Mumbai", description: "Stunning 4BHK penthouse with breathtaking lake view in Powai.", price: 120000000, type: "sale", category: "apartment", bedrooms: 4, bathrooms: 4, balconies: 3, area: 3800, floor: "22", totalFloors: "22", facing: "West", furnishing: "furnished", age: "0-1 years", address: "Hiranandani Gardens, Powai", locality: "Powai", city: "Mumbai", state: "Maharashtra", pincode: "400076", images: JSON.stringify([img.apt[0], img.villa[0]]), amenities: JSON.stringify(["Parking", "Lift", "Security", "Power Backup", "Swimming Pool", "Gym"]), verified: true, featured: true, premium: true, ownerId: o(1), ownerType: "owner", views: 891 },
-    { title: "2BHK Apartment in Baner, Pune", description: "New 2BHK apartment in Baner with modern amenities.", price: 6500000, type: "sale", category: "apartment", bedrooms: 2, bathrooms: 2, balconies: 1, area: 950, floor: "7", totalFloors: "15", facing: "West", furnishing: "semi-furnished", age: "Under Construction", address: "Baner Road", locality: "Baner", city: "Pune", state: "Maharashtra", pincode: "411045", images: JSON.stringify([img.apt[2], img.apt[0]]), amenities: JSON.stringify(["Parking", "Lift", "Security", "Swimming Pool", "Gym"]), verified: true, ownerId: o(1), ownerType: "owner", views: 198 },
-    { title: "3BHK Flat in Gachibowli, Hyderabad", description: "Modern 3BHK flat near Financial District.", price: 8500000, type: "sale", category: "apartment", bedrooms: 3, bathrooms: 2, balconies: 2, area: 1350, floor: "9", totalFloors: "18", facing: "North-East", furnishing: "unfurnished", age: "0-1 years", address: "Nanakramguda Road", locality: "Gachibowli", city: "Hyderabad", state: "Telangana", pincode: "500032", images: JSON.stringify([img.apt[0], img.apt[2]]), amenities: JSON.stringify(["Parking", "Lift", "Security", "Gym", "Jogging Track"]), verified: true, featured: true, ownerId: o(2), ownerType: "agent", views: 315 },
-    { title: "2BHK Premium Apartment in Whitefield, Bangalore", description: "Brand new 2BHK apartment near ITPL.", price: 7200000, type: "sale", category: "apartment", bedrooms: 2, bathrooms: 2, balconies: 1, area: 1100, floor: "14", totalFloors: "20", facing: "South-East", furnishing: "unfurnished", age: "0-1 years", address: "ITPL Main Road", locality: "Whitefield", city: "Bangalore", state: "Karnataka", pincode: "560066", images: JSON.stringify([img.apt[1], img.apt[2]]), amenities: JSON.stringify(["Parking", "Lift", "Security", "Swimming Pool", "Gym"]), verified: true, featured: true, ownerId: o(4), ownerType: "owner", views: 256 },
-    { title: "Modern 2BHK for Rent in Indirapuram", description: "Fully furnished 2BHK flat near metro.", price: 18000, type: "rent", category: "apartment", bedrooms: 2, bathrooms: 2, balconies: 1, area: 1100, floor: "5", totalFloors: "12", facing: "North", furnishing: "furnished", age: "3-5 years", address: "Ahinsa Khand 2", locality: "Indirapuram", city: "Ghaziabad", state: "Uttar Pradesh", pincode: "201014", images: JSON.stringify([img.apt[1], img.apt[2]]), amenities: JSON.stringify(["Parking", "Lift", "Security", "Gym", "Wi-Fi"]), verified: true, featured: true, ownerId: o(0), ownerType: "owner", views: 189 },
-    { title: "1BHK Studio in Koramangala, Bangalore", description: "Fully furnished studio apartment for professionals.", price: 22000, type: "rent", category: "apartment", bedrooms: 1, bathrooms: 1, area: 550, floor: "3", totalFloors: "6", facing: "East", furnishing: "furnished", age: "1-3 years", address: "5th Block, Koramangala", locality: "Koramangala", city: "Bangalore", state: "Karnataka", pincode: "560095", images: JSON.stringify([img.apt[1]]), amenities: JSON.stringify(["Security", "Power Backup", "Lift", "Wi-Fi"]), verified: true, featured: true, ownerId: o(0), ownerType: "owner", views: 423 },
-    { title: "3BHK Furnished Flat in Andheri West, Mumbai", description: "Beautifully furnished 3BHK near DN Nagar metro.", price: 65000, type: "rent", category: "apartment", bedrooms: 3, bathrooms: 2, balconies: 2, area: 1400, floor: "16", totalFloors: "22", facing: "West", furnishing: "furnished", age: "3-5 years", address: "Lokhandwala Complex", locality: "Andheri West", city: "Mumbai", state: "Maharashtra", pincode: "400053", images: JSON.stringify(img.apt), amenities: JSON.stringify(["Parking", "Lift", "Security", "Swimming Pool"]), verified: true, ownerId: o(1), ownerType: "owner", views: 287 },
-    { title: "2BHK Apartment for Rent in Sector 62, Noida", description: "Semi-furnished 2BHK near metro station.", price: 15000, type: "rent", category: "apartment", bedrooms: 2, bathrooms: 2, balconies: 1, area: 1000, floor: "4", totalFloors: "10", facing: "North-East", furnishing: "semi-furnished", age: "5-10 years", address: "Block A, Sector 62", locality: "Sector 62", city: "Noida", state: "Uttar Pradesh", pincode: "201301", images: JSON.stringify([img.apt[2]]), amenities: JSON.stringify(["Parking", "Lift", "Security"]), verified: true, ownerId: o(5), ownerType: "agent", views: 145 },
-    { title: "3BHK Independent House in Whitefield", description: "Spacious independent house with garden.", price: 15000000, type: "sale", category: "house", bedrooms: 3, bathrooms: 3, balconies: 1, area: 2200, facing: "North", furnishing: "semi-furnished", age: "3-5 years", address: "Whitefield Main Road", locality: "Whitefield", city: "Bangalore", state: "Karnataka", pincode: "560066", images: JSON.stringify(img.house), amenities: JSON.stringify(["Parking", "Security", "Power Backup", "Garden"]), verified: true, ownerId: o(2), ownerType: "agent", views: 276 },
-    { title: "4BHK Builder Floor in Greater Kailash, Delhi", description: "Newly built 4BHK in GK-1 with modern architecture.", price: 45000000, type: "sale", category: "house", bedrooms: 4, bathrooms: 4, balconies: 2, area: 2800, floor: "2", totalFloors: "4", facing: "East", furnishing: "semi-furnished", age: "0-1 years", address: "M Block, Greater Kailash 1", locality: "Greater Kailash", city: "Delhi", state: "Delhi", pincode: "110048", images: JSON.stringify(img.house), amenities: JSON.stringify(["Parking", "Security", "Power Backup", "Lift"]), verified: true, featured: true, premium: true, ownerId: o(2), ownerType: "agent", views: 487 },
-    { title: "3BHK Builder Floor in Sector 57, Gurgaon", description: "Premium ground floor with private garden.", price: 18000000, type: "sale", category: "house", bedrooms: 3, bathrooms: 3, balconies: 1, area: 1800, floor: "Ground", totalFloors: "3", facing: "South", furnishing: "unfurnished", age: "1-3 years", address: "Sector 57", locality: "Sector 57", city: "Gurgaon", state: "Haryana", pincode: "122011", images: JSON.stringify([img.house[0], img.house[2]]), amenities: JSON.stringify(["Parking", "Security", "Garden"]), verified: true, ownerId: o(3), ownerType: "owner", views: 198 },
-    { title: "Premium Villa in DLF Phase 5, Gurgaon", description: "5BHK independent villa with smart home features.", price: 85000000, type: "sale", category: "villa", bedrooms: 5, bathrooms: 5, balconies: 3, area: 5000, facing: "South", furnishing: "furnished", age: "0-1 years", address: "DLF Phase 5", locality: "DLF Phase 5", city: "Gurgaon", state: "Haryana", pincode: "122002", images: JSON.stringify(img.villa), amenities: JSON.stringify(["Parking", "Security", "Swimming Pool", "Garden", "EV Charging"]), verified: true, featured: true, premium: true, ownerId: o(2), ownerType: "agent", views: 567 },
-    { title: "4BHK Luxury Villa in Jubilee Hills, Hyderabad", description: "Contemporary villa with rooftop infinity pool.", price: 65000000, type: "sale", category: "villa", bedrooms: 4, bathrooms: 4, balconies: 2, area: 4200, facing: "East", furnishing: "furnished", age: "1-3 years", address: "Road No. 36, Jubilee Hills", locality: "Jubilee Hills", city: "Hyderabad", state: "Telangana", pincode: "500033", images: JSON.stringify(img.villa), amenities: JSON.stringify(["Parking", "Security", "Swimming Pool", "Home Theater", "Gym"]), verified: true, featured: true, premium: true, ownerId: o(6), ownerType: "owner", views: 723 },
-    { title: "3BHK Villa in Sarjapur Road, Bangalore", description: "Gated community villa with vastu-compliant design.", price: 25000000, type: "sale", category: "villa", bedrooms: 3, bathrooms: 3, balconies: 2, area: 2800, facing: "North-East", furnishing: "semi-furnished", age: "0-1 years", address: "Rainbow Drive Layout", locality: "Sarjapur Road", city: "Bangalore", state: "Karnataka", pincode: "560035", images: JSON.stringify([img.villa[2], img.villa[0]]), amenities: JSON.stringify(["Parking", "Security", "Swimming Pool", "Club House"]), verified: true, ownerId: o(4), ownerType: "owner", views: 389 },
-    { title: "Residential Plot in Greater Noida West", description: "200 sq yard plot in gated community.", price: 3500000, type: "sale", category: "plot", area: 1800, facing: "East", address: "Sector 1, Greater Noida West", locality: "Greater Noida West", city: "Greater Noida", state: "Uttar Pradesh", pincode: "201308", images: JSON.stringify(img.plot), amenities: JSON.stringify(["Security", "Garden"]), verified: true, ownerId: o(3), ownerType: "owner", views: 145 },
-    { title: "Corner Plot in Sector 92, Gurgaon", description: "Premium corner plot near Dwarka Expressway.", price: 12000000, type: "sale", category: "plot", area: 2700, facing: "North-East", address: "Sector 92", locality: "Sector 92", city: "Gurgaon", state: "Haryana", pincode: "122505", images: JSON.stringify(img.plot), amenities: JSON.stringify(["Security", "Boundary Wall"]), verified: true, featured: true, ownerId: o(3), ownerType: "owner", views: 234 },
-    { title: "Commercial Office in Connaught Place, Delhi", description: "Prime office space in the heart of Delhi.", price: 250000, type: "rent", category: "office", area: 2500, floor: "3", totalFloors: "8", facing: "North-East", furnishing: "furnished", age: "5-10 years", address: "Block A, Connaught Place", locality: "Connaught Place", city: "Delhi", state: "Delhi", pincode: "110001", images: JSON.stringify(img.comm), amenities: JSON.stringify(["Parking", "Lift", "Security", "AC", "Wi-Fi"]), verified: true, featured: true, ownerId: o(2), ownerType: "agent", views: 234 },
-    { title: "IT Office in Sector 62, Noida", description: "Plug-and-play office with 50 workstations.", price: 120000, type: "rent", category: "office", area: 3000, floor: "6", totalFloors: "12", facing: "North", furnishing: "furnished", age: "1-3 years", address: "A Block, Sector 62", locality: "Sector 62", city: "Noida", state: "Uttar Pradesh", pincode: "201301", images: JSON.stringify([img.comm[1]]), amenities: JSON.stringify(["Parking", "Lift", "Security", "Cafeteria"]), verified: true, ownerId: o(5), ownerType: "agent", views: 167 },
-    { title: "Premium Office in BKC, Mumbai", description: "Grade-A office with panoramic city views.", price: 500000, type: "rent", category: "office", area: 5000, floor: "15", totalFloors: "25", facing: "West", furnishing: "furnished", age: "0-1 years", address: "One BKC", locality: "BKC", city: "Mumbai", state: "Maharashtra", pincode: "400051", images: JSON.stringify(img.comm), amenities: JSON.stringify(["Parking", "Lift", "Security", "Central AC", "Gym"]), verified: true, featured: true, premium: true, ownerId: o(1), ownerType: "owner", views: 456 },
-    { title: "Retail Shop in Saket, New Delhi", description: "Prime shop near Select Citywalk Mall.", price: 35000000, type: "sale", category: "shop", area: 800, floor: "Ground", facing: "South", furnishing: "unfurnished", age: "5-10 years", address: "Saket District Centre", locality: "Saket", city: "Delhi", state: "Delhi", pincode: "110017", images: JSON.stringify(img.shop), amenities: JSON.stringify(["Parking", "Security", "CCTV"]), ownerId: o(3), ownerType: "owner", views: 112 },
-    { title: "Showroom on MG Road, Bangalore", description: "Double-height showroom with premium glass facade.", price: 45000000, type: "sale", category: "shop", area: 1500, floor: "Ground", totalFloors: "2", facing: "North", furnishing: "unfurnished", age: "5-10 years", address: "MG Road", locality: "MG Road", city: "Bangalore", state: "Karnataka", pincode: "560001", images: JSON.stringify([img.comm[0], img.shop[0]]), amenities: JSON.stringify(["Parking", "Security", "Central AC"]), verified: true, featured: true, ownerId: o(4), ownerType: "owner", views: 267 },
-    { title: "Boys PG in Sector 62, Noida", description: "Furnished PG with meals and Wi-Fi for professionals.", price: 8000, type: "pg", category: "apartment", bedrooms: 1, bathrooms: 1, area: 150, floor: "2", totalFloors: "3", facing: "North", furnishing: "furnished", age: "1-3 years", address: "Block J, Sector 62", locality: "Sector 62", city: "Noida", state: "Uttar Pradesh", pincode: "201301", images: JSON.stringify(img.pg), amenities: JSON.stringify(["Wi-Fi", "Meals", "Housekeeping", "Laundry"]), verified: true, ownerId: o(0), ownerType: "owner", views: 567 },
-    { title: "Girls PG in Koramangala, Bangalore", description: "Safe PG for women with home-cooked meals.", price: 12000, type: "pg", category: "apartment", bedrooms: 1, bathrooms: 1, area: 180, floor: "1", totalFloors: "3", facing: "East", furnishing: "furnished", age: "3-5 years", address: "4th Block, Koramangala", locality: "Koramangala", city: "Bangalore", state: "Karnataka", pincode: "560034", images: JSON.stringify(img.pg), amenities: JSON.stringify(["Wi-Fi", "Meals", "Housekeeping", "Security"]), verified: true, featured: true, ownerId: o(4), ownerType: "owner", views: 432 },
-  ];
+  const cityData: Record<string, { state: string; localities: string[]; pincodes: string[] }> = {
+    Noida: { state: "Uttar Pradesh", localities: ["Sector 150", "Sector 62", "Sector 78", "Sector 44", "Sector 137"], pincodes: ["201310", "201301", "201301", "201303", "201305"] },
+    Delhi: { state: "Delhi", localities: ["Greater Kailash", "Dwarka", "Rohini", "Lajpat Nagar", "Vasant Kunj"], pincodes: ["110048", "110075", "110085", "110024", "110070"] },
+    Gurugram: { state: "Haryana", localities: ["DLF Phase 5", "Sector 57", "Sector 56", "Sohna Road", "Golf Course Road"], pincodes: ["122002", "122011", "122011", "122018", "122002"] },
+    Ghaziabad: { state: "Uttar Pradesh", localities: ["Indirapuram", "Vaishali", "Raj Nagar Extension", "Crossing Republik", "Kaushambi"], pincodes: ["201014", "201010", "201017", "201016", "201010"] },
+    "Greater Noida": { state: "Uttar Pradesh", localities: ["Techzone 4", "Pari Chowk", "Sector 1", "Alpha 2", "Omega 1"], pincodes: ["201306", "201310", "201308", "201310", "201306"] },
+    Jaipur: { state: "Rajasthan", localities: ["Mansarovar", "Vaishali Nagar", "C-Scheme", "Malviya Nagar", "Jagatpura"], pincodes: ["302020", "302021", "302001", "302017", "302017"] },
+    Pune: { state: "Maharashtra", localities: ["Baner", "Kharadi", "Viman Nagar", "Hinjawadi", "Wakad"], pincodes: ["411045", "411014", "411014", "411057", "411057"] },
+  };
+
+  const categories = ["apartment", "house", "villa", "commercial", "plot"] as const;
+  const types = ["sale", "rent"] as const;
+  const facings = ["East", "West", "North", "South", "North-East", "South-West"];
+  const furnishings = ["furnished", "semi-furnished", "unfurnished"];
+  const ages = ["0-1 years", "1-3 years", "3-5 years", "5-10 years"];
+
+  type CatConfig = {
+    images: string[];
+    salePriceRange: [number, number];
+    rentPriceRange: [number, number];
+    areaRange: [number, number];
+    bedrooms: number[];
+    amenities: string[][];
+    titleTemplates: { sale: string[]; rent: string[] };
+    descriptions: { sale: string[]; rent: string[] };
+  };
+
+  const catConfig: Record<string, CatConfig> = {
+    apartment: {
+      images: img.apt,
+      salePriceRange: [4500000, 25000000],
+      rentPriceRange: [12000, 65000],
+      areaRange: [800, 2200],
+      bedrooms: [1, 2, 3, 4],
+      amenities: [
+        ["Parking", "Lift", "Security", "Power Backup", "Swimming Pool", "Gym"],
+        ["Parking", "Lift", "Security", "Club House", "Jogging Track"],
+        ["Parking", "Lift", "Security", "Wi-Fi", "Power Backup", "Gym"],
+      ],
+      titleTemplates: {
+        sale: ["BHK Apartment in LOCALITY", "BHK Flat in LOCALITY", "BHK Premium Apartment in LOCALITY"],
+        rent: ["BHK Apartment for Rent in LOCALITY", "BHK Flat for Rent in LOCALITY", "BHK Furnished Flat in LOCALITY"],
+      },
+      descriptions: {
+        sale: ["Modern apartment with premium amenities and excellent connectivity.", "Spacious flat in a gated society with world-class facilities.", "Well-designed apartment with park-facing balcony and covered parking."],
+        rent: ["Fully maintained flat available for immediate move-in.", "Well-furnished apartment near metro station with modern amenities.", "Bright and airy flat with excellent cross-ventilation and amenities."],
+      },
+    },
+    house: {
+      images: img.house,
+      salePriceRange: [8000000, 50000000],
+      rentPriceRange: [20000, 85000],
+      areaRange: [1500, 3500],
+      bedrooms: [2, 3, 4],
+      amenities: [
+        ["Parking", "Security", "Power Backup", "Garden"],
+        ["Parking", "Security", "Garden", "Lift"],
+        ["Parking", "Security", "Power Backup", "Garden", "Servant Room"],
+      ],
+      titleTemplates: {
+        sale: ["BHK Builder Floor in LOCALITY", "BHK Independent House in LOCALITY", "BHK Duplex House in LOCALITY"],
+        rent: ["BHK House for Rent in LOCALITY", "BHK Independent Floor for Rent in LOCALITY", "BHK Builder Floor for Rent in LOCALITY"],
+      },
+      descriptions: {
+        sale: ["Newly built house with modern architecture and private parking.", "Spacious independent house with garden and terrace.", "Premium builder floor with vastu-compliant design and covered parking."],
+        rent: ["Well-maintained house with dedicated parking and lawn. Ideal for families.", "Spacious independent floor in a quiet neighbourhood with all amenities.", "Beautiful builder floor near market, park, and schools."],
+      },
+    },
+    villa: {
+      images: img.villa,
+      salePriceRange: [15000000, 95000000],
+      rentPriceRange: [50000, 200000],
+      areaRange: [2500, 6000],
+      bedrooms: [3, 4, 5],
+      amenities: [
+        ["Parking", "Security", "Swimming Pool", "Garden", "Gym"],
+        ["Parking", "Security", "Swimming Pool", "Home Theater", "Club House"],
+        ["Parking", "Security", "Swimming Pool", "Garden", "EV Charging", "Spa"],
+      ],
+      titleTemplates: {
+        sale: ["BHK Luxury Villa in LOCALITY", "BHK Independent Villa in LOCALITY", "BHK Premium Villa in LOCALITY"],
+        rent: ["BHK Villa for Rent in LOCALITY", "BHK Furnished Villa in LOCALITY", "BHK Luxury Villa for Rent in LOCALITY"],
+      },
+      descriptions: {
+        sale: ["Luxurious villa in a gated community with world-class amenities.", "Premium independent villa with rooftop garden and private pool.", "Exquisite villa with smart home features and landscaped garden."],
+        rent: ["Stunning furnished villa with private garden and pool access.", "Spacious villa ideal for expat families and corporate leasing.", "Beautifully maintained villa in an upscale neighbourhood."],
+      },
+    },
+    commercial: {
+      images: img.comm,
+      salePriceRange: [10000000, 80000000],
+      rentPriceRange: [40000, 300000],
+      areaRange: [800, 5000],
+      bedrooms: [],
+      amenities: [
+        ["Parking", "Lift", "Security", "AC", "Wi-Fi"],
+        ["Parking", "Lift", "Security", "Cafeteria", "Power Backup"],
+        ["Parking", "Lift", "Security", "Central AC", "CCTV"],
+      ],
+      titleTemplates: {
+        sale: ["Commercial Office Space in LOCALITY", "Premium Office for Sale in LOCALITY", "Commercial Space in LOCALITY"],
+        rent: ["Office Space for Rent in LOCALITY", "Commercial Space for Rent in LOCALITY", "Premium Office for Rent in LOCALITY"],
+      },
+      descriptions: {
+        sale: ["Prime commercial space in a high-visibility business district.", "Grade-A office space with modern infrastructure and parking.", "Well-designed commercial unit ideal for offices or retail."],
+        rent: ["Plug-and-play office space with all modern amenities.", "Prime commercial space in a high-footfall area.", "Fully furnished office ready for immediate occupancy."],
+      },
+    },
+    plot: {
+      images: img.plot,
+      salePriceRange: [2500000, 25000000],
+      rentPriceRange: [15000, 60000],
+      areaRange: [1200, 5000],
+      bedrooms: [],
+      amenities: [
+        ["Security", "Boundary Wall", "Park"],
+        ["Security", "Garden", "Wide Roads"],
+        ["Security", "Boundary Wall", "Underground Electricity"],
+      ],
+      titleTemplates: {
+        sale: ["Residential Plot in LOCALITY", "Corner Plot in LOCALITY", "Premium Plot in LOCALITY"],
+        rent: ["Land for Lease in LOCALITY", "Plot for Rent in LOCALITY", "Open Land for Rent in LOCALITY"],
+      },
+      descriptions: {
+        sale: ["Well-located residential plot in a gated community.", "Premium corner plot with excellent frontage and connectivity.", "Freehold plot with clear title in a developing sector."],
+        rent: ["Open plot available for lease, ideal for storage or temporary setup.", "Land parcel available for rent with boundary wall and security.", "Flat plot on main road suitable for commercial or residential use."],
+      },
+    },
+  };
+
+  function randBetween(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  function pick<T>(arr: T[]): T {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+  function roundPrice(n: number, type: string): number {
+    if (type === "rent") return Math.round(n / 1000) * 1000;
+    return Math.round(n / 100000) * 100000;
+  }
+
+  const properties: any[] = [];
+  let viewCounter = 100;
+
+  for (const city of Object.keys(cityData)) {
+    const cd = cityData[city];
+    for (const type of types) {
+      for (const category of categories) {
+        const cfg = catConfig[category];
+        const priceRange = type === "sale" ? cfg.salePriceRange : cfg.rentPriceRange;
+        const count = 3;
+
+        for (let i = 0; i < count; i++) {
+          const localityIdx = (categories.indexOf(category) * count + i) % cd.localities.length;
+          const locality = cd.localities[localityIdx];
+          const pincode = cd.pincodes[localityIdx];
+          const bedrooms = cfg.bedrooms.length > 0 ? cfg.bedrooms[i % cfg.bedrooms.length] : undefined;
+          const titleTpl = cfg.titleTemplates[type][i % cfg.titleTemplates[type].length];
+          const title = (bedrooms ? `${bedrooms}` : "") + titleTpl.replace("LOCALITY", locality) + `, ${city}`;
+          const description = cfg.descriptions[type][i % cfg.descriptions[type].length];
+          const price = roundPrice(randBetween(priceRange[0], priceRange[1]), type);
+          const area = randBetween(cfg.areaRange[0], cfg.areaRange[1]);
+          const facing = facings[i % facings.length];
+          const furnishing = furnishings[i % furnishings.length];
+          const age = ages[i % ages.length];
+          const amenities = cfg.amenities[i % cfg.amenities.length];
+          const isFeatured = i === 0;
+          viewCounter += randBetween(20, 150);
+
+          const prop: any = {
+            title,
+            description,
+            price,
+            type,
+            category,
+            area,
+            facing,
+            furnishing,
+            age,
+            address: `${locality}, ${city}`,
+            locality,
+            city,
+            state: cd.state,
+            pincode,
+            images: JSON.stringify(cfg.images.slice(0, 2 + (i % 2))),
+            amenities: JSON.stringify(amenities),
+            verified: true,
+            featured: isFeatured,
+            ownerId: o(viewCounter),
+            ownerType: i % 2 === 0 ? "owner" : "agent",
+            views: viewCounter,
+          };
+
+          if (bedrooms) {
+            prop.bedrooms = bedrooms;
+            prop.bathrooms = Math.max(1, bedrooms - 1 + (i % 2));
+            prop.balconies = Math.min(bedrooms, 1 + (i % 2));
+          }
+
+          if (category !== "plot") {
+            prop.floor = String(randBetween(1, 15));
+            prop.totalFloors = String(randBetween(Number(prop.floor) + 2, 25));
+          }
+
+          properties.push(prop);
+        }
+      }
+    }
+  }
 
   for (const prop of properties) {
     await prisma.property.create({ data: prop });
@@ -115,13 +315,15 @@ async function main() {
   const projects = [
     { title: "Devika Vibe Sector 110", slug: "devika-vibe-sector-110", description: "Premium Hub in Sector 110, Noida. 75,000 sq. ft. of luxury retail, vibrant dining, and immersive experiences.", highlights: JSON.stringify(["Possession Soon", "50K+ Families Catchment", "State-of-the-Art Design", "Seamless Connectivity", "Low Maintenance", "4 Entry & Exit Points"]), builderName: "Devika Group", location: "Sector 110, Noida", city: "Noida", state: "Uttar Pradesh", reraNumber: "UPRERAPRJ9275", projectStatus: "under-construction", possessionDate: "December 2025", startingPrice: 60, priceUnit: "Lac", propertyType: "commercial", configurations: JSON.stringify(["Retail Shops", "Food Court", "Kiosks"]), totalArea: "1.25 Acres", totalUnits: 280, images: JSON.stringify(["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800", "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800", "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800"]), amenities: JSON.stringify(["Power Backup", "Lift", "Security", "Visitor Parking", "Gymnasium", "Rain Water Harvesting", "Air Conditioned", "Kids Play Area", "Fire Fighting", "CCTV", "Cafeteria", "Grand Lobby"]), locationAdvantages: JSON.stringify([{ place: "Yamuna Expressway", distance: "15 min" }, { place: "Metro Station", distance: "7 min" }, { place: "Yatharth Hospital", distance: "2 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
     { title: "M3M The Cullinan Sector 94", slug: "m3m-the-cullinan-sector-94", description: "Ultra-luxury residential and commercial project with panoramic views of F1 track and golf course.", highlights: JSON.stringify(["3/4/5 BHK Apartments", "F1 Track & Golf Views", "Infinity Pool", "Smart Home Automation", "Italian Marble Flooring"]), builderName: "M3M Group", location: "Sector 94, Noida", city: "Noida", state: "Uttar Pradesh", reraNumber: "UPRERAPRJ442214", projectStatus: "under-construction", possessionDate: "April 2028", startingPrice: 4.5, priceUnit: "Cr", propertyType: "mixed", configurations: JSON.stringify(["3 BHK", "4 BHK", "5 BHK", "Penthouse"]), totalArea: "12 Acres", totalUnits: 400, images: JSON.stringify(["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800", "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800"]), amenities: JSON.stringify(["Swimming Pool", "Gymnasium", "Club House", "Spa", "Tennis Court", "Jogging Track", "Kids Play Area", "24/7 Security", "EV Charging", "Concierge Service"]), locationAdvantages: JSON.stringify([{ place: "F1 Circuit", distance: "10 min" }, { place: "Noida Expressway", distance: "5 min" }, { place: "DND Flyway", distance: "15 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
-    { title: "DLF The Arbour Sector 63", slug: "dlf-the-arbour-sector-63", description: "Ultra-luxury 4 BHK apartments across 25 acres of lush greens with low density living.", highlights: JSON.stringify(["Only 280 Apartments", "25 Acres Landscape", "Private Lobbies", "Designed by Hafeez Contractor", "Golf Cart Service"]), builderName: "DLF Limited", location: "Sector 63, Gurgaon", city: "Gurgaon", state: "Haryana", reraNumber: "RC/HARERA/GGM/2023/101", projectStatus: "under-construction", possessionDate: "March 2027", startingPrice: 7, priceUnit: "Cr", propertyType: "residential", configurations: JSON.stringify(["4 BHK", "4.5 BHK", "Penthouse"]), totalArea: "25 Acres", totalUnits: 280, images: JSON.stringify(["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800", "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800", "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800"]), amenities: JSON.stringify(["Swimming Pool", "Gymnasium", "Club House", "Tennis Court", "Squash Court", "Mini Theater", "Yoga Room", "Jogging Track"]), locationAdvantages: JSON.stringify([{ place: "Golf Course Road", distance: "5 min" }, { place: "Rapid Metro", distance: "10 min" }, { place: "Cyber City", distance: "12 min" }, { place: "IGI Airport", distance: "25 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
+    { title: "DLF The Arbour Sector 63", slug: "dlf-the-arbour-sector-63", description: "Ultra-luxury 4 BHK apartments across 25 acres of lush greens with low density living.", highlights: JSON.stringify(["Only 280 Apartments", "25 Acres Landscape", "Private Lobbies", "Designed by Hafeez Contractor", "Golf Cart Service"]), builderName: "DLF Limited", location: "Sector 63, Gurugram", city: "Gurugram", state: "Haryana", reraNumber: "RC/HARERA/GGM/2023/101", projectStatus: "under-construction", possessionDate: "March 2027", startingPrice: 7, priceUnit: "Cr", propertyType: "residential", configurations: JSON.stringify(["4 BHK", "4.5 BHK", "Penthouse"]), totalArea: "25 Acres", totalUnits: 280, images: JSON.stringify(["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800", "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800", "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800"]), amenities: JSON.stringify(["Swimming Pool", "Gymnasium", "Club House", "Tennis Court", "Squash Court", "Mini Theater", "Yoga Room", "Jogging Track"]), locationAdvantages: JSON.stringify([{ place: "Golf Course Road", distance: "5 min" }, { place: "Rapid Metro", distance: "10 min" }, { place: "Cyber City", distance: "12 min" }, { place: "IGI Airport", distance: "25 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
     { title: "Godrej Tropical Isle Sector 146", slug: "godrej-tropical-isle-sector-146", description: "Resort-style living with tropical architecture, water features, and lagoon pool.", highlights: JSON.stringify(["Tropical Architecture", "3-Side Open Apartments", "Lagoon Pool", "International Landscaping"]), builderName: "Godrej Properties", location: "Sector 146, Noida", city: "Noida", state: "Uttar Pradesh", reraNumber: "UPRERAPRJ585234", projectStatus: "under-construction", possessionDate: "June 2028", startingPrice: 2.5, priceUnit: "Cr", propertyType: "residential", configurations: JSON.stringify(["2 BHK", "3 BHK", "4 BHK"]), totalArea: "10 Acres", totalUnits: 500, images: JSON.stringify(["https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800", "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800"]), amenities: JSON.stringify(["Lagoon Pool", "Gymnasium", "Club House", "Tropical Gardens", "Kids Play Area", "Amphitheater", "24/7 Security"]), locationAdvantages: JSON.stringify([{ place: "FNG Expressway", distance: "3 min" }, { place: "Noida Expressway", distance: "5 min" }]), floorPlans: JSON.stringify([]), featured: false, verified: true },
     { title: "Paras Avenue Sector 129", slug: "paras-avenue-sector-129", description: "Premium commercial project on Noida Expressway with direct visibility and excellent connectivity.", highlights: JSON.stringify(["High-Street Retail", "Direct Expressway Visibility", "500+ Vehicle Parking", "Entertainment Zone"]), builderName: "Paras Buildtech", location: "Sector 129, Noida", city: "Noida", state: "Uttar Pradesh", reraNumber: "UPRERAPRJ297873", projectStatus: "under-construction", possessionDate: "September 2027", startingPrice: 55, priceUnit: "Lac", propertyType: "commercial", configurations: JSON.stringify(["Retail Shops", "Food Court", "Anchor Stores"]), totalArea: "3 Acres", totalUnits: 350, images: JSON.stringify(["https://images.unsplash.com/photo-1497366216548-37526070297c?w=800", "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800"]), amenities: JSON.stringify(["Power Backup", "Lift", "Escalators", "Security", "Fire Safety", "Central AC"]), locationAdvantages: JSON.stringify([{ place: "Noida Expressway", distance: "On Expressway" }, { place: "Sector 137 Metro", distance: "5 min" }]), floorPlans: JSON.stringify([]), featured: false, verified: true },
     { title: "Prestige Lakeside Habitat", slug: "prestige-lakeside-habitat", description: "80-acre township with 5-acre central lake, apartments, and villas in Whitefield, Bangalore.", highlights: JSON.stringify(["80-Acre Township", "5-Acre Natural Lake", "Ready to Move", "Schools & Shopping Within"]), builderName: "Prestige Group", location: "Whitefield, Bangalore", city: "Bangalore", state: "Karnataka", reraNumber: "PRM/KA/RERA/2020/003", projectStatus: "ready-to-move", possessionDate: "Ready to Move", startingPrice: 85, priceUnit: "Lac", propertyType: "residential", configurations: JSON.stringify(["1 BHK", "2 BHK", "3 BHK", "4 BHK", "Villa"]), totalArea: "80 Acres", totalUnits: 3000, images: JSON.stringify(["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800", "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800", "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800"]), amenities: JSON.stringify(["Swimming Pool", "Gymnasium", "Club House", "Tennis Court", "Basketball Court", "Jogging Track", "Kids Play Area", "24/7 Security"]), locationAdvantages: JSON.stringify([{ place: "ITPL Tech Park", distance: "10 min" }, { place: "Bangalore Airport", distance: "40 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
     { title: "Smartworld Elie Saab Noida", slug: "smartworld-elie-saab-noida", description: "Ultra-luxury project by fashion icon Elie Saab with bespoke interiors.", highlights: JSON.stringify(["Designed by Elie Saab", "Bespoke Interiors", "Rooftop Infinity Pool", "Valet & Concierge"]), builderName: "Smartworld Developers", location: "Sector 98, Noida", city: "Noida", state: "Uttar Pradesh", reraNumber: "UPRERAPRJ300532", projectStatus: "upcoming", possessionDate: "October 2030", startingPrice: 6, priceUnit: "Cr", propertyType: "residential", configurations: JSON.stringify(["3 BHK", "4 BHK", "5 BHK", "Penthouse"]), totalArea: "15 Acres", totalUnits: 350, images: JSON.stringify(["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800", "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800"]), amenities: JSON.stringify(["Infinity Pool", "Private Gym", "Spa", "Concierge", "Private Theater", "Rooftop Garden"]), locationAdvantages: JSON.stringify([{ place: "Noida Expressway", distance: "2 min" }, { place: "DND Flyway", distance: "15 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
     { title: "Lodha The Park Worli", slug: "lodha-the-park-worli", description: "Sea-facing luxury in Worli with amenities by Trump Organization and Armani/Casa interiors.", highlights: JSON.stringify(["Sea-Facing in Worli", "Trump Organization Amenities", "Private Elevator", "Armani/Casa Interiors"]), builderName: "Lodha Group", location: "Worli, Mumbai", city: "Mumbai", state: "Maharashtra", reraNumber: "P51800001234", projectStatus: "ready-to-move", possessionDate: "Ready to Move", startingPrice: 8, priceUnit: "Cr", propertyType: "residential", configurations: JSON.stringify(["3 BHK", "4 BHK", "5 BHK", "Duplex Penthouse"]), totalArea: "17 Acres", totalUnits: 600, images: JSON.stringify(["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800", "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800"]), amenities: JSON.stringify(["Infinity Pool", "Private Beach Club", "Spa", "Golf Simulator", "Tennis Court", "Concierge", "Valet Parking"]), locationAdvantages: JSON.stringify([{ place: "Sea Link", distance: "5 min" }, { place: "BKC", distance: "10 min" }, { place: "Airport", distance: "25 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
-    { title: "BPTP Amstoria Plots Sector 102", slug: "bptp-amstoria-plots-sector-102", description: "Premium residential plots on Dwarka Expressway in gated community.", highlights: JSON.stringify(["Gated Community", "On Dwarka Expressway", "Well-Planned Infrastructure", "Near Diplomatic Enclave"]), builderName: "BPTP Limited", location: "Sector 102, Gurgaon", city: "Gurgaon", state: "Haryana", reraNumber: "RC/HARERA/GGM/2022/78", projectStatus: "ready-to-move", possessionDate: "Ready to Move", startingPrice: 2, priceUnit: "Cr", propertyType: "plots", configurations: JSON.stringify(["200 Sq Yd", "300 Sq Yd", "500 Sq Yd"]), totalArea: "200 Acres", totalUnits: 1200, images: JSON.stringify(["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800", "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800"]), amenities: JSON.stringify(["Gated Community", "Wide Roads", "Underground Electricity", "Parks", "24/7 Security"]), locationAdvantages: JSON.stringify([{ place: "Dwarka Expressway", distance: "On Expressway" }, { place: "IGI Airport", distance: "20 min" }]), floorPlans: JSON.stringify([]), featured: false, verified: true },
+    { title: "BPTP Amstoria Plots Sector 102", slug: "bptp-amstoria-plots-sector-102", description: "Premium residential plots on Dwarka Expressway in gated community.", highlights: JSON.stringify(["Gated Community", "On Dwarka Expressway", "Well-Planned Infrastructure", "Near Diplomatic Enclave"]), builderName: "BPTP Limited", location: "Sector 102, Gurugram", city: "Gurugram", state: "Haryana", reraNumber: "RC/HARERA/GGM/2022/78", projectStatus: "ready-to-move", possessionDate: "Ready to Move", startingPrice: 2, priceUnit: "Cr", propertyType: "plots", configurations: JSON.stringify(["200 Sq Yd", "300 Sq Yd", "500 Sq Yd"]), totalArea: "200 Acres", totalUnits: 1200, images: JSON.stringify(["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800", "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800"]), amenities: JSON.stringify(["Gated Community", "Wide Roads", "Underground Electricity", "Parks", "24/7 Security"]), locationAdvantages: JSON.stringify([{ place: "Dwarka Expressway", distance: "On Expressway" }, { place: "IGI Airport", distance: "20 min" }]), floorPlans: JSON.stringify([]), featured: false, verified: true },
+    { title: "Mahindra World City Jaipur", slug: "mahindra-world-city-jaipur", description: "Integrated township with residential plots, villas, and world-class infrastructure near Jaipur.", highlights: JSON.stringify(["3000+ Acre Township", "SEZ Zone", "International School", "Hospital Within"]), builderName: "Mahindra Lifespaces", location: "Kalwara Road, Jaipur", city: "Jaipur", state: "Rajasthan", reraNumber: "RAJ/P/2020/123", projectStatus: "ready-to-move", possessionDate: "Ready to Move", startingPrice: 35, priceUnit: "Lac", propertyType: "plots", configurations: JSON.stringify(["200 Sq Yd", "300 Sq Yd", "500 Sq Yd", "Villa"]), totalArea: "3000 Acres", totalUnits: 5000, images: JSON.stringify(["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800", "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800"]), amenities: JSON.stringify(["Wide Roads", "Underground Electricity", "Parks", "Shopping Complex", "24/7 Security", "Schools", "Hospital"]), locationAdvantages: JSON.stringify([{ place: "Jaipur Airport", distance: "30 min" }, { place: "NH-8", distance: "5 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
+    { title: "Siddharth Vihar Ghaziabad", slug: "siddharth-vihar-ghaziabad", description: "Premium residential project in Ghaziabad with excellent metro connectivity and modern amenities.", highlights: JSON.stringify(["Metro Connectivity", "Gated Community", "Sports Complex", "Near NH-24"]), builderName: "Gaur Group", location: "Siddharth Vihar, Ghaziabad", city: "Ghaziabad", state: "Uttar Pradesh", reraNumber: "UPRERAPRJ113344", projectStatus: "under-construction", possessionDate: "March 2027", startingPrice: 55, priceUnit: "Lac", propertyType: "residential", configurations: JSON.stringify(["2 BHK", "3 BHK", "4 BHK"]), totalArea: "15 Acres", totalUnits: 800, images: JSON.stringify(["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800", "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800"]), amenities: JSON.stringify(["Swimming Pool", "Gymnasium", "Club House", "Kids Play Area", "Jogging Track", "24/7 Security"]), locationAdvantages: JSON.stringify([{ place: "NH-24", distance: "5 min" }, { place: "Vaishali Metro", distance: "10 min" }]), floorPlans: JSON.stringify([]), featured: true, verified: true },
     { title: "Max Estate 128 Noida", slug: "max-estate-128-noida", description: "Grade A+ commercial towers with LEED Gold certification on Noida Expressway.", highlights: JSON.stringify(["Grade A+ Office Space", "LEED Gold Certified", "Smart Building Management", "Co-working Spaces"]), builderName: "Max Estates", location: "Sector 128, Noida", city: "Noida", state: "Uttar Pradesh", reraNumber: "UPRERAPRJ671234", projectStatus: "under-construction", possessionDate: "December 2026", startingPrice: 1.2, priceUnit: "Cr", propertyType: "commercial", configurations: JSON.stringify(["Office Suites", "Co-working", "Retail"]), totalArea: "8 Acres", totalUnits: 200, images: JSON.stringify(["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800", "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800"]), amenities: JSON.stringify(["Central AC", "High-Speed Elevators", "Food Court", "Business Lounge", "EV Charging"]), locationAdvantages: JSON.stringify([{ place: "Noida Expressway", distance: "On Expressway" }, { place: "Sector 137 Metro", distance: "8 min" }]), floorPlans: JSON.stringify([]), featured: false, verified: true },
   ];
 

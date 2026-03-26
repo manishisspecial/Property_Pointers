@@ -1,11 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { formatDate, timeAgo } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import {
   BookOpen, Plus, Edit, Trash2, Eye, EyeOff, CheckCircle, X, Save, Calendar,
   Upload, Loader2
 } from "lucide-react";
+import RichTextEditor from "@/components/RichTextEditor";
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+function toSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -14,11 +28,17 @@ export default function AdminBlogPage() {
   const [editingPost, setEditingPost] = useState<any>(null);
   const [form, setForm] = useState({
     title: "",
+    slug: "",
     excerpt: "",
     content: "",
+    metaTitle: "",
+    metaDescription: "",
+    metaTags: "",
+    schemaJson: "",
     coverImage: "",
     category: "general",
     tags: "",
+    faqs: [{ question: "", answer: "" }, { question: "", answer: "" }, { question: "", answer: "" }] as FaqItem[],
     published: false,
   });
 
@@ -40,26 +60,54 @@ export default function AdminBlogPage() {
       setEditingPost(post);
       setForm({
         title: post.title,
+        slug: post.slug,
         excerpt: post.excerpt,
         content: post.content,
+        metaTitle: post.metaTitle || "",
+        metaDescription: post.metaDescription || "",
+        metaTags: JSON.parse(post.metaTags || "[]").join(", "),
+        schemaJson: post.schemaJson || "",
         coverImage: post.coverImage || "",
         category: post.category,
         tags: JSON.parse(post.tags || "[]").join(", "),
+        faqs: (() => {
+          const parsed = JSON.parse(post.faqs || "[]");
+          const normalized = Array.isArray(parsed) ? parsed : [];
+          const firstThree = normalized.slice(0, 3);
+          while (firstThree.length < 3) {
+            firstThree.push({ question: "", answer: "" });
+          }
+          return firstThree;
+        })(),
         published: post.published,
       });
     } else {
       setEditingPost(null);
       setForm({
         title: "",
+        slug: "",
         excerpt: "",
         content: "",
+        metaTitle: "",
+        metaDescription: "",
+        metaTags: "",
+        schemaJson: "",
         coverImage: "",
         category: "general",
         tags: "",
+        faqs: [{ question: "", answer: "" }, { question: "", answer: "" }, { question: "", answer: "" }],
         published: false,
       });
     }
     setShowEditor(true);
+  }
+
+  function updateFaq(index: number, field: "question" | "answer", value: string) {
+    setForm((prev) => {
+      const nextFaqs = [...prev.faqs];
+      nextFaqs[index] = { ...nextFaqs[index], [field]: value };
+      return { ...prev, faqs: nextFaqs };
+    });
   }
 
   async function savePost() {
@@ -67,8 +115,21 @@ export default function AdminBlogPage() {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
+    const metaTags = form.metaTags
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const faqs = form.faqs
+      .map((f) => ({ question: f.question.trim(), answer: f.answer.trim() }))
+      .filter((f) => f.question && f.answer);
 
-    const body = { ...form, tags };
+    const body = {
+      ...form,
+      slug: toSlug(form.slug || form.title),
+      tags,
+      metaTags,
+      faqs,
+    };
 
     try {
       if (editingPost) {
@@ -141,9 +202,54 @@ export default function AdminBlogPage() {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Slug</label>
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: toSlug(e.target.value) })}
+                  className="input-field"
+                  placeholder="auto-generated-from-title"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Excerpt (SEO Description)</label>
                 <textarea value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
                   className="input-field resize-none" rows={2} placeholder="Brief summary for SEO and previews..." />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Meta Title</label>
+                  <input
+                    type="text"
+                    value={form.metaTitle}
+                    onChange={(e) => setForm({ ...form, metaTitle: e.target.value })}
+                    className="input-field"
+                    placeholder="Custom SEO title"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Meta Tags (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={form.metaTags}
+                    onChange={(e) => setForm({ ...form, metaTags: e.target.value })}
+                    className="input-field"
+                    placeholder="real estate, noida, buying guide"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Meta Description</label>
+                <textarea
+                  value={form.metaDescription}
+                  onChange={(e) => setForm({ ...form, metaDescription: e.target.value })}
+                  className="input-field resize-none"
+                  rows={3}
+                  placeholder="Search result description for this article..."
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -178,9 +284,52 @@ export default function AdminBlogPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Content</label>
-                <textarea value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  className="input-field resize-none font-mono text-sm" rows={12}
-                  placeholder="Write your blog post content here..." />
+                <RichTextEditor
+                  value={form.content}
+                  onChange={(value) => setForm({ ...form, content: value })}
+                  placeholder="Write your blog content with formatting, links, and media..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Schema Editor (JSON-LD)</label>
+                <textarea
+                  value={form.schemaJson}
+                  onChange={(e) => setForm({ ...form, schemaJson: e.target.value })}
+                  className="input-field resize-none font-mono text-xs"
+                  rows={6}
+                  placeholder='{"@context":"https://schema.org","@type":"Article"}'
+                />
+              </div>
+
+              <div className="border rounded-xl p-4 bg-gray-50">
+                <h3 className="text-sm font-semibold text-navy-900 mb-3">FAQ</h3>
+                <div className="space-y-4">
+                  {form.faqs.map((faq, index) => (
+                    <div key={index} className="space-y-2">
+                      <label className="block text-xs font-medium text-gray-600">
+                        FAQ Question {index + 1}
+                      </label>
+                      <input
+                        type="text"
+                        value={faq.question}
+                        onChange={(e) => updateFaq(index, "question", e.target.value)}
+                        className="input-field"
+                        placeholder={`Enter FAQ Question ${index + 1}`}
+                      />
+                      <label className="block text-xs font-medium text-gray-600">
+                        FAQ Answer {index + 1}
+                      </label>
+                      <textarea
+                        value={faq.answer}
+                        onChange={(e) => updateFaq(index, "answer", e.target.value)}
+                        className="input-field resize-none"
+                        rows={3}
+                        placeholder={`Enter FAQ Answer ${index + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="flex items-center gap-3">

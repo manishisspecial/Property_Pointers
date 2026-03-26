@@ -5,10 +5,14 @@ import { useSearchParams, useRouter } from "next/navigation";
 import PropertyCard from "@/components/PropertyCard";
 import { PropertyType } from "@/types";
 import { Search, SlidersHorizontal, X, MapPin, Grid3X3, List, ChevronDown } from "lucide-react";
+import { useCity } from "@/context/CityContext";
+
+const SERVICE_CITIES = ["Delhi", "Noida", "Greater Noida", "Gurugram", "Ghaziabad", "Jaipur", "Pune"];
 
 function PropertiesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { selectedCity } = useCity();
   const [properties, setProperties] = useState<PropertyType[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -16,10 +20,13 @@ function PropertiesContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  const urlCity = searchParams.get("city") || "";
+  const effectiveCity = urlCity || selectedCity?.name || "";
+
   const [filters, setFilters] = useState({
     type: searchParams.get("type") || "",
     category: searchParams.get("category") || "",
-    city: searchParams.get("city") || "",
+    city: effectiveCity,
     q: searchParams.get("q") || "",
     minPrice: searchParams.get("minPrice") || "",
     maxPrice: searchParams.get("maxPrice") || "",
@@ -30,10 +37,12 @@ function PropertiesContent() {
   });
 
   useEffect(() => {
+    const newUrlCity = searchParams.get("city") || "";
+    const newEffectiveCity = newUrlCity || selectedCity?.name || "";
     setFilters({
       type: searchParams.get("type") || "",
       category: searchParams.get("category") || "",
-      city: searchParams.get("city") || "",
+      city: newEffectiveCity,
       q: searchParams.get("q") || "",
       minPrice: searchParams.get("minPrice") || "",
       maxPrice: searchParams.get("maxPrice") || "",
@@ -42,7 +51,7 @@ function PropertiesContent() {
       sort: searchParams.get("sort") || "newest",
       page: searchParams.get("page") || "1",
     });
-  }, [searchParams]);
+  }, [searchParams, selectedCity]);
 
   const fetchProperties = useCallback(async () => {
     setLoading(true);
@@ -160,7 +169,10 @@ function PropertiesContent() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">City</label>
-                <input type="text" value={filters.city} onChange={(e) => updateFilter("city", e.target.value)} placeholder="Enter city" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" />
+                <select value={filters.city} onChange={(e) => updateFilter("city", e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                  <option value="">All Cities</option>
+                  {SERVICE_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Min Price</label>

@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, ChevronDown } from "lucide-react";
+import { useCity } from "@/context/CityContext";
 
 export default function SearchBar({ className = "" }: { className?: string }) {
   const router = useRouter();
+  const { selectedCity, openPicker } = useCity();
   const [type, setType] = useState("sale");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
@@ -16,6 +18,7 @@ export default function SearchBar({ className = "" }: { className?: string }) {
     params.set("type", type);
     if (query) params.set("q", query);
     if (category !== "all") params.set("category", category);
+    if (selectedCity) params.set("city", selectedCity.name);
     router.push(`/properties?${params.toString()}`);
   }
 
@@ -42,6 +45,19 @@ export default function SearchBar({ className = "" }: { className?: string }) {
       </div>
 
       <form onSubmit={handleSearch} className="bg-white rounded-xl shadow-2xl p-2 flex flex-col md:flex-row gap-2">
+        {/* City Selector */}
+        <button
+          type="button"
+          onClick={openPicker}
+          className="flex items-center gap-2 px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors shrink-0"
+        >
+          <MapPin size={16} className="text-gold-500" />
+          <span className="max-w-[120px] truncate">
+            {selectedCity ? selectedCity.name : "All Cities"}
+          </span>
+          <ChevronDown size={14} className="text-gray-400" />
+        </button>
+
         <div className="relative flex-shrink-0">
           <select
             value={category}
@@ -61,12 +77,12 @@ export default function SearchBar({ className = "" }: { className?: string }) {
         </div>
 
         <div className="flex-1 relative">
-          <MapPin size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by city, locality, project, or landmark..."
+            placeholder={`Search in ${selectedCity?.name || "all cities"}...`}
             className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-gold-400"
           />
         </div>
