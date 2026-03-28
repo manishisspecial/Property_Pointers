@@ -23,42 +23,41 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const projects = await prisma.project.findMany({
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        city: true,
-        state: true,
-        location: true,
-        startingPrice: true,
-        priceUnit: true,
-        builderName: true,
-        builderLogo: true,
-        projectStatus: true,
-        description: true,
-        propertyType: true,
-        configurations: true,
-        totalUnits: true,
-        totalArea: true,
-        reraNumber: true,
-        amenities: true,
-        images: true,
-        featured: true,
-        verified: true,
-        possessionDate: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+
+    const [projects, developerRecord, activityLogs, contactCount] = await Promise.all([
+      prisma.project.findMany({
+        select: {
+          id: true, slug: true, title: true, city: true, state: true,
+          location: true, startingPrice: true, priceUnit: true,
+          builderName: true, builderLogo: true, projectStatus: true,
+          description: true, propertyType: true, configurations: true,
+          totalUnits: true, totalArea: true, reraNumber: true,
+          amenities: true, images: true, featured: true, verified: true,
+          possessionDate: true, createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.developer.findUnique({ where: { slug } }),
+      prisma.activityLog.findMany({
+        where: {
+          page: `/developers/${slug}`,
+          action: { in: ["developer_review", "developer_feedback", "developer_partner_interest"] },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 200,
+      }),
+      prisma.activityLog.count({
+        where: { page: `/developers/${slug}`, action: "developer_contact_request" },
+      }),
+    ]);
 
     const byDeveloper = projects.filter((p) => toSlug(p.builderName) === slug);
-    if (!byDeveloper.length) {
+    if (!byDeveloper.length && !developerRecord) {
       return NextResponse.json({ error: "Developer not found" }, { status: 404 });
     }
 
-    const name = byDeveloper[0].builderName;
-    const logo = byDeveloper.find((p) => p.builderLogo)?.builderLogo || null;
+    const name = developerRecord?.name || byDeveloper[0]?.builderName || slug;
+    const logo = developerRecord?.logo || byDeveloper.find((p) => p.builderLogo)?.builderLogo || null;
     const cities = Array.from(new Set(byDeveloper.map((p) => p.city)));
     const states = Array.from(new Set(byDeveloper.map((p) => p.state)));
     const delivered = byDeveloper.filter((p) => p.projectStatus === "ready-to-move").length;
@@ -70,58 +69,52 @@ export async function GET(
     const featuredProjects = byDeveloper.filter((p) => p.featured).length;
     const propertyTypes = Array.from(new Set(byDeveloper.map((p) => p.propertyType)));
 
-    const priceRange = {
-      min: Math.min(...byDeveloper.map((p) => p.startingPrice)),
-      max: Math.max(...byDeveloper.map((p) => p.startingPrice)),
-      unit: byDeveloper[0].priceUnit,
-    };
+    const priceRange = byDeveloper.length > 0
+      ? {
+          min: Math.min(...byDeveloper.map((p) => p.startingPrice)),
+          max: Math.max(...byDeveloper.map((p) => p.startingPrice)),
+          unit: byDeveloper[0].priceUnit,
+        }
+      : { min: 0, max: 0, unit: "Lac" };
 
-    const about =
-      byDeveloper.find((p) => p.description)?.description ||
-      `${name} is a trusted real estate developer with an active project portfolio across ${cities.join(", ")}. Known for quality construction and timely delivery.`;
+    const about = developerRecord?.about
+      || byDeveloper.find((p) => p.description)?.description
+      || `${name} is a trusted real estate developer with an active project portfolio across ${cities.join(", ")}.`;
 
-    const logs = await prisma.activityLog.findMany({
-      where: {
-        page: `/developers/${slug}`,
-        action: { in: ["developer_review", "developer_feedback", "developer_partner_interest"] },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 200,
-    });
+    const dbStrengths = safeParse(developerRecord?.strengths ?? null);
+    const strengths = Array.isArray(dbStrengths) && dbStrengths.length > 0
+      ? dbStrengths
+      : [];
 
-    const reviews = logs
+    const reviews = activityLogs
       .filter((log) => log.action === "developer_review")
       .map((log) => safeParse(log.details))
       .filter((item) => item && (!item.status || item.status === "approved"));
 
-    const feedback = logs
+    const feedback = activityLogs
       .filter((log) => log.action === "developer_feedback")
       .map((log) => safeParse(log.details))
       .filter((item) => item && (!item.status || item.status === "approved"));
 
-    const partner = logs
+    const partner = activityLogs
       .filter((log) => log.action === "developer_partner_interest")
       .map((log) => safeParse(log.details))
       .find(Boolean);
 
-    const contactRequests = logs.filter(
-      (log) => log.action === "developer_contact_request"
-    ).length;
+    const partnerOpportunity = developerRecord?.partnerOpportunity
+      || (partner as { note?: string } | undefined)?.note
+      || `Open for channel and strategic partnerships. ${name} welcomes brokers, advisors, and institutional partners.`;
 
     const configSet = new Set<string>();
     for (const p of byDeveloper) {
       const parsed = safeParse(p.configurations);
-      if (Array.isArray(parsed)) {
-        parsed.forEach((c: string) => configSet.add(c));
-      }
+      if (Array.isArray(parsed)) parsed.forEach((c: string) => configSet.add(c));
     }
 
     const allAmenities = new Set<string>();
     for (const p of byDeveloper) {
       const parsed = safeParse(p.amenities);
-      if (Array.isArray(parsed)) {
-        parsed.forEach((a: string) => allAmenities.add(a));
-      }
+      if (Array.isArray(parsed)) parsed.forEach((a: string) => allAmenities.add(a));
     }
 
     return NextResponse.json({
@@ -129,7 +122,7 @@ export async function GET(
         slug,
         name,
         logo,
-        establishedYear: 2000,
+        establishedYear: developerRecord?.establishedYear || null,
         cities,
         states,
         delivered,
@@ -144,40 +137,15 @@ export async function GET(
         priceRange,
         configurations: Array.from(configSet),
         amenities: Array.from(allAmenities).slice(0, 20),
-        contactRequests,
+        contactRequests: contactCount,
         about,
-        strengths: [
-          "Execution quality",
-          "Location strategy",
-          "Buyer-focused planning",
-          "RERA compliant",
-          "Timely delivery",
-        ],
-        partnerOpportunity:
-          (partner as { note?: string } | undefined)?.note ||
-          `Open for channel and strategic partnerships. ${name} welcomes brokers, advisors, and institutional partners for active inventory across ${cities.join(", ")}.`,
-        reviews:
-          (reviews as Array<{ author: string; rating: number; text: string }>).length > 0
-            ? (reviews as Array<{ author: string; rating: number; text: string }>)
-            : [
-                {
-                  author: "Verified Buyer",
-                  rating: 4.5,
-                  text: "Good experience with the builder. Quality construction and transparent communication throughout.",
-                },
-                {
-                  author: "Property Investor",
-                  rating: 4.0,
-                  text: "Reliable developer with a strong track record in the region. Documentation was smooth.",
-                },
-              ],
-        feedback:
-          (feedback as Array<{ type: string; text: string }>).length > 0
-            ? (feedback as Array<{ type: string; text: string }>)
-            : [
-                { type: "Buyer", text: "Good potential for end-use and long-term hold." },
-                { type: "Investor", text: "Consistent appreciation in builder's past projects." },
-              ],
+        strengths,
+        partnerOpportunity,
+        reviews: reviews as Array<{ author: string; rating: number; text: string }>,
+        feedback: feedback as Array<{ type: string; text: string }>,
+        website: developerRecord?.website || null,
+        contactEmail: developerRecord?.contactEmail || null,
+        contactPhone: developerRecord?.contactPhone || null,
       },
       projects: byDeveloper.map((p) => ({
         id: p.id,

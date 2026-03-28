@@ -1,8 +1,45 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, ArrowRight } from "lucide-react";
 import Logo from "@/components/Logo";
 
+interface Settings {
+  address: string;
+  contactPhone: string;
+  contactEmail: string;
+  facebook: string;
+  twitter: string;
+  instagram: string;
+  linkedin: string;
+}
+
+const SOCIAL_ICONS = {
+  facebook: Facebook,
+  twitter: Twitter,
+  instagram: Instagram,
+  linkedin: Linkedin,
+} as const;
+
 export default function Footer() {
+  const [s, setS] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((data) => setS(data))
+      .catch(() => {});
+  }, []);
+
+  const socials = s
+    ? (Object.entries(SOCIAL_ICONS) as [keyof typeof SOCIAL_ICONS, typeof Facebook][])
+        .filter(([key]) => s[key])
+        .map(([key, Icon]) => ({ key, url: s[key], Icon }))
+    : [];
+
+  const phoneDigits = s?.contactPhone?.replace(/[^0-9]/g, "") || "";
+
   return (
     <footer className="gradient-navy text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -14,13 +51,16 @@ export default function Footer() {
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
               India&apos;s most trusted real estate platform. Find your dream property with verified listings, virtual tours, and zero brokerage options.
             </p>
-            <div className="flex gap-3">
-              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                <a key={i} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 transition-colors">
-                  <Icon size={18} />
-                </a>
-              ))}
-            </div>
+            {socials.length > 0 && (
+              <div className="flex gap-3">
+                {socials.map(({ key, url, Icon }) => (
+                  <a key={key} href={url} target="_blank" rel="noopener noreferrer" aria-label={`Property Pointers on ${key}`}
+                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 transition-colors">
+                    <Icon size={18} />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -58,20 +98,34 @@ export default function Footer() {
 
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Contact Us</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <MapPin size={18} className="text-gold-400 mt-0.5 shrink-0" />
-                <span className="text-sm">Sector 62, Noida, Uttar Pradesh, India - 201301</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone size={18} className="text-gold-400 shrink-0" />
-                <span className="text-sm">+91-9876543210</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail size={18} className="text-gold-400 shrink-0" />
-                <span className="text-sm">info@propertypointers.com</span>
-              </li>
-            </ul>
+            {s ? (
+              <ul className="space-y-4">
+                {s.address && (
+                  <li className="flex items-start gap-3">
+                    <MapPin size={18} className="text-gold-400 mt-0.5 shrink-0" />
+                    <span className="text-sm">{s.address}</span>
+                  </li>
+                )}
+                {s.contactPhone && (
+                  <li className="flex items-center gap-3">
+                    <Phone size={18} className="text-gold-400 shrink-0" />
+                    <a href={`tel:+${phoneDigits}`} className="text-sm hover:text-gold-400 transition-colors">{s.contactPhone}</a>
+                  </li>
+                )}
+                {s.contactEmail && (
+                  <li className="flex items-center gap-3">
+                    <Mail size={18} className="text-gold-400 shrink-0" />
+                    <a href={`mailto:${s.contactEmail}`} className="text-sm hover:text-gold-400 transition-colors">{s.contactEmail}</a>
+                  </li>
+                )}
+              </ul>
+            ) : (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-5 bg-white/5 rounded animate-pulse" />
+                ))}
+              </div>
+            )}
             <div className="mt-6">
               <h4 className="text-white font-medium text-sm mb-2">Newsletter</h4>
               <form className="flex gap-2">

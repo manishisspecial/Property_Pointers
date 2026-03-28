@@ -51,11 +51,11 @@ export async function PUT(
     }
 
     if (data.startingPrice !== undefined) updateData.startingPrice = parseFloat(data.startingPrice);
-    if (data.totalUnits !== undefined) updateData.totalUnits = data.totalUnits ? parseInt(data.totalUnits) : null;
+    if (data.totalUnits !== undefined) updateData.totalUnits = data.totalUnits != null && data.totalUnits !== "" ? parseInt(data.totalUnits) : null;
     if (data.featured !== undefined) updateData.featured = data.featured;
     if (data.verified !== undefined) updateData.verified = data.verified;
 
-    const jsonFields = ["highlights", "configurations", "images", "amenities", "floorPlans", "locationAdvantages"];
+    const jsonFields = ["highlights", "configurations", "images", "amenities", "floorPlans", "locationAdvantages", "paymentPlans"];
     for (const field of jsonFields) {
       if (data[field] !== undefined) updateData[field] = JSON.stringify(data[field]);
     }

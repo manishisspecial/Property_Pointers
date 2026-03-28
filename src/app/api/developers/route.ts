@@ -103,24 +103,31 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    let developers = Array.from(devMap.values()).map((d) => ({
-      slug: d.slug,
-      name: d.name,
-      logo: d.logo,
-      cities: Array.from(d.cities),
-      states: Array.from(d.states),
-      totalProjects: d.total,
-      delivered: d.delivered,
-      ongoing: d.ongoing,
-      upcoming: d.upcoming,
-      featured: d.featured,
-      verified: d.verified,
-      totalUnits: d.totalUnits,
-      minPrice: d.minPrice,
-      priceUnit: d.priceUnit,
-      propertyTypes: Array.from(d.propertyTypes),
-      about: d.about,
-    }));
+    const devRecords = await prisma.developer.findMany();
+    const devRecordMap = new Map(devRecords.map((r) => [r.slug, r]));
+
+    let developers = Array.from(devMap.values()).map((d) => {
+      const rec = devRecordMap.get(d.slug);
+      return {
+        slug: d.slug,
+        name: rec?.name || d.name,
+        logo: rec?.logo || d.logo,
+        cities: Array.from(d.cities),
+        states: Array.from(d.states),
+        totalProjects: d.total,
+        delivered: d.delivered,
+        ongoing: d.ongoing,
+        upcoming: d.upcoming,
+        featured: rec?.featured || d.featured,
+        verified: rec?.verified || d.verified,
+        totalUnits: d.totalUnits,
+        minPrice: d.minPrice,
+        priceUnit: d.priceUnit,
+        propertyTypes: Array.from(d.propertyTypes),
+        about: rec?.about || d.about,
+        establishedYear: rec?.establishedYear || null,
+      };
+    });
 
     if (q) {
       const lower = q.toLowerCase();

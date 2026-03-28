@@ -32,6 +32,7 @@ interface Project {
   amenities: string;
   floorPlans: string;
   locationAdvantages: string;
+  paymentPlans: string;
   brochureUrl: string | null;
   featured: boolean;
   verified: boolean;
@@ -60,6 +61,7 @@ const EMPTY_FORM = {
   amenities: "",
   highlights: "",
   locationAdvantages: "",
+  paymentPlans: "",
   brochureUrl: "",
   featured: false,
   verified: false,
@@ -146,6 +148,9 @@ export default function AdminProjectsPage() {
       locationAdvantages: safeParseJSON(project.locationAdvantages)
         .map((a: any) => (typeof a === "string" ? a : `${a.place} - ${a.distance}`))
         .join("\n"),
+      paymentPlans: safeParseJSON(project.paymentPlans)
+        .map((p: any) => (typeof p === "string" ? p : `${p.title} - ${p.detail}`))
+        .join("\n"),
       brochureUrl: project.brochureUrl || "",
       featured: project.featured,
       verified: project.verified,
@@ -156,34 +161,48 @@ export default function AdminProjectsPage() {
   }
 
   async function handleSubmit() {
-    if (!form.title || !form.builderName || !form.city || !form.startingPrice) return;
+    if (!form.title || !form.builderName || !form.city || !form.location || !form.startingPrice) return;
     setSaving(true);
+
+    const splitCommaOrNewline = (s: string) => s.split(/[,\n]/).map((v) => v.trim()).filter(Boolean);
 
     const payload = {
       ...form,
       startingPrice: parseFloat(form.startingPrice),
       totalUnits: form.totalUnits ? parseInt(form.totalUnits) : null,
-      configurations: form.configurations.split(",").map((s) => s.trim()).filter(Boolean),
-      amenities: form.amenities.split(",").map((s) => s.trim()).filter(Boolean),
+      configurations: splitCommaOrNewline(form.configurations),
+      amenities: splitCommaOrNewline(form.amenities),
       images: form.images.split("\n").map((s) => s.trim()).filter(Boolean),
       highlights: form.highlights.split("\n").map((s) => s.trim()).filter(Boolean),
       locationAdvantages: form.locationAdvantages.split("\n").map((s) => s.trim()).filter(Boolean).map((line) => {
         const parts = line.split(" - ");
         return parts.length === 2 ? { place: parts[0].trim(), distance: parts[1].trim() } : line;
       }),
+      paymentPlans: form.paymentPlans.split("\n").map((s) => s.trim()).filter(Boolean).map((line) => {
+        const parts = line.split(" - ");
+        return parts.length >= 2 ? { title: parts[0].trim(), detail: parts.slice(1).join(" - ").trim() } : { title: line, detail: "" };
+      }),
     };
 
     try {
       const url = editSlug ? `/api/projects/${editSlug}` : "/api/projects";
       const method = editSlug ? "PUT" : "POST";
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Failed to save project. Please try again.");
+        setSaving(false);
+        return;
+      }
       setShowModal(false);
       fetchProjects();
-    } catch {}
+    } catch {
+      alert("Network error. Please check your connection and try again.");
+    }
     setSaving(false);
   }
 
@@ -471,6 +490,12 @@ export default function AdminProjectsPage() {
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500"
                       rows={4} placeholder={"Possession Soon\nCatchment Area of 50K+ Families\nSeamless Connectivity"} />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Plans (one per line: Title - Detail)</label>
+                    <textarea value={form.paymentPlans} onChange={(e) => setForm({ ...form, paymentPlans: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500"
+                      rows={4} placeholder={"Down Payment Plan - 10% booking, 80% construction, 10% possession\nConstruction Linked Plan - Pay in stages as milestones are achieved\nFlexible Plan - Custom payment schedule on request"} />
+                  </div>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="checkbox" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })}
@@ -549,7 +574,7 @@ export default function AdminProjectsPage() {
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t bg-gray-50 rounded-b-2xl">
               <button onClick={() => setShowModal(false)}
                 className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-              <button onClick={handleSubmit} disabled={saving || !form.title || !form.builderName || !form.city || !form.startingPrice}
+              <button onClick={handleSubmit} disabled={saving || !form.title || !form.builderName || !form.city || !form.location || !form.startingPrice}
                 className="flex items-center gap-2 bg-gold-500 hover:bg-gold-600 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">
                 {saving && <Loader2 size={14} className="animate-spin" />}
                 {editSlug ? "Update Project" : "Create Project"}

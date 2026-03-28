@@ -197,10 +197,31 @@ model Project {
   amenities          String   @default("[]")
   floorPlans         String   @default("[]")
   locationAdvantages String   @default("[]")
+  paymentPlans       String   @default("[]")
   brochureUrl        String?
   featured           Boolean  @default(false)
   verified           Boolean  @default(false)
   views              Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Developer {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  slug             String   @unique
+  logo             String?
+  about            String?
+  establishedYear  Int?
+  strengths        String   @default("[]")
+  partnerOpportunity String?
+  operatingCities  String   @default("[]")
+  website          String?
+  contactEmail     String?
+  contactPhone     String?
+  featured         Boolean  @default(false)
+  verified         Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -226,12 +247,12 @@ model SiteSettings {
   id              String  @id @map("_id")
   siteName        String  @default("Property Pointers")
   siteDescription String  @default("India's #1 Real Estate Platform")
-  contactEmail    String  @default("info@propertypointers.com")
-  contactPhone    String  @default("+91-9876543210")
-  address         String  @default("Noida, Uttar Pradesh, India")
-  facebook        String?
+  contactEmail    String  @default("propertypointersofficial@gmail.com")
+  contactPhone    String  @default("+91-9990074072")
+  address         String  @default("701, GDITL NorthEx, Netaji Subhash Place, New Delhi - 110034")
+  facebook        String? @default("https://www.facebook.com/share/1CQ4czxaZu/?mibextid=wwXIfr")
   twitter         String?
   instagram       String?
-  linkedin        String?
+  linkedin        String? @default("https://www.linkedin.com/company/propertypointersofficial/")
   maintenanceMode Boolean @default(false)
 }

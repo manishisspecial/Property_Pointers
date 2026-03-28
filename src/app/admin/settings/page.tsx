@@ -1,37 +1,100 @@
 "use client";
 
-import { useState } from "react";
-import { Settings, Save, CheckCircle, Globe, Mail, Phone, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Save, CheckCircle, Globe, Mail, Phone, MapPin, Loader2 } from "lucide-react";
+
+interface SiteSettings {
+  siteName: string;
+  siteDescription: string;
+  contactEmail: string;
+  contactPhone: string;
+  address: string;
+  facebook: string;
+  twitter: string;
+  instagram: string;
+  linkedin: string;
+  maintenanceMode: boolean;
+}
+
+const EMPTY: SiteSettings = {
+  siteName: "",
+  siteDescription: "",
+  contactEmail: "",
+  contactPhone: "",
+  address: "",
+  facebook: "",
+  twitter: "",
+  instagram: "",
+  linkedin: "",
+  maintenanceMode: false,
+};
 
 export default function AdminSettingsPage() {
-  const [settings, setSettings] = useState({
-    siteName: "Property Pointers",
-    siteDescription: "India's #1 Real Estate Platform",
-    contactEmail: "info@propertypointers.com",
-    contactPhone: "+91-9876543210",
-    address: "Sector 62, Noida, Uttar Pradesh, India",
-    facebook: "",
-    twitter: "",
-    instagram: "",
-    linkedin: "",
-    maintenanceMode: false,
-  });
-  const [saved, setSaved] = useState(false);
+  const [settings, setSettings] = useState<SiteSettings>(EMPTY);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
 
-  function update(field: string, value: string | boolean) {
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((data) => {
+        setSettings({
+          siteName: data.siteName ?? "",
+          siteDescription: data.siteDescription ?? "",
+          contactEmail: data.contactEmail ?? "",
+          contactPhone: data.contactPhone ?? "",
+          address: data.address ?? "",
+          facebook: data.facebook ?? "",
+          twitter: data.twitter ?? "",
+          instagram: data.instagram ?? "",
+          linkedin: data.linkedin ?? "",
+          maintenanceMode: data.maintenanceMode ?? false,
+        });
+      })
+      .catch(() => setStatus({ ok: false, text: "Failed to load settings" }))
+      .finally(() => setLoading(false));
+  }, []);
+
+  function update(field: keyof SiteSettings, value: string | boolean) {
     setSettings((prev) => ({ ...prev, [field]: value }));
   }
 
-  function handleSave() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  async function handleSave() {
+    setSaving(true);
+    setStatus(null);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Save failed");
+      }
+      setStatus({ ok: true, text: "Settings saved successfully!" });
+      setTimeout(() => setStatus(null), 4000);
+    } catch (e: unknown) {
+      setStatus({ ok: false, text: e instanceof Error ? e.message : "Save failed" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20 text-gray-400 gap-2">
+        <Loader2 size={20} className="animate-spin" /> Loading settings…
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
         <h1 className="text-2xl font-bold text-navy-900">Site Settings</h1>
-        <p className="text-sm text-gray-500">Manage your platform configuration</p>
+        <p className="text-sm text-gray-500">Manage your platform configuration — changes are saved to the database</p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
@@ -70,10 +133,10 @@ export default function AdminSettingsPage() {
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h3 className="text-lg font-semibold text-navy-800">Social Media</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {["facebook", "twitter", "instagram", "linkedin"].map((social) => (
+          {(["facebook", "twitter", "instagram", "linkedin"] as const).map((social) => (
             <div key={social}>
               <label className="block text-sm font-medium text-gray-700 mb-1.5 capitalize">{social}</label>
-              <input type="url" value={(settings as any)[social]} onChange={(e) => update(social, e.target.value)}
+              <input type="url" value={settings[social]} onChange={(e) => update(social, e.target.value)}
                 className="input-field" placeholder={`https://${social}.com/propertypointers`} />
             </div>
           ))}
@@ -101,12 +164,13 @@ export default function AdminSettingsPage() {
       </div>
 
       <div className="flex items-center gap-4">
-        <button onClick={handleSave} className="btn-primary flex items-center gap-2">
-          <Save size={18} /> Save Settings
+        <button onClick={handleSave} disabled={saving} className="btn-primary flex items-center gap-2">
+          {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+          {saving ? "Saving…" : "Save Settings"}
         </button>
-        {saved && (
-          <span className="flex items-center gap-1 text-green-600 text-sm">
-            <CheckCircle size={16} /> Settings saved successfully!
+        {status && (
+          <span className={`flex items-center gap-1 text-sm ${status.ok ? "text-green-600" : "text-red-600"}`}>
+            {status.ok && <CheckCircle size={16} />} {status.text}
           </span>
         )}
       </div>

@@ -13,6 +13,7 @@ const SIDEBAR_ITEMS = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/properties", icon: Building2, label: "Properties" },
   { href: "/admin/projects", icon: Landmark, label: "Projects" },
+  { href: "/admin/developers", icon: Shield, label: "Developers" },
   { href: "/admin/users", icon: Users, label: "Users" },
   { href: "/admin/inquiries", icon: MessageCircle, label: "Inquiries" },
   { href: "/admin/community", icon: MessageCircle, label: "Community" },

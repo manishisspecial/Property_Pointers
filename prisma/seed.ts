@@ -422,10 +422,17 @@ async function main() {
     await prisma.property.create({ data: prop });
   }
 
+  const siteContact = {
+    contactEmail: "propertypointersofficial@gmail.com",
+    contactPhone: "+91-9990074072",
+    address: "701, GDITL NorthEx, Netaji Subhash Place, New Delhi - 110034",
+    facebook: "https://www.facebook.com/share/1CQ4czxaZu/?mibextid=wwXIfr",
+    linkedin: "https://www.linkedin.com/company/propertypointersofficial/",
+  };
   await prisma.siteSettings.upsert({
     where: { id: "default" },
-    create: { id: "default" },
-    update: {},
+    create: { id: "default", ...siteContact },
+    update: siteContact,
   });
 
   console.log(`Seeded: ${users.length + 1} users, ${properties.length} properties`);

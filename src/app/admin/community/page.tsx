@@ -22,14 +22,18 @@ export default function AdminCommunityPage() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
 
   useEffect(() => {
     fetchEntries();
-  }, [statusFilter]);
+  }, [statusFilter, typeFilter]);
 
   async function fetchEntries() {
     setLoading(true);
-    const query = statusFilter === "all" ? "" : `?status=${statusFilter}`;
+    const params = new URLSearchParams();
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (typeFilter !== "all") params.set("type", typeFilter);
+    const query = params.toString() ? `?${params}` : "";
     const res = await fetch(`/api/admin/community${query}`);
     const data = await res.json();
     setEntries(data.entries || []);
@@ -52,13 +56,23 @@ export default function AdminCommunityPage() {
           <h1 className="text-2xl font-bold text-navy-900">Community Moderation</h1>
           <p className="text-sm text-gray-500">Approve, reject, or hide project/developer community submissions.</p>
         </div>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field max-w-[180px]">
-          <option value="all">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-          <option value="hidden">Hidden</option>
-        </select>
+        <div className="flex items-center gap-2">
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="input-field max-w-[200px]">
+            <option value="all">All Types</option>
+            <option value="project_review">Project Reviews</option>
+            <option value="locality_review">Locality Reviews</option>
+            <option value="forum_thread">Forum Threads</option>
+            <option value="developer_review">Developer Reviews</option>
+            <option value="developer_feedback">Developer Feedback</option>
+          </select>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field max-w-[180px]">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="hidden">Hidden</option>
+          </select>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">

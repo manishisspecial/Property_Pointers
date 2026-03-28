@@ -1,13 +1,13 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Building2, CheckCircle, Star, ArrowRight,
-  ChevronLeft, ChevronRight, X, Share2, Phone, IndianRupee,
-  Shield, Loader2, Download, Clock, Maximize2,
+  ChevronLeft, ChevronRight, X, Share2, Phone,
+  Shield, Download, Clock, Maximize2,
   Ruler, Users, ExternalLink, Check
 } from "lucide-react";
 import FAQAccordion from "@/components/FAQAccordion";
@@ -35,7 +35,6 @@ function safeParseJSON(str: string): any[] {
 
 export default function ProjectDetailPage() {
   const { slug } = useParams() as { slug: string };
-  const router = useRouter();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
@@ -45,23 +44,32 @@ export default function ProjectDetailPage() {
   const [similarProjects, setSimilarProjects] = useState<any[]>([]);
   const [leadLoading, setLeadLoading] = useState(false);
   const [leadStatus, setLeadStatus] = useState<{ ok: boolean; text: string } | null>(null);
+  const [leadAction, setLeadAction] = useState("project_get_price_details");
+  const [sitePhone, setSitePhone] = useState("+91-9990074072");
 
   useEffect(() => {
     if (slug) fetchProject();
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((d) => { if (d.contactPhone) setSitePhone(d.contactPhone); })
+      .catch(() => {});
   }, [slug]);
 
   async function fetchProject() {
     setLoading(true);
     try {
       const res = await fetch(`/api/projects/${slug}`);
-      if (!res.ok) { router.push("/projects"); return; }
+      if (!res.ok) throw new Error("not-found");
       const data = await res.json();
       setProject(data.project);
-      fetchSimilar(data.project.city, data.project.propertyType, data.project.id);
+      if (data.project) {
+        fetchSimilar(data.project.city, data.project.propertyType, data.project.id);
+      }
     } catch {
-      router.push("/projects");
+      setProject(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function fetchSimilar(city: string, type: string, excludeId: string) {
@@ -116,13 +124,74 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-16">
-        <Loader2 className="animate-spin text-gold-500" size={32} />
+      <div className="min-h-screen bg-gray-50 pt-16">
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="h-4 bg-gray-200 rounded w-64 animate-pulse" />
+          </div>
+        </div>
+        <div className="bg-white">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="lg:col-span-2 h-72 md:h-96 lg:h-[480px] bg-gray-200 rounded-2xl animate-pulse" />
+              <div className="hidden lg:grid grid-rows-2 gap-3">
+                <div className="bg-gray-200 rounded-xl animate-pulse" />
+                <div className="bg-gray-200 rounded-xl animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-2xl p-6 shadow-sm animate-pulse">
+                <div className="h-8 bg-gray-200 rounded w-3/4 mb-3" />
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+                <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
+                  {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-gray-100 rounded-lg" />)}
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl p-6 shadow-sm animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-40 mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+              </div>
+            </div>
+            <div>
+              <div className="bg-white rounded-2xl p-6 shadow-sm animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-2/3 mx-auto mb-4" />
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => <div key={i} className="h-11 bg-gray-100 rounded-xl" />)}
+                  <div className="h-11 bg-gold-200 rounded-xl" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (!project) return null;
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-16">
+        <div className="max-w-7xl mx-auto px-4 py-20">
+          <div className="max-w-md mx-auto text-center">
+            <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Building2 size={36} className="text-gray-300" />
+            </div>
+            <h1 className="text-2xl font-bold text-navy-900 mb-2">Project Not Found</h1>
+            <p className="text-gray-500 mb-6">
+              This project may have been removed or the URL might be incorrect.
+            </p>
+            <Link href="/projects" className="btn-primary inline-flex items-center gap-2">
+              Browse All Projects <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const images = safeParseJSON(project.images);
   const configs = safeParseJSON(project.configurations);
@@ -131,23 +200,10 @@ export default function ProjectDetailPage() {
   const locationAdvantages = safeParseJSON(project.locationAdvantages);
   const floorPlans = safeParseJSON(project.floorPlans);
   const statusInfo = STATUS_MAP[project.projectStatus] || STATUS_MAP["under-construction"];
-  const paymentPlans = [
-    { title: "Down Payment Plan", detail: "10% booking, 80% during construction, 10% on possession" },
-    { title: "Construction Linked Plan", detail: "Pay in stages as construction milestones are achieved" },
-    { title: "Flexible Plan", detail: "Custom payment schedule available on request" },
-  ];
-  const projectReviews = [
-    { author: "Rohit Sharma", rating: 4.5, text: "Good construction quality and transparent communication.", tag: "Verified Buyer" },
-    { author: "Aditi Mehra", rating: 4.2, text: "Location is strong and pricing is competitive for this micro-market.", tag: "Investor" },
-  ];
-  const localityReviews = [
-    { author: "Neha Arora", rating: 4.3, text: "Great connectivity to schools and metro routes.", tag: "Local Resident" },
-    { author: "Kunal Bhatia", rating: 4.0, text: "Good social infrastructure, traffic gets busy during peak hours.", tag: "Commuter" },
-  ];
-  const forumThreads = [
-    { title: "How is the builder's possession track record?", replies: 18, lastActive: "2 days ago" },
-    { title: "Any feedback on maintenance and amenities quality?", replies: 12, lastActive: "5 days ago" },
-  ];
+  const paymentPlans = safeParseJSON(project.paymentPlans);
+  const projectReviews: Array<{ author: string; rating: number; text: string; tag: string }> = [];
+  const localityReviews: Array<{ author: string; rating: number; text: string; tag: string }> = [];
+  const forumThreads: Array<{ title: string; replies: number; lastActive: string }> = [];
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
@@ -499,22 +555,24 @@ export default function ProjectDetailPage() {
               </motion.div>
             )}
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.43 }}
-              className="bg-white rounded-2xl p-6 shadow-sm"
-            >
-              <h2 className="text-xl font-bold text-navy-900 mb-4">Payment Plans</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {paymentPlans.map((plan) => (
-                  <div key={plan.title} className="rounded-xl border border-gray-200 p-4 bg-gray-50">
-                    <p className="font-semibold text-navy-900">{plan.title}</p>
-                    <p className="text-sm text-gray-600 mt-1">{plan.detail}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+            {paymentPlans.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.43 }}
+                className="bg-white rounded-2xl p-6 shadow-sm"
+              >
+                <h2 className="text-xl font-bold text-navy-900 mb-4">Payment Plans</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {paymentPlans.map((plan: any) => (
+                    <div key={plan.title} className="rounded-xl border border-gray-200 p-4 bg-gray-50">
+                      <p className="font-semibold text-navy-900">{plan.title}</p>
+                      {plan.detail && <p className="text-sm text-gray-600 mt-1">{plan.detail}</p>}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -524,9 +582,14 @@ export default function ProjectDetailPage() {
             >
               <h2 className="text-xl font-bold text-navy-900 mb-4">About Developer</h2>
               <p className="text-gray-700 leading-relaxed">
-                <span className="font-semibold text-navy-900">{project.builderName}</span> has an active footprint in {project.city}
-                {" "}with a focus on timely delivery, transparent documentation, and quality-focused execution.
+                {project.description || `${project.builderName} is developing ${project.title} in ${project.location}, ${project.city}.`}
               </p>
+              <Link
+                href={`/developers/${project.builderName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`}
+                className="inline-flex items-center gap-1.5 text-sm text-gold-600 font-semibold mt-3 hover:text-gold-700"
+              >
+                View {project.builderName} Profile <ArrowRight size={14} />
+              </Link>
             </motion.div>
 
             <ProjectReviewsForum
@@ -545,11 +608,33 @@ export default function ProjectDetailPage() {
                 },
                 {
                   question: "Can I get updated price details by configuration?",
-                  answer: "Yes. Use Get Price Details and our advisor will share current tower-wise inventory and pricing.",
+                  answer: "Yes. Use the Get Price Details button and our advisor will share current tower-wise inventory and pricing.",
                 },
                 {
                   question: "Is this project RERA registered?",
                   answer: project.reraNumber ? `Yes, RERA number is ${project.reraNumber}.` : "RERA details can be requested from our team.",
+                },
+                {
+                  question: "What payment plans are available?",
+                  answer: "Multiple payment plans are available including down payment, construction-linked, and flexible plans. Use the enquiry form to get the latest payment schedule.",
+                },
+                {
+                  question: "How can I book a site visit?",
+                  answer: "Fill in your details in the enquiry form and select 'Book Site Visit'. Our team will schedule a convenient time for you.",
+                },
+                {
+                  question: "Is home loan assistance available?",
+                  answer: "Yes. Property Pointers partners with leading banks and NBFCs to help you get pre-approved home loans at competitive rates. Use our EMI Calculator to estimate monthly payments.",
+                },
+                {
+                  question: "Can I download the project brochure?",
+                  answer: project.brochureUrl
+                    ? "Yes, click the Download Brochure button on this page to get the latest project brochure."
+                    : "The brochure will be shared by our team once you submit an enquiry.",
+                },
+                {
+                  question: "What is the resale potential of this project?",
+                  answer: `Properties in ${project.city} by ${project.builderName} have shown consistent appreciation. Contact our advisory team for a detailed market analysis.`,
                 },
               ]}
             />
@@ -581,17 +666,30 @@ export default function ProjectDetailPage() {
               transition={{ delay: 0.15 }}
               className="bg-white rounded-2xl p-6 shadow-sm sticky top-24"
             >
-              <div className="text-center mb-6">
+              <div className="text-center mb-4">
                 <h3 className="text-lg font-bold text-navy-900 mb-1">Interested in this project?</h3>
                 <p className="text-sm text-gray-500">Get expert advice & best deals</p>
               </div>
 
-              <form id="lead-form" className="space-y-3" onSubmit={(e) => handleLeadSubmit(e, "project_get_price_details")}>
+              <div className="flex gap-1 mb-4 bg-gray-100 rounded-lg p-1">
+                {[
+                  { key: "project_get_price_details", label: "Price Details" },
+                  { key: "project_book_site_visit", label: "Site Visit" },
+                  { key: "project_download_brochure", label: "Brochure" },
+                ].map((opt) => (
+                  <button key={opt.key} type="button" onClick={() => setLeadAction(opt.key)}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors ${leadAction === opt.key ? "bg-white text-navy-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              <form id="lead-form" className="space-y-3" onSubmit={(e) => handleLeadSubmit(e, leadAction)}>
                 <input name="name" placeholder="Your Name" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
                 <input name="email" placeholder="Email Address" type="email" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
                 <input name="phone" placeholder="Phone Number" type="tel" className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500" />
                 <button disabled={leadLoading} className="w-full bg-gold-500 hover:bg-gold-600 text-white py-3 rounded-xl text-sm font-bold transition-colors disabled:opacity-60">
-                  {leadLoading ? "Submitting..." : "Get Price Details"}
+                  {leadLoading ? "Submitting..." : leadAction === "project_book_site_visit" ? "Book Site Visit" : leadAction === "project_download_brochure" ? "Get Brochure" : "Get Price Details"}
                 </button>
               </form>
               {leadStatus && <p className={`mt-3 text-sm ${leadStatus.ok ? "text-emerald-600" : "text-red-600"}`}>{leadStatus.text}</p>}
@@ -601,11 +699,11 @@ export default function ProjectDetailPage() {
               </div>
 
               <div className="mt-6 pt-6 border-t border-gray-100 space-y-3">
-                <a href="tel:+919999999999"
+                <a href={`tel:+${sitePhone.replace(/[^0-9]/g, "")}`}
                   className="flex items-center gap-3 w-full px-4 py-3 bg-green-50 text-green-700 rounded-xl text-sm font-medium hover:bg-green-100 transition-colors">
-                  <Phone size={16} /> +91 99999 99999
+                  <Phone size={16} /> {sitePhone}
                 </a>
-                <a href={`https://wa.me/919999999999?text=Hi, I'm interested in ${project.title}`}
+                <a href={`https://wa.me/${sitePhone.replace(/[^0-9]/g, "")}?text=Hi, I'm interested in ${project.title}`}
                   target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-3 w-full px-4 py-3 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100 transition-colors">
                   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.347 0-4.518-.803-6.237-2.15l-.436-.362-3.2 1.073 1.073-3.2-.362-.436A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" /></svg>
@@ -744,6 +842,26 @@ export default function ProjectDetailPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Sticky CTA */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-4 py-3">
+        <div className="flex items-center gap-2 max-w-lg mx-auto">
+          <a href={`tel:+${sitePhone.replace(/[^0-9]/g, "")}`}
+            className="flex items-center justify-center gap-2 flex-1 py-2.5 bg-green-50 text-green-700 rounded-xl text-sm font-semibold hover:bg-green-100 transition-colors">
+            <Phone size={16} /> Call
+          </a>
+          <a href={`https://wa.me/${sitePhone.replace(/[^0-9]/g, "")}?text=Hi, I'm interested in ${project.title}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 flex-1 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-colors">
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.347 0-4.518-.803-6.237-2.15l-.436-.362-3.2 1.073 1.073-3.2-.362-.436A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" /></svg>
+            WhatsApp
+          </a>
+          <a href="#lead-form"
+            className="flex items-center justify-center gap-2 flex-1 py-2.5 bg-gold-500 text-white rounded-xl text-sm font-semibold hover:bg-gold-600 transition-colors">
+            Enquire
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

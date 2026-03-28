@@ -184,7 +184,7 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
   const avgRating =
     reviews.length > 0
       ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
-      : "4.2";
+      : null;
 
   const statusBadge = (status: string) => {
     const map: Record<string, { label: string; color: string }> = {
@@ -242,14 +242,18 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                     <MapPin size={14} className="text-gold-400" />
                     {profile.cities.join(", ")}
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <Star size={14} className="text-amber-400 fill-amber-400" />
-                    {avgRating} rating
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={14} className="text-blue-400" />
-                    Since {profile.establishedYear}
-                  </span>
+                  {avgRating && (
+                    <span className="flex items-center gap-1.5">
+                      <Star size={14} className="text-amber-400 fill-amber-400" />
+                      {avgRating} rating
+                    </span>
+                  )}
+                  {profile.establishedYear && (
+                    <span className="flex items-center gap-1.5">
+                      <Clock size={14} className="text-blue-400" />
+                      Since {profile.establishedYear}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -317,21 +321,23 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
             {activeTab === "overview" && (
               <>
                 {/* Key Strengths */}
-                <MotionSection className="card p-6">
-                  <h2 className="text-xl font-bold text-navy-900 flex items-center gap-2">
-                    <Award size={20} className="text-gold-500" /> Key Strengths
-                  </h2>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {profile.strengths.map((strength) => (
-                      <span
-                        key={strength}
-                        className="px-3.5 py-2 rounded-lg bg-navy-50 text-navy-700 text-sm font-medium border border-navy-100"
-                      >
-                        {strength}
-                      </span>
-                    ))}
-                  </div>
-                </MotionSection>
+                {profile.strengths.length > 0 && (
+                  <MotionSection className="card p-6">
+                    <h2 className="text-xl font-bold text-navy-900 flex items-center gap-2">
+                      <Award size={20} className="text-gold-500" /> Key Strengths
+                    </h2>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {profile.strengths.map((strength) => (
+                        <span
+                          key={strength}
+                          className="px-3.5 py-2 rounded-lg bg-navy-50 text-navy-700 text-sm font-medium border border-navy-100"
+                        >
+                          {strength}
+                        </span>
+                      ))}
+                    </div>
+                  </MotionSection>
+                )}
 
                 {/* Project Portfolio Summary */}
                 <MotionSection className="card p-6">
@@ -582,16 +588,18 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                   <h2 className="text-xl font-bold text-navy-900">Developer Rating</h2>
                   <div className="flex items-center gap-6 mt-4">
                     <div className="text-center">
-                      <p className="text-4xl font-bold text-navy-900">{avgRating}</p>
-                      <div className="flex items-center gap-0.5 mt-1 justify-center">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            size={16}
-                            className={i < Math.round(parseFloat(avgRating)) ? "text-amber-400 fill-amber-400" : "text-gray-200"}
-                          />
-                        ))}
-                      </div>
+                      <p className="text-4xl font-bold text-navy-900">{avgRating || "—"}</p>
+                      {avgRating && (
+                        <div className="flex items-center gap-0.5 mt-1 justify-center">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              size={16}
+                              className={i < Math.round(parseFloat(avgRating)) ? "text-amber-400 fill-amber-400" : "text-gray-200"}
+                            />
+                          ))}
+                        </div>
+                      )}
                       <p className="text-xs text-gray-500 mt-1">{reviews.length} reviews</p>
                     </div>
                     <div className="flex-1 space-y-1.5">
@@ -771,12 +779,14 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                   <span className="text-gray-500">Price Range</span>
                   <span className="font-semibold text-navy-900">₹{profile.priceRange.min}-{profile.priceRange.max} {profile.priceRange.unit}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Rating</span>
-                  <span className="font-semibold text-amber-600 flex items-center gap-1">
-                    <Star size={12} className="fill-amber-400" /> {avgRating}
-                  </span>
-                </div>
+                {avgRating && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500">Rating</span>
+                    <span className="font-semibold text-amber-600 flex items-center gap-1">
+                      <Star size={12} className="fill-amber-400" /> {avgRating}
+                    </span>
+                  </div>
+                )}
               </div>
             </section>
 
