@@ -227,11 +227,12 @@ export default function ProjectDetailPage() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 rounded-2xl overflow-hidden">
             {/* Main Image */}
-            <div className="lg:col-span-2 relative h-72 md:h-96 lg:h-[480px] cursor-pointer group"
+            <div className="lg:col-span-2 relative h-72 md:h-96 lg:h-[480px] cursor-pointer group bg-gradient-to-br from-gray-100 to-gray-200"
               onClick={() => setLightbox(true)}>
               {images[activeImage] ? (
                 <img src={images[activeImage]} alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-navy-100 to-navy-200 flex items-center justify-center">
                   <Building2 size={60} className="text-navy-300" />
@@ -256,9 +257,10 @@ export default function ProjectDetailPage() {
             {/* Side Images */}
             <div className="hidden lg:grid grid-rows-2 gap-3">
               {images.slice(1, 3).map((img: string, i: number) => (
-                <div key={i} className="relative cursor-pointer overflow-hidden group"
+                <div key={i} className="relative cursor-pointer overflow-hidden group bg-gradient-to-br from-gray-100 to-gray-200"
                   onClick={() => { setActiveImage(i + 1); setLightbox(true); }}>
-                  <img src={img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   {i === 1 && images.length > 3 && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-lg">
                       +{images.length - 3} Photos
