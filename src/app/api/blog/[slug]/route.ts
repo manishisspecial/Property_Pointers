@@ -46,6 +46,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
     const tags = Array.isArray(data.tags) ? data.tags : undefined;
     const metaTags = Array.isArray(data.metaTags) ? data.metaTags : undefined;
     const faqs = Array.isArray(data.faqs) ? data.faqs : undefined;
+    const byline =
+      data.byline === undefined
+        ? undefined
+        : typeof data.byline === "string"
+          ? data.byline.trim() || null
+          : null;
 
     const post = await prisma.blogPost.update({
       where: { slug },
@@ -62,6 +68,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
         coverImage: data.coverImage ?? undefined,
         category: data.category ?? undefined,
         tags: tags ? JSON.stringify(tags) : undefined,
+        byline,
         published: data.published ?? undefined,
       },
     });

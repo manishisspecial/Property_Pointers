@@ -51,6 +51,8 @@ const DEMO_PROJECTS = [
       { place: "Akshardham Temple", distance: "15 min" },
     ]),
     floorPlans: JSON.stringify([]),
+    brochureUrl:
+      "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     featured: true,
     verified: true,
   },
@@ -478,6 +480,7 @@ const DEMO_PROJECTS = [
     floorPlans: JSON.stringify([
       { name: "Lockable Retail Shops", size: "134 Sq Ft" },
     ]),
+    brochureUrl: "/brochures/devika-vibe-panache-bazaar.pdf",
     featured: true,
     verified: true,
   },
@@ -538,6 +541,18 @@ async function main() {
     await prisma.project.create({ data: project });
     console.log(`  Created: ${project.title}`);
   }
+
+  await prisma.developer.upsert({
+    where: { slug: "devika-group" },
+    create: {
+      name: "Devika Group",
+      slug: "devika-group",
+      establishedYear: 1954,
+      verified: true,
+    },
+    update: { name: "Devika Group", establishedYear: 1954 },
+  });
+  console.log("  Upserted Developer: Devika Group (est. 1954)");
 
   console.log(`\nSeeded ${DEMO_PROJECTS.length} demo projects.`);
 }

@@ -28,11 +28,29 @@ export async function PUT(req: Request) {
     const allowed = [
       "siteName", "siteDescription", "contactEmail", "contactPhone",
       "address", "facebook", "twitter", "instagram", "linkedin", "maintenanceMode",
+      "activeVisitorsDisplay", "manualActiveVisitors",
     ] as const;
 
-    const data: Record<string, string | boolean> = {};
+    const data: Record<string, string | boolean | number> = {};
     for (const key of allowed) {
-      if (key in body) data[key] = body[key];
+      if (!(key in body)) continue;
+      if (key === "manualActiveVisitors") {
+        const n = parseInt(String(body[key]), 10);
+        if (!Number.isFinite(n) || n < 0 || n > 9_999_999) {
+          return NextResponse.json({ error: "manualActiveVisitors must be between 0 and 9999999" }, { status: 400 });
+        }
+        data[key] = n;
+        continue;
+      }
+      if (key === "activeVisitorsDisplay") {
+        const v = String(body[key]);
+        if (v !== "exact" && v !== "manual") {
+          return NextResponse.json({ error: "activeVisitorsDisplay must be exact or manual" }, { status: 400 });
+        }
+        data[key] = v;
+        continue;
+      }
+      data[key] = body[key];
     }
 
     const settings = await prisma.siteSettings.upsert({

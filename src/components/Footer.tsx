@@ -67,10 +67,15 @@ export default function Footer() {
             <h3 className="text-white font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-3">
               {[
+                { label: "About Us", href: "/about" },
+                { label: "Careers", href: "/careers" },
+                { label: "Blogs", href: "/insights" },
                 { label: "Buy Property", href: "/properties?type=sale" },
                 { label: "Rent Property", href: "/properties?type=rent" },
                 { label: "Post Property", href: "/post-property" },
-                { label: "Commercial", href: "/properties?category=commercial" },
+                { label: "Offices", href: "/properties?category=office" },
+                { label: "Shops", href: "/properties?category=shop" },
+                { label: "Studio Apartments", href: "/properties?category=studio" },
                 { label: "Plots/Land", href: "/properties?category=plot" },
                 { label: "EMI Calculator", href: "/calculator" },
               ].map((link) => (
@@ -148,7 +153,10 @@ export default function Footer() {
           <p className="text-sm text-gray-400">
             &copy; {new Date().getFullYear()} Property Pointers. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-gray-400">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-400">
+            <Link href="/disclaimer" className="hover:text-gold-400 transition-colors">
+              Disclaimer
+            </Link>
             <a href="#" className="hover:text-gold-400 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-gold-400 transition-colors">Terms of Service</a>
             <a href="#" className="hover:text-gold-400 transition-colors">Sitemap</a>

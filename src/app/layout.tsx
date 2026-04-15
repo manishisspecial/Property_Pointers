@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import LayoutShell from "@/components/LayoutShell";
-import ChatBot from "@/components/ChatBot";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 import GeoTracker from "@/components/GeoTracker";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen flex flex-col bg-gray-50">
         <LayoutShell>{children}</LayoutShell>
-        <ChatBot />
+        <WhatsAppFloat />
         <GeoTracker />
       </body>
     </html>

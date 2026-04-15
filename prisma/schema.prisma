@@ -22,6 +22,10 @@ model User {
   state       String?
   lastLoginAt DateTime?
   lastLoginIp String?
+  /// Set true after partner/vendor/developer completes first-time profile details
+  onboardingComplete Boolean @default(false)
+  /// Role-specific onboarding fields (company, category, etc.)
+  profileMeta          Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -163,6 +167,8 @@ model BlogPost {
   coverImage String?
   category   String   @default("general")
   tags       String   @default("[]")
+  /// Shown as author on the public post; falls back to linked user name if empty.
+  byline     String?
   authorId   String   @db.ObjectId
   published  Boolean  @default(false)
   views      Int      @default(0)
@@ -244,15 +250,18 @@ model City {
 }
 
 model SiteSettings {
-  id              String  @id @map("_id")
-  siteName        String  @default("Property Pointers")
-  siteDescription String  @default("India's #1 Real Estate Platform")
-  contactEmail    String  @default("propertypointersofficial@gmail.com")
-  contactPhone    String  @default("+91-9990074072")
-  address         String  @default("701, GDITL NorthEx, Netaji Subhash Place, New Delhi - 110034")
-  facebook        String? @default("https://www.facebook.com/share/1CQ4czxaZu/?mibextid=wwXIfr")
-  twitter         String?
-  instagram       String?
-  linkedin        String? @default("https://www.linkedin.com/company/propertypointersofficial/")
-  maintenanceMode Boolean @default(false)
+  id                     String  @id @map("_id")
+  siteName               String  @default("Property Pointers")
+  siteDescription        String  @default("India's #1 Real Estate Platform")
+  contactEmail           String  @default("propertypointersofficial@gmail.com")
+  contactPhone           String  @default("+91-9990074072")
+  address                String  @default("701, GDITL NorthEx, Netaji Subhash Place, New Delhi - 110034")
+  facebook               String? @default("https://www.facebook.com/share/1CQ4czxaZu/?mibextid=wwXIfr")
+  twitter                String?
+  instagram              String?
+  linkedin               String? @default("https://www.linkedin.com/company/propertypointersofficial/")
+  maintenanceMode        Boolean @default(false)
+  /// "exact" = count from activity logs; "manual" = show manualActiveVisitors
+  activeVisitorsDisplay  String  @default("exact")
+  manualActiveVisitors   Int     @default(20)
 }

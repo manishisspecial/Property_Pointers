@@ -43,3 +43,9 @@ export function slugify(text: string): string {
 export function getInitials(name: string): string {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 }
+
+/** Credited author on the post: optional byline, else the linked account name. */
+export function blogBylineDisplay(byline: string | null | undefined, authorName: string): string {
+  const t = byline?.trim();
+  return t || authorName;
+}

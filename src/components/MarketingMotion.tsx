@@ -12,9 +12,18 @@ export const stagger = {
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 };
 
-export function MotionSection({ children, className }: { children: React.ReactNode; className?: string }) {
+export function MotionSection({
+  children,
+  className,
+  id,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+}) {
   return (
     <motion.section
+      id={id}
       variants={fadeUp}
       initial="hidden"
       whileInView="show"

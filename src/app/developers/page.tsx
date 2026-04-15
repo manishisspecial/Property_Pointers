@@ -84,7 +84,6 @@ export default function DevelopersPage() {
   );
 
   const totalProjects = developers.reduce((s, d) => s + d.totalProjects, 0);
-  const totalDelivered = developers.reduce((s, d) => s + d.delivered, 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,7 +119,6 @@ export default function DevelopersPage() {
               {[
                 { value: `${developers.length || "—"}`, label: "Developers" },
                 { value: `${totalProjects || "—"}`, label: "Projects" },
-                { value: `${totalDelivered || "—"}`, label: "Delivered" },
                 { value: `${allCities.length || "—"}`, label: "Cities" },
               ].map((s) => (
                 <div key={s.label} className="text-center px-5">

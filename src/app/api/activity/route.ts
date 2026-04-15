@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Activity log error:", error);
-    return NextResponse.json({ success: false });
+    return NextResponse.json({ success: false, error: "Could not save your request" }, { status: 500 });
   }
 }
 

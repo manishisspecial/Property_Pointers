@@ -18,6 +18,8 @@ import {
   ArrowRight,
   Landmark,
   Store,
+  Briefcase,
+  LayoutGrid,
   TreePine,
   Key,
   Users,
@@ -33,6 +35,7 @@ import {
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { useCity } from "@/context/CityContext";
+import { defaultDashboardHref } from "@/lib/role-dashboard";
 
 interface UserSession {
   userId: string;
@@ -74,7 +77,9 @@ const NAV_ITEMS: NavItemConfig[] = [
         { label: "Apartments", href: "/properties?type=sale&category=apartment", icon: <Building2 size={16} className="text-blue-500" /> },
         { label: "Builder Floors", href: "/properties?type=sale&category=house", icon: <HomeIcon size={16} className="text-green-500" /> },
         { label: "Villas", href: "/properties?type=sale&category=villa", icon: <Landmark size={16} className="text-purple-500" /> },
-        { label: "Commercial", href: "/properties?type=sale&category=commercial", icon: <Store size={16} className="text-orange-500" /> },
+        { label: "Offices", href: "/properties?type=sale&category=office", icon: <Briefcase size={16} className="text-cyan-600" /> },
+        { label: "Shops", href: "/properties?type=sale&category=shop", icon: <Store size={16} className="text-orange-500" /> },
+        { label: "Studio Apartments", href: "/properties?type=sale&category=studio", icon: <LayoutGrid size={16} className="text-indigo-500" /> },
         { label: "Plots / Land", href: "/properties?type=sale&category=plot", icon: <TreePine size={16} className="text-emerald-500" /> },
         { label: "Ready to Move", href: "/properties?type=sale&furnished=furnished", icon: <Key size={16} className="text-orange-500" /> },
         { label: "Luxury Homes", href: "/properties?type=sale&sort=price_high", icon: <IndianRupee size={16} className="text-gold-500" /> },
@@ -113,7 +118,9 @@ const NAV_ITEMS: NavItemConfig[] = [
       items: [
         { label: "Flats for Rent", href: "/properties?type=rent&category=apartment", icon: <Building2 size={16} className="text-blue-500" /> },
         { label: "House for Rent", href: "/properties?type=rent&category=house", icon: <HomeIcon size={16} className="text-green-500" /> },
-        { label: "Commercial Rent", href: "/properties?type=rent&category=commercial", icon: <Store size={16} className="text-orange-500" /> },
+        { label: "Offices", href: "/properties?type=rent&category=office", icon: <Briefcase size={16} className="text-cyan-600" /> },
+        { label: "Shops", href: "/properties?type=rent&category=shop", icon: <Store size={16} className="text-orange-500" /> },
+        { label: "Studio Apartments", href: "/properties?type=rent&category=studio", icon: <LayoutGrid size={16} className="text-indigo-500" /> },
         { label: "PG / Co-living", href: "/properties?type=pg", icon: <Users size={16} className="text-purple-500" /> },
         { label: "Owner Properties", href: "/properties?type=rent", icon: <Shield size={16} className="text-emerald-500" /> },
       ],
@@ -150,6 +157,7 @@ const NAV_ITEMS: NavItemConfig[] = [
     mega: {
       items: [
         { label: "All Developers", href: "/developers", icon: <Building2 size={16} className="text-blue-500" /> },
+        { label: "Join As Developer", href: "/developers/join", icon: <Plus size={16} className="text-gold-500" /> },
         { label: "Top Developers", href: "/developers/top", icon: <TrendingUp size={16} className="text-gold-500" /> },
         { label: "Explore by Builder", href: "/developers/explore", icon: <HomeIcon size={16} className="text-emerald-500" /> },
         { label: "Builder Reviews", href: "/developers/reviews", icon: <Store size={16} className="text-purple-500" /> },
@@ -179,7 +187,7 @@ const NAV_ITEMS: NavItemConfig[] = [
     },
   },
   {
-    label: "Partner Network",
+    label: "Partners",
     href: "/partners",
     mega: {
       items: [
@@ -211,7 +219,7 @@ const NAV_ITEMS: NavItemConfig[] = [
     },
   },
   {
-    label: "Vendor Marketplace",
+    label: "Vendors",
     href: "/vendors",
     mega: {
       items: [
@@ -258,7 +266,7 @@ const NAV_ITEMS: NavItemConfig[] = [
         { label: "EMI", href: "/calculator?tool=emi", icon: <Calculator size={16} className="text-blue-500" /> },
         { label: "ROI", href: "/calculator?tool=roi", icon: <TrendingUp size={16} className="text-emerald-500" /> },
         { label: "Rental Yield", href: "/calculator?tool=rental-yield", icon: <IndianRupee size={16} className="text-gold-500" /> },
-        { label: "Vastu", href: "/calculator?tool=vastu", icon: <Sprout size={16} className="text-green-500" /> },
+        { label: "Vastu", href: "/insights/vastu", icon: <Sprout size={16} className="text-green-500" /> },
       ],
       cities: {
         title: "Featured Reads",
@@ -268,7 +276,7 @@ const NAV_ITEMS: NavItemConfig[] = [
           { name: "Investment basics", href: "/insights/investment-guides" },
           { name: "Latest blogs", href: "/blog" },
           { name: "RERA & legal guides", href: "/blog" },
-          { name: "Interiors & Vastu", href: "/blog" },
+          { name: "Interiors & Vastu", href: "/insights/vastu" },
         ],
       },
       stats: [
@@ -285,6 +293,8 @@ const NAV_ITEMS: NavItemConfig[] = [
       },
     },
   },
+  { label: "About", href: "/about" },
+  { label: "Careers", href: "/careers" },
 ];
 
 export default function Navbar() {
@@ -348,30 +358,26 @@ export default function Navbar() {
       ref={navRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-lg"
-          : "bg-navy-900/95 backdrop-blur-md"
+          ? "bg-white/98 backdrop-blur-md shadow-md"
+          : "bg-white/95 backdrop-blur-sm"
       }`}
     >
       <div className={`relative z-[60] max-w-[1400px] mx-auto px-3 sm:px-4 lg:px-6 ${
-        activeDropdown ? (scrolled ? "bg-white" : "bg-navy-900") : ""
+        activeDropdown ? "bg-white" : ""
       }`}>
         <div className="flex items-center justify-between h-16 lg:h-16">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Link href="/" className="shrink-0">
-              <Logo variant={scrolled ? "dark" : "light"} size="sm" />
+              <Logo variant="dark" size="sm" />
             </Link>
 
             {/* City Selector */}
             {isLoaded && (
               <button
                 onClick={openPicker}
-                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all border ${
-                  scrolled
-                    ? "border-gray-200 text-navy-700 hover:bg-gray-100 bg-gray-50"
-                    : "border-white/20 text-white hover:bg-white/10 bg-white/5"
-                }`}
+                className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] xl:text-[13px] font-medium transition-all border border-gray-200 text-navy-700 hover:bg-gray-100 bg-gray-50"
               >
-                <MapPin size={14} className={scrolled ? "text-gold-500" : "text-gold-400"} />
+                <MapPin size={14} className="text-gold-500" />
                 <span className="max-w-[100px] truncate">
                   {selectedCity ? selectedCity.name : "All India"}
                 </span>
@@ -381,55 +387,52 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-0">
-            {NAV_ITEMS.map((item) => (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => item.mega && handleMouseEnter(item.label)}
-                onMouseLeave={handleMouseLeave}
-              >
-                {item.mega ? (
-                  <button
-                    type="button"
-                    className={`flex items-center gap-1 text-[13px] font-medium px-2.5 py-2 rounded-lg transition-all ${
-                      scrolled
-                        ? "text-navy-700 hover:bg-gray-100 hover:text-navy-900"
-                        : "text-gray-200 hover:bg-white/10 hover:text-white"
-                    } ${activeDropdown === item.label ? (scrolled ? "bg-gray-100 text-navy-900" : "bg-white/10 text-white") : ""}`}
-                    onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
-                  >
-                    {item.label}
-                    <ChevronDown
-                      size={14}
-                      className={`transition-transform duration-200 ${activeDropdown === item.label ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-1 text-[13px] font-medium px-2.5 py-2 rounded-lg transition-all ${
-                      scrolled
-                        ? "text-navy-700 hover:bg-gray-100 hover:text-navy-900"
-                        : "text-gray-200 hover:bg-white/10 hover:text-white"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </div>
-            ))}
+          <div className="hidden lg:flex items-center justify-center flex-1 min-w-0 mx-2 xl:mx-4 gap-0.5 xl:gap-1 rounded-xl px-1.5 py-1 border bg-gray-50/90 border-gray-200">
+            {NAV_ITEMS.map((item) => {
+              const showOnlyOnXl = item.label === "About" || item.label === "Careers";
+              return (
+                <div
+                  key={item.label}
+                  className={`relative shrink-0 ${showOnlyOnXl ? "hidden xl:block" : ""}`}
+                  onMouseEnter={() => item.mega && handleMouseEnter(item.label)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {item.mega ? (
+                    <button
+                      type="button"
+                      className={`flex items-center gap-0.5 text-[12px] xl:text-[13px] font-medium px-2 xl:px-2.5 py-1.5 rounded-lg transition-all text-navy-700 hover:bg-white hover:text-navy-900 ${
+                        activeDropdown === item.label ? "bg-white text-navy-900 shadow-sm" : ""
+                      }`}
+                      onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={13}
+                        className={`opacity-80 shrink-0 transition-transform duration-200 ${activeDropdown === item.label ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-1 text-[12px] xl:text-[13px] font-medium px-2 xl:px-2.5 py-1.5 rounded-lg transition-all text-navy-700 hover:bg-white hover:text-navy-900"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* Desktop Right Side */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
             <Link
               href="/post-property"
-              className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-600 text-white font-semibold px-3.5 py-2 rounded-lg transition-all text-[13px] whitespace-nowrap"
+              className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-600 text-white font-semibold px-3 xl:px-3.5 py-1.5 xl:py-2 rounded-lg transition-all text-[12px] xl:text-[13px] whitespace-nowrap shadow-sm"
             >
               <Plus size={16} />
               Post Property
-              <span className="bg-white/20 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1 hidden xl:inline">
+              <span className="bg-white/20 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1 hidden 2xl:inline">
                 FREE
               </span>
             </Link>
@@ -438,11 +441,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
-                    scrolled
-                      ? "text-navy-800 hover:bg-gray-100"
-                      : "text-white hover:bg-white/10"
-                  }`}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-navy-800 hover:bg-gray-100"
                 >
                   <div className="w-8 h-8 rounded-full bg-gold-500 flex items-center justify-center text-white text-sm font-bold">
                     {user.name[0]}
@@ -462,7 +461,7 @@ export default function Navbar() {
                         <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                       <Link
-                        href="/dashboard"
+                        href={defaultDashboardHref(user.role)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                         onClick={() => setUserDropdownOpen(false)}
                       >
@@ -503,17 +502,13 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/auth/login"
-                  className={`text-[13px] font-medium px-3 py-2 rounded-lg transition-all whitespace-nowrap ${
-                    scrolled
-                      ? "text-navy-800 hover:bg-gray-100"
-                      : "text-white hover:bg-white/10"
-                  }`}
+                  className="text-[12px] xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-lg transition-all whitespace-nowrap text-navy-800 hover:bg-gray-100"
                 >
                   Login
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="text-[13px] font-medium px-3 py-2 rounded-lg bg-navy-700 text-white hover:bg-navy-600 transition-all whitespace-nowrap"
+                  className="text-[12px] xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-lg bg-navy-800 text-white hover:bg-navy-700 transition-all whitespace-nowrap"
                 >
                   Register
                 </Link>
@@ -524,9 +519,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`lg:hidden p-2 rounded-lg ${
-              scrolled ? "text-navy-800" : "text-white"
-            }`}
+            className="lg:hidden p-2 rounded-lg text-navy-800 hover:bg-gray-100 transition-colors"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -757,7 +750,11 @@ export default function Navbar() {
             </Link>
             {user ? (
               <>
-                <Link href="/dashboard" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">
+                <Link
+                  href={defaultDashboardHref(user.role)}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
+                >
                   My Dashboard
                 </Link>
                 {user.role === "admin" && (

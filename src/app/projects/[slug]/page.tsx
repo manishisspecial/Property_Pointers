@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Building2, CheckCircle, Star, ArrowRight,
-  ChevronLeft, ChevronRight, X, Share2, Phone,
+  ChevronLeft, ChevronRight, X, Share2,
   Shield, Download, Clock, Maximize2,
   Ruler, Users, ExternalLink, Check
 } from "lucide-react";
@@ -199,8 +199,8 @@ export default function ProjectDetailPage() {
   const highlights = safeParseJSON(project.highlights);
   const locationAdvantages = safeParseJSON(project.locationAdvantages);
   const floorPlans = safeParseJSON(project.floorPlans);
+  const brochureHref = `/api/projects/${slug}/brochure`;
   const statusInfo = STATUS_MAP[project.projectStatus] || STATUS_MAP["under-construction"];
-  const paymentPlans = safeParseJSON(project.paymentPlans);
   const projectReviews: Array<{ author: string; rating: number; text: string; tag: string }> = [];
   const localityReviews: Array<{ author: string; rating: number; text: string; tag: string }> = [];
   const forumThreads: Array<{ title: string; replies: number; lastActive: string }> = [];
@@ -372,44 +372,13 @@ export default function ProjectDetailPage() {
                   {copied ? <Check size={16} className="text-green-500" /> : <Share2 size={16} />}
                   {copied ? "Link Copied!" : "Share"}
                 </button>
-                {project.brochureUrl && (
-                  <a href={project.brochureUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 hover:bg-navy-900 rounded-xl text-sm font-medium text-white transition-colors">
-                    <Download size={16} /> Download Brochure
-                  </a>
-                )}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.18 }}
-              className="bg-white rounded-2xl p-6 shadow-sm"
-            >
-              <h2 className="text-xl font-bold text-navy-900 mb-4">Price Range</h2>
-              <p className="text-gray-700">
-                Starting at <span className="font-semibold text-navy-900">₹{project.startingPrice} {project.priceUnit}+</span>.
-                Final pricing can vary by tower, view, and configuration.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl p-6 shadow-sm"
-            >
-              <h2 className="text-xl font-bold text-navy-900 mb-4">Possession & RERA</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">Possession</p>
-                  <p className="text-base font-semibold text-navy-900 mt-1">{project.possessionDate || "To be announced"}</p>
-                </div>
-                <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">RERA</p>
-                  <p className="text-base font-semibold text-navy-900 mt-1">{project.reraNumber || "RERA details on request"}</p>
-                </div>
+                <a
+                  href={brochureHref}
+                  download
+                  className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 hover:bg-navy-900 rounded-xl text-sm font-medium text-white transition-colors"
+                >
+                  <Download size={16} /> Download Brochure
+                </a>
               </div>
             </motion.div>
 
@@ -420,7 +389,7 @@ export default function ProjectDetailPage() {
               transition={{ delay: 0.2 }}
               className="bg-white rounded-2xl p-6 shadow-sm"
             >
-              <h2 className="text-xl font-bold text-navy-900 mb-4">About {project.title}</h2>
+              <h2 className="text-xl font-bold text-navy-900 mb-4">About Project</h2>
               <p className="text-gray-600 leading-relaxed whitespace-pre-line">{project.description}</p>
             </motion.div>
 
@@ -557,25 +526,6 @@ export default function ProjectDetailPage() {
               </motion.div>
             )}
 
-            {paymentPlans.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.43 }}
-                className="bg-white rounded-2xl p-6 shadow-sm"
-              >
-                <h2 className="text-xl font-bold text-navy-900 mb-4">Payment Plans</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {paymentPlans.map((plan: any) => (
-                    <div key={plan.title} className="rounded-xl border border-gray-200 p-4 bg-gray-50">
-                      <p className="font-semibold text-navy-900">{plan.title}</p>
-                      {plan.detail && <p className="text-sm text-gray-600 mt-1">{plan.detail}</p>}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -630,9 +580,7 @@ export default function ProjectDetailPage() {
                 },
                 {
                   question: "Can I download the project brochure?",
-                  answer: project.brochureUrl
-                    ? "Yes, click the Download Brochure button on this page to get the latest project brochure."
-                    : "The brochure will be shared by our team once you submit an enquiry.",
+                  answer: "Yes, click the Download Brochure button on this page to download a PDF brochure with all project details, images, and specifications.",
                 },
                 {
                   question: "What is the resale potential of this project?",
@@ -651,7 +599,11 @@ export default function ProjectDetailPage() {
               <p className="text-gray-200 mt-1">Choose an action and our team will assist you with complete project details.</p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <a href="#lead-form" className="btn-secondary">Book Site Visit</a>
-                <a href={project.brochureUrl || "#"} target={project.brochureUrl ? "_blank" : undefined} rel="noopener noreferrer" className="btn-outline border-white/30 text-white hover:bg-white/10">
+                <a
+                  href={brochureHref}
+                  download
+                  className="btn-outline border-white/30 text-white hover:bg-white/10 inline-flex items-center gap-2"
+                >
                   Download Brochure
                 </a>
                 <a href="#lead-form" className="btn-primary">Get Price Details</a>
@@ -700,16 +652,18 @@ export default function ProjectDetailPage() {
                 <Shield size={12} /> Your information is safe with us
               </div>
 
-              <div className="mt-6 pt-6 border-t border-gray-100 space-y-3">
-                <a href={`tel:+${sitePhone.replace(/[^0-9]/g, "")}`}
-                  className="flex items-center gap-3 w-full px-4 py-3 bg-green-50 text-green-700 rounded-xl text-sm font-medium hover:bg-green-100 transition-colors">
-                  <Phone size={16} /> {sitePhone}
-                </a>
-                <a href={`https://wa.me/${sitePhone.replace(/[^0-9]/g, "")}?text=Hi, I'm interested in ${project.title}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 w-full px-4 py-3 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100 transition-colors">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.347 0-4.518-.803-6.237-2.15l-.436-.362-3.2 1.073 1.073-3.2-.362-.436A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" /></svg>
-                  WhatsApp Us
+              <div className="mt-6 pt-6 border-t border-gray-100">
+                <a
+                  href={`https://wa.me/${sitePhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Hi, I'm interested in ${project.title}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-3 w-full px-4 py-3.5 bg-emerald-50 text-emerald-800 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-colors border border-emerald-100"
+                >
+                  <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current shrink-0" aria-hidden>
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.347 0-4.518-.803-6.237-2.15l-.436-.362-3.2 1.073 1.073-3.2-.362-.436A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+                  </svg>
+                  <span>Message us on WhatsApp</span>
                 </a>
               </div>
             </motion.div>
@@ -848,15 +802,17 @@ export default function ProjectDetailPage() {
       {/* Mobile Sticky CTA */}
       <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-4 py-3">
         <div className="flex items-center gap-2 max-w-lg mx-auto">
-          <a href={`tel:+${sitePhone.replace(/[^0-9]/g, "")}`}
-            className="flex items-center justify-center gap-2 flex-1 py-2.5 bg-green-50 text-green-700 rounded-xl text-sm font-semibold hover:bg-green-100 transition-colors">
-            <Phone size={16} /> Call
-          </a>
-          <a href={`https://wa.me/${sitePhone.replace(/[^0-9]/g, "")}?text=Hi, I'm interested in ${project.title}`}
-            target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 flex-1 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-colors">
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.347 0-4.518-.803-6.237-2.15l-.436-.362-3.2 1.073 1.073-3.2-.362-.436A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" /></svg>
-            WhatsApp
+          <a
+            href={`https://wa.me/${sitePhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Hi, I'm interested in ${project.title}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 flex-[1.2] py-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-colors border border-emerald-100"
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current shrink-0" aria-hidden>
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.347 0-4.518-.803-6.237-2.15l-.436-.362-3.2 1.073 1.073-3.2-.362-.436A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+            </svg>
+            <span className="truncate">Message us</span>
           </a>
           <a href="#lead-form"
             className="flex items-center justify-center gap-2 flex-1 py-2.5 bg-gold-500 text-white rounded-xl text-sm font-semibold hover:bg-gold-600 transition-colors">

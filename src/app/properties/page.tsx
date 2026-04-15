@@ -162,9 +162,9 @@ function PropertiesContent() {
                   <option value="house">House</option>
                   <option value="villa">Villa</option>
                   <option value="plot">Plot</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="office">Office</option>
-                  <option value="shop">Shop</option>
+                  <option value="office">Offices</option>
+                  <option value="shop">Shops</option>
+                  <option value="studio">Studio Apartments</option>
                 </select>
               </div>
               <div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, Map, BookOpen, ArrowRight } from "lucide-react";
+import { BarChart3, Map, BookOpen, ArrowRight, Calculator, TrendingUp, IndianRupee, Sprout } from "lucide-react";
 import { motion } from "framer-motion";
 import { MotionCard, MotionGrid, MotionSection } from "@/components/MarketingMotion";
 import FAQAccordion from "@/components/FAQAccordion";
@@ -10,6 +10,13 @@ const INSIGHTS = [
   { title: "Market Trends", href: "/insights/market-trends", icon: <BarChart3 size={18} className="text-emerald-600" /> },
   { title: "City Reports", href: "/insights/city-reports", icon: <Map size={18} className="text-blue-600" /> },
   { title: "Investment Guides", href: "/insights/investment-guides", icon: <BookOpen size={18} className="text-purple-600" /> },
+];
+
+const CALCULATORS = [
+  { title: "EMI", href: "/calculator?tool=emi", icon: <Calculator size={18} className="text-blue-600" /> },
+  { title: "ROI", href: "/calculator?tool=roi", icon: <TrendingUp size={18} className="text-emerald-600" /> },
+  { title: "Rental Yield", href: "/calculator?tool=rental-yield", icon: <IndianRupee size={18} className="text-gold-600" /> },
+  { title: "Vastu guide", href: "/insights/vastu", icon: <Sprout size={18} className="text-green-600" /> },
 ];
 
 export default function InsightsPage() {
@@ -70,6 +77,30 @@ export default function InsightsPage() {
                     <div className="min-w-0">
                       <p className="font-semibold text-navy-900 truncate">{s.title}</p>
                       <p className="text-sm text-gray-500 truncate">Open section</p>
+                    </div>
+                  </div>
+                  <ArrowRight size={18} className="text-gray-400 group-hover:text-navy-800 transition-colors shrink-0" />
+                </Link>
+              </MotionCard>
+            ))}
+          </MotionGrid>
+
+          <h3 className="text-lg font-bold text-navy-900 mt-10">Calculators &amp; guides</h3>
+          <p className="text-gray-600 mt-1 text-sm">Run numbers instantly or read our Vastu primer for layout ideas.</p>
+          <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            {CALCULATORS.map((s) => (
+              <MotionCard key={s.href} className="h-full">
+                <Link
+                  href={s.href}
+                  className="group flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-sm transition-all px-4 py-4 h-full"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-11 h-11 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
+                      {s.icon}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-navy-900 truncate">{s.title}</p>
+                      <p className="text-sm text-gray-500 truncate">Open</p>
                     </div>
                   </div>
                   <ArrowRight size={18} className="text-gray-400 group-hover:text-navy-800 transition-colors shrink-0" />

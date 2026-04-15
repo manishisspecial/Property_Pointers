@@ -15,6 +15,17 @@ const AMENITIES = [
   "Meditation Area", "EV Charging", "Solar Panels", "Wi-Fi", "Air Conditioning",
 ];
 
+const CATEGORY_LABELS: Record<string, string> = {
+  apartment: "Apartment",
+  house: "Independent House",
+  villa: "Villa",
+  plot: "Plot / Land",
+  office: "Offices",
+  shop: "Shops",
+  studio: "Studio Apartments",
+  other: "Other",
+};
+
 const STEPS = [
   { title: "Basic Info", desc: "Property type & category" },
   { title: "Details", desc: "Rooms, area & features" },
@@ -149,9 +160,9 @@ export default function PostPropertyPage() {
                     { value: "house", label: "Independent House" },
                     { value: "villa", label: "Villa" },
                     { value: "plot", label: "Plot / Land" },
-                    { value: "commercial", label: "Commercial" },
-                    { value: "office", label: "Office Space" },
-                    { value: "shop", label: "Shop / Retail" },
+                    { value: "office", label: "Offices" },
+                    { value: "shop", label: "Shops" },
+                    { value: "studio", label: "Studio Apartments" },
                     { value: "other", label: "Other" },
                   ].map((c) => (
                     <button key={c.value} type="button" onClick={() => update("category", c.value)}
@@ -425,7 +436,7 @@ export default function PostPropertyPage() {
                   <div className="p-4 bg-gray-50 rounded-xl">
                     <h3 className="font-semibold text-navy-800 mb-2">Basic Info</h3>
                     <p className="text-sm text-gray-600"><strong>Title:</strong> {form.title || "Not provided"}</p>
-                    <p className="text-sm text-gray-600"><strong>Type:</strong> {form.type} | <strong>Category:</strong> {form.category}</p>
+                    <p className="text-sm text-gray-600"><strong>Type:</strong> {form.type} | <strong>Category:</strong> {CATEGORY_LABELS[form.category] ?? form.category}</p>
                     <p className="text-sm text-gray-600"><strong>Listed as:</strong> {form.ownerType}</p>
                   </div>
                   <div className="p-4 bg-gray-50 rounded-xl">

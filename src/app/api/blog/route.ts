@@ -63,6 +63,9 @@ export async function POST(req: NextRequest) {
     const metaTags = Array.isArray(data.metaTags) ? data.metaTags : [];
     const faqs = Array.isArray(data.faqs) ? data.faqs : [];
 
+    const byline =
+      typeof data.byline === "string" ? data.byline.trim() || null : null;
+
     const post = await prisma.blogPost.create({
       data: {
         title: data.title,
@@ -77,6 +80,7 @@ export async function POST(req: NextRequest) {
         coverImage: data.coverImage || null,
         category: data.category || "general",
         tags: JSON.stringify(tags),
+        byline,
         authorId: session.userId,
         published: data.published ?? false,
       },

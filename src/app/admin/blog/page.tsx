@@ -38,6 +38,7 @@ export default function AdminBlogPage() {
     coverImage: "",
     category: "general",
     tags: "",
+    byline: "",
     faqs: [{ question: "", answer: "" }, { question: "", answer: "" }, { question: "", answer: "" }] as FaqItem[],
     published: false,
   });
@@ -70,6 +71,7 @@ export default function AdminBlogPage() {
         coverImage: post.coverImage || "",
         category: post.category,
         tags: JSON.parse(post.tags || "[]").join(", "),
+        byline: post.byline || "",
         faqs: (() => {
           const parsed = JSON.parse(post.faqs || "[]");
           const normalized = Array.isArray(parsed) ? parsed : [];
@@ -95,6 +97,7 @@ export default function AdminBlogPage() {
         coverImage: "",
         category: "general",
         tags: "",
+        byline: "",
         faqs: [{ question: "", answer: "" }, { question: "", answer: "" }, { question: "", answer: "" }],
         published: false,
       });
@@ -210,6 +213,18 @@ export default function AdminBlogPage() {
                   className="input-field"
                   placeholder="auto-generated-from-title"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Author name (shown on post)</label>
+                <input
+                  type="text"
+                  value={form.byline}
+                  onChange={(e) => setForm({ ...form, byline: e.target.value })}
+                  className="input-field"
+                  placeholder="e.g. Gaurav Chopra — appears in the byline instead of your account name"
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave blank to use your account display name.</p>
               </div>
 
               <div>

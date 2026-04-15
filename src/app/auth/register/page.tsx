@@ -1,15 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, AlertCircle } from "lucide-react";
 import Logo from "@/components/Logo";
+import { postAuthDestination } from "@/lib/role-dashboard";
 
-export default function RegisterPage() {
+const ROLE_OPTIONS: { value: string; label: string }[] = [
+  { value: "user", label: "Buyer/Tenant" },
+  { value: "owner", label: "Owner" },
+  { value: "agent", label: "Agent" },
+  { value: "partner", label: "Partner" },
+  { value: "vendor", label: "Vendor" },
+  { value: "developer", label: "Developer" },
+];
+
+const ALLOWED_ROLE_VALUES = new Set(ROLE_OPTIONS.map((r) => r.value));
+
+function RegisterForm() {
+  const searchParams = useSearchParams();
   const [form, setForm] = useState({ name: "", email: "", password: "", phone: "", role: "user" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const r = searchParams.get("role");
+    if (r && ALLOWED_ROLE_VALUES.has(r)) {
+      setForm((prev) => ({ ...prev, role: r }));
+    }
+  }, [searchParams]);
 
   function updateForm(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -39,7 +60,7 @@ export default function RegisterPage() {
         return;
       }
 
-      window.location.href = "/dashboard";
+      window.location.href = postAuthDestination(data.user);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -120,12 +141,8 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">I am a</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { value: "user", label: "Buyer/Tenant" },
-                  { value: "owner", label: "Owner" },
-                  { value: "agent", label: "Agent" },
-                ].map((r) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {ROLE_OPTIONS.map((r) => (
                   <button key={r.value} type="button" onClick={() => updateForm("role", r.value)}
                     className={`py-2.5 rounded-lg text-sm font-medium border-2 transition-all ${
                       form.role === r.value
@@ -171,5 +188,19 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="animate-spin w-10 h-10 border-4 border-gold-500 border-t-transparent rounded-full" />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

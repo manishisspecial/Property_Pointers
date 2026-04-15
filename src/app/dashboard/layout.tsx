@@ -7,6 +7,7 @@ import {
   Building2,
 } from "lucide-react";
 import Logo from "@/components/Logo";
+import { defaultDashboardHref } from "@/lib/role-dashboard";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
@@ -105,7 +106,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
                       <Link
-                        href="/dashboard"
+                        href={user ? defaultDashboardHref(user.role) : "/dashboard"}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                         onClick={() => setDropdownOpen(false)}
                       >

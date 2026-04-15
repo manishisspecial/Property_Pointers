@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { hashPassword, generateToken } from "@/lib/auth";
 
+const ALLOWED_ROLES = new Set(["user", "owner", "agent", "partner", "vendor", "developer"]);
+
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, password, phone, role = "user" } = await req.json();
+    const { name, email, password, phone, role: rawRole = "user" } = await req.json();
+    const role = typeof rawRole === "string" && ALLOWED_ROLES.has(rawRole) ? rawRole : "user";
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "Name, email, and password are required" }, { status: 400 });
@@ -17,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     const hashed = await hashPassword(password);
     const user = await prisma.user.create({
-      data: { name, email, password: hashed, phone, role: role === "admin" ? "user" : role },
+      data: { name, email, password: hashed, phone, role },
     });
 
     const token = generateToken({
@@ -28,7 +31,13 @@ export async function POST(req: NextRequest) {
     });
 
     const response = NextResponse.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        onboardingComplete: user.onboardingComplete === true,
+      },
       message: "Registration successful",
     });
 

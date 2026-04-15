@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Building2, Home, MapPin, TrendingUp, Shield, Users, Star, ArrowRight,
-  Search, Landmark, Building, TreePine, Phone, CheckCircle, Zap, Globe, Calculator,
-  BookOpen, Clock
+  Search, Landmark, TreePine, Phone, CheckCircle, Zap, Globe, Calculator,
+  BookOpen, Clock, Briefcase, Store, LayoutGrid
 } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import PropertyCard from "@/components/PropertyCard";
@@ -27,8 +27,9 @@ const categories = [
   { icon: Home, label: "Houses", href: "/properties?category=house", color: "bg-green-500", count: "1200+" },
   { icon: Landmark, label: "Villas", href: "/properties?category=villa", color: "bg-purple-500", count: "800+" },
   { icon: TreePine, label: "Plots/Land", href: "/properties?category=plot", color: "bg-emerald-500", count: "950+" },
-  { icon: Building, label: "Commercial", href: "/properties?category=commercial", color: "bg-orange-500", count: "650+" },
-  { icon: Building2, label: "Office Space", href: "/properties?category=office", color: "bg-cyan-500", count: "420+" },
+  { icon: Briefcase, label: "Offices", href: "/properties?category=office", color: "bg-cyan-500", count: "420+" },
+  { icon: Store, label: "Shops", href: "/properties?category=shop", color: "bg-orange-500", count: "380+" },
+  { icon: LayoutGrid, label: "Studio Apartments", href: "/properties?category=studio", color: "bg-indigo-500", count: "290+" },
 ];
 
 export default function HomePage() {
@@ -36,6 +37,7 @@ export default function HomePage() {
   const [featured, setFeatured] = useState<PropertyType[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [stats, setStats] = useState({ properties: 0, users: 0, cities: 7 });
+  const [activeVisitors, setActiveVisitors] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -46,15 +48,25 @@ export default function HomePage() {
       params.set("limit", "8");
       if (selectedCity) params.set("city", selectedCity.name);
 
-      const [propRes, blogRes] = await Promise.all([
+      const [propRes, blogRes, visitorsRes] = await Promise.all([
         fetch(`/api/properties?${params.toString()}`),
         fetch("/api/blog?limit=3"),
+        fetch("/api/public/active-visitors"),
       ]);
       const propData = await propRes.json();
       const blogData = await blogRes.json();
+      let visitorsData: { activeVisitors?: number } = {};
+      try {
+        visitorsData = await visitorsRes.json();
+      } catch {
+        visitorsData = {};
+      }
       setFeatured(propData.properties || []);
       setBlogPosts(blogData.posts || []);
       setStats((prev) => ({ ...prev, properties: propData.total || prev.properties }));
+      if (typeof visitorsData.activeVisitors === "number") {
+        setActiveVisitors(visitorsData.activeVisitors);
+      }
     } catch {
       setFeatured([]);
     }
@@ -73,33 +85,33 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center gradient-navy overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center bg-gradient-to-b from-cream-100 via-white to-warm-100 overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-gold-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.03%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-gold-300/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-gold-200/30 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-warm-200/40 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-24">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 bg-gold-500/10 border border-gold-500/20 px-4 py-2 rounded-full mb-6">
-              <Zap size={16} className="text-gold-400" />
-              <span className="text-gold-400 text-sm font-medium">
+            <div className="inline-flex items-center gap-2 bg-gold-100 border border-gold-200 px-4 py-2 rounded-full mb-6 shadow-sm">
+              <Zap size={16} className="text-gold-600" />
+              <span className="text-gold-700 text-sm font-medium">
                 {selectedCity
                   ? `Exploring properties in ${selectedCity.name}`
                   : "India's #1 Trusted Real Estate Platform"}
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-navy-800 mb-6 leading-tight">
               Find Your Dream<br />
               <span className="text-gradient">Property</span>{" "}
               {selectedCity ? (
-                <>in <span className="text-gold-400">{selectedCity.name}</span></>
+                <>in <span className="text-gold-600">{selectedCity.name}</span></>
               ) : (
                 "Today"
               )}
             </h1>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
               {selectedCity
                 ? `Discover verified properties in ${selectedCity.name}, ${selectedCity.state}. Buy, sell, or rent with zero brokerage.`
                 : "Discover verified properties across Delhi NCR, Jaipur & Pune. Buy, sell, or rent with zero brokerage."}
@@ -109,15 +121,36 @@ export default function HomePage() {
           <SearchBar className="max-w-4xl mx-auto" />
 
           <div className="flex flex-wrap justify-center gap-6 mt-12">
-            {[
-              { value: `${stats.properties || "10,000"}+`, label: "Listed Properties" },
-              { value: "50,000+", label: "Happy Customers" },
-              { value: `${stats.cities}`, label: "Cities Served" },
-              { value: "100%", label: "Verified Listings" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center px-6">
-                <p className="text-2xl md:text-3xl font-bold text-gold-400">{stat.value}</p>
-                <p className="text-sm text-gray-400 mt-1">{stat.label}</p>
+            {(
+              [
+                {
+                  value:
+                    activeVisitors != null
+                      ? new Intl.NumberFormat("en-IN").format(activeVisitors)
+                      : "…",
+                  label: "Browsing right now",
+                  live: true,
+                },
+                {
+                  value: `${stats.properties ? new Intl.NumberFormat("en-IN").format(stats.properties) : "10,000"}+`,
+                  label: "Listed Properties",
+                },
+                { value: "1000+", label: "Happy Customers" },
+                { value: `${stats.cities}`, label: "Cities Served" },
+                { value: "100%", label: "Verified Listings" },
+              ] as { value: string; label: string; live?: boolean }[]
+            ).map((stat) => (
+              <div key={stat.label} className="text-center px-6 max-w-[11rem]">
+                <div className="flex items-center justify-center gap-2 min-h-[2.25rem]">
+                  {stat.live && (
+                    <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                    </span>
+                  )}
+                  <p className="text-2xl md:text-3xl font-bold text-gold-600 tabular-nums">{stat.value}</p>
+                </div>
+                <p className="text-sm text-gray-500 mt-1 leading-snug">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -137,7 +170,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             {categories.map((cat) => {
               const href = selectedCity
                 ? `${cat.href}&city=${selectedCity.name}`
@@ -243,11 +276,11 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20 gradient-navy">
+      <section className="py-20 bg-gradient-to-br from-warm-100 via-cream-100 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <span className="text-gold-400 font-semibold text-sm uppercase tracking-wider">Why Property Pointers</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mt-2">
+            <span className="text-gold-600 font-semibold text-sm uppercase tracking-wider">Why Property Pointers</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-navy-800 mt-2">
               India&apos;s Most Trusted Platform
             </h2>
           </div>
@@ -264,11 +297,11 @@ export default function HomePage() {
               { icon: Star, title: "Top Rated", desc: "Rated 4.8/5 by over 1 million satisfied customers across India" },
             ].map((feature) => (
               <div key={feature.title} className="text-center group">
-                <div className="w-16 h-16 bg-gold-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-gold-500/20 transition-colors">
-                  <feature.icon size={28} className="text-gold-400" />
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg transition-all shadow-sm border border-gray-100">
+                  <feature.icon size={28} className="text-gold-500" />
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{feature.desc}</p>
+                <h3 className="text-navy-800 font-semibold text-lg mb-2">{feature.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -278,21 +311,21 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-navy-900 to-navy-800 rounded-3xl p-8 md:p-16 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl" />
+          <div className="bg-gradient-to-br from-gold-50 via-warm-100 to-cream-200 rounded-3xl p-8 md:p-16 text-center relative overflow-hidden border border-gold-200/50">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gold-300/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-warm-300/30 rounded-full blur-3xl" />
             <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy-800 mb-4">
                 Ready to List Your Property?
               </h2>
-              <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+              <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
                 Join thousands of property owners who trust Property Pointers. List your property for FREE and reach millions of potential buyers and tenants.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/post-property" className="btn-primary text-lg px-10 py-4 inline-flex items-center justify-center gap-2">
                   Post Property FREE <ArrowRight size={20} />
                 </Link>
-                <Link href="/properties" className="btn-outline text-lg px-10 py-4 inline-flex items-center justify-center gap-2 border-white/30 text-white hover:bg-white hover:text-navy-900">
+                <Link href="/properties" className="bg-navy-800 hover:bg-navy-700 text-white font-semibold text-lg px-10 py-4 rounded-lg inline-flex items-center justify-center gap-2 transition-all shadow-md">
                   Browse Properties
                 </Link>
               </div>
@@ -381,11 +414,11 @@ export default function HomePage() {
       )}
 
       {/* Testimonials */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-cream-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-gold-500 font-semibold text-sm uppercase tracking-wider">Testimonials</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mt-2">What Our Customers Say</h2>
+            <span className="text-gold-600 font-semibold text-sm uppercase tracking-wider">Testimonials</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-navy-800 mt-2">What Our Customers Say</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -394,7 +427,7 @@ export default function HomePage() {
               { name: "Priya Patel", location: "Gurugram", text: "Listed my property and got genuine inquiries within hours. The platform is incredibly easy to use. Highly recommended for property owners!", rating: 5 },
               { name: "Amit Kumar", location: "Jaipur", text: "The EMI calculator and market insights helped me make an informed decision. Best real estate platform I've used. Professional and trustworthy.", rating: 5 },
             ].map((review) => (
-              <div key={review.name} className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow">
+              <div key={review.name} className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow border border-gray-100">
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: review.rating }).map((_, i) => (
                     <Star key={i} size={18} className="text-gold-500 fill-gold-500" />
@@ -402,7 +435,7 @@ export default function HomePage() {
                 </div>
                 <p className="text-gray-600 mb-6 leading-relaxed">&ldquo;{review.text}&rdquo;</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center text-white font-bold">
+                  <div className="w-12 h-12 rounded-full bg-gold-500 flex items-center justify-center text-white font-bold">
                     {review.name[0]}
                   </div>
                   <div>

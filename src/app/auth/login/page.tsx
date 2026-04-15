@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import Logo from "@/components/Logo";
+import { postAuthDestination } from "@/lib/role-dashboard";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -30,11 +31,7 @@ export default function LoginPage() {
         return;
       }
 
-      if (data.user.role === "admin") {
-        window.location.href = "/admin";
-      } else {
-        window.location.href = "/dashboard";
-      }
+      window.location.href = postAuthDestination(data.user);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {

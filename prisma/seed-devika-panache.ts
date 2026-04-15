@@ -22,6 +22,18 @@ async function main() {
   console.log(`\nProject: ${project?.title}`);
   console.log(`Slug:    ${project?.slug}`);
   console.log(`Link:    /projects/${project?.slug}`);
+
+  await prisma.developer.upsert({
+    where: { slug: "devika-group" },
+    create: {
+      name: "Devika Group",
+      slug: "devika-group",
+      establishedYear: 1954,
+      verified: true,
+    },
+    update: { name: "Devika Group", establishedYear: 1954 },
+  });
+  console.log("Developer: Devika Group — Since 1954 (developers/devika-group)");
 }
 
 function buildProjectData() {
@@ -122,7 +134,7 @@ This commercial property in Noida is located in the bustling residential sector 
       },
     ]),
 
-    brochureUrl: null,
+    brochureUrl: "/brochures/devika-vibe-panache-bazaar.pdf",
     featured: true,
     verified: true,
   };

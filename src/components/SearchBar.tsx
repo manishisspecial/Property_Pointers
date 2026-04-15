@@ -35,8 +35,8 @@ export default function SearchBar({ className = "" }: { className?: string }) {
             onClick={() => setType(t.value)}
             className={`px-6 py-2.5 rounded-t-lg font-semibold text-sm transition-all ${
               type === t.value
-                ? "bg-white text-navy-800 shadow-sm"
-                : "bg-white/10 text-white/80 hover:bg-white/20"
+                ? "bg-white text-navy-800 shadow-md border-t border-l border-r border-gray-200"
+                : "bg-navy-800 text-white hover:bg-navy-700"
             }`}
           >
             {t.label}
@@ -69,9 +69,9 @@ export default function SearchBar({ className = "" }: { className?: string }) {
             <option value="house">House</option>
             <option value="villa">Villa</option>
             <option value="plot">Plot/Land</option>
-            <option value="commercial">Commercial</option>
-            <option value="office">Office Space</option>
-            <option value="shop">Shop</option>
+            <option value="office">Offices</option>
+            <option value="shop">Shops</option>
+            <option value="studio">Studio Apartments</option>
           </select>
           <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>

@@ -4,18 +4,24 @@ import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Building2, MapPin, Star, ShieldCheck, ArrowRight, Clock, Users,
-  CheckCircle, TrendingUp, Phone, Award, ChevronRight, Eye,
-  Landmark, Sparkles, BadgeCheck, FileCheck,
+  TrendingUp, Phone, Award, ChevronRight, Eye,
+  Landmark, Sparkles, BadgeCheck, FileCheck, Download,
 } from "lucide-react";
 import FAQAccordion from "@/components/FAQAccordion";
 import { MotionCard, MotionGrid, MotionSection } from "@/components/MarketingMotion";
 import { motion } from "framer-motion";
 
+function yearsFromEstablished(establishedYear: number | null): number | null {
+  if (establishedYear == null || establishedYear < 1800) return null;
+  const y = new Date().getFullYear() - establishedYear;
+  return Math.max(0, y);
+}
+
 type DeveloperProfile = {
   slug: string;
   name: string;
   logo?: string;
-  establishedYear: number;
+  establishedYear: number | null;
   cities: string[];
   states: string[];
   delivered: number;
@@ -54,6 +60,7 @@ type Project = {
   featured: boolean;
   verified: boolean;
   possessionDate: string | null;
+  brochureUrl: string | null;
   images: string[];
   configurations: string[];
 };
@@ -186,6 +193,8 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
       ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
       : null;
 
+  const yearsExperience = yearsFromEstablished(profile.establishedYear);
+
   const statusBadge = (status: string) => {
     const map: Record<string, { label: string; color: string }> = {
       "ready-to-move": { label: "Ready to Move", color: "bg-emerald-100 text-emerald-700" },
@@ -226,11 +235,6 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                       <BadgeCheck size={12} /> Verified
                     </span>
                   )}
-                  {profile.reraProjects > 0 && (
-                    <span className="inline-flex items-center gap-1 text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">
-                      <FileCheck size={12} /> RERA Compliant
-                    </span>
-                  )}
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">{profile.name}</h1>
@@ -248,43 +252,16 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                       {avgRating} rating
                     </span>
                   )}
-                  {profile.establishedYear && (
+                  {profile.establishedYear != null && yearsExperience != null && (
                     <span className="flex items-center gap-1.5">
                       <Clock size={14} className="text-blue-400" />
-                      Since {profile.establishedYear}
+                      {yearsExperience} year{yearsExperience === 1 ? "" : "s"} experience
+                      <span className="text-gray-500">· Since {profile.establishedYear}</span>
                     </span>
                   )}
                 </div>
               </div>
             </div>
-          </motion.div>
-
-          {/* Stats Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-8 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3"
-          >
-            {[
-              { value: profile.totalProjects, label: "Total Projects", icon: <Building2 size={16} /> },
-              { value: profile.delivered, label: "Delivered", icon: <CheckCircle size={16} /> },
-              { value: profile.ongoing, label: "Ongoing", icon: <Clock size={16} /> },
-              { value: `${profile.totalUnits.toLocaleString()}+`, label: "Total Units", icon: <Users size={16} /> },
-              { value: profile.reraProjects, label: "RERA Verified", icon: <ShieldCheck size={16} /> },
-              { value: `${profile.cities.length}`, label: "Cities", icon: <MapPin size={16} /> },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-center"
-              >
-                <div className="flex items-center justify-center gap-1.5 text-gold-400 mb-1">
-                  {s.icon}
-                </div>
-                <p className="text-xl font-bold text-white">{s.value}</p>
-                <p className="text-[11px] text-gray-400 mt-0.5">{s.label}</p>
-              </div>
-            ))}
           </motion.div>
         </div>
       </section>
@@ -344,10 +321,19 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                   <h2 className="text-xl font-bold text-navy-900 flex items-center gap-2">
                     <Building2 size={20} className="text-blue-500" /> Project Portfolio
                   </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-                    <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4 text-center">
-                      <p className="text-2xl font-bold text-emerald-700">{profile.delivered}</p>
-                      <p className="text-xs text-gray-600 mt-1">Delivered</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-4">
+                    <div className="rounded-xl bg-navy-50 border border-navy-100 p-4 text-center">
+                      <p className="text-2xl font-bold text-navy-800">{profile.totalProjects}</p>
+                      <p className="text-xs text-gray-600 mt-1">Total Projects</p>
+                    </div>
+                    <div className="rounded-xl bg-slate-50 border border-slate-100 p-4 text-center min-h-[88px] flex flex-col justify-center">
+                      <p className="text-2xl font-bold text-slate-800 leading-tight">
+                        {yearsExperience != null ? yearsExperience : "—"}
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">Years of experience</p>
+                      {profile.establishedYear != null && (
+                        <p className="text-[11px] text-gray-500 mt-1">Since {profile.establishedYear}</p>
+                      )}
                     </div>
                     <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 text-center">
                       <p className="text-2xl font-bold text-blue-700">{profile.ongoing}</p>
@@ -357,7 +343,7 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                       <p className="text-2xl font-bold text-amber-700">{profile.upcoming}</p>
                       <p className="text-xs text-gray-600 mt-1">Upcoming</p>
                     </div>
-                    <div className="rounded-xl bg-purple-50 border border-purple-100 p-4 text-center">
+                    <div className="rounded-xl bg-purple-50 border border-purple-100 p-4 text-center col-span-2 sm:col-span-1 lg:col-span-1">
                       <p className="text-2xl font-bold text-purple-700">{profile.totalUnits.toLocaleString()}</p>
                       <p className="text-xs text-gray-600 mt-1">Total Units</p>
                     </div>
@@ -400,32 +386,20 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                   </div>
                 </MotionSection>
 
-                {/* Amenities & Configurations */}
-                {(profile.amenities.length > 0 || profile.configurations.length > 0) && (
+                {/* Configurations */}
+                {profile.configurations.length > 0 && (
                   <MotionSection className="card p-6">
                     <h2 className="text-xl font-bold text-navy-900 flex items-center gap-2">
                       <Sparkles size={20} className="text-purple-500" /> Common Offerings
                     </h2>
-                    {profile.configurations.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-sm font-semibold text-gray-700 mb-2">Configurations</p>
-                        <div className="flex flex-wrap gap-2">
-                          {profile.configurations.map((c) => (
-                            <span key={c} className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md">{c}</span>
-                          ))}
-                        </div>
+                    <div className="mt-4">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Configurations</p>
+                      <div className="flex flex-wrap gap-2">
+                        {profile.configurations.map((c) => (
+                          <span key={c} className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md">{c}</span>
+                        ))}
                       </div>
-                    )}
-                    {profile.amenities.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-sm font-semibold text-gray-700 mb-2">Popular Amenities</p>
-                        <div className="flex flex-wrap gap-2">
-                          {profile.amenities.map((a) => (
-                            <span key={a} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md">{a}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    </div>
                   </MotionSection>
                 )}
 
@@ -450,42 +424,54 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                         const badge = statusBadge(project.projectStatus);
                         return (
                           <MotionCard key={project.id}>
-                            <Link
-                              href={`/projects/${project.slug}`}
-                              className="group block rounded-xl border border-gray-200 hover:border-gold-200 hover:shadow-md transition-all overflow-hidden"
-                            >
-                              {project.images?.[0] && (
-                                <div className="h-36 overflow-hidden bg-gray-100">
-                                  <img
-                                    src={project.images[0]}
-                                    alt={project.title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                  />
-                                </div>
-                              )}
-                              <div className="p-4">
-                                <div className="flex items-start justify-between gap-2">
-                                  <h3 className="font-semibold text-navy-900 text-sm leading-tight">{project.title}</h3>
-                                  <span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap ${badge.color}`}>
-                                    {badge.label}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                                  <MapPin size={10} /> {project.location}, {project.city}
-                                </p>
-                                <div className="flex items-center justify-between mt-2.5">
-                                  <p className="text-sm font-bold text-navy-800">
-                                    ₹{project.startingPrice} {project.priceUnit}+
+                            <div className="rounded-xl border border-gray-200 hover:border-gold-200 hover:shadow-md transition-all overflow-hidden flex flex-col h-full bg-white">
+                              <Link
+                                href={`/projects/${project.slug}`}
+                                className="group block flex-1 min-h-0"
+                              >
+                                {project.images?.[0] && (
+                                  <div className="h-36 overflow-hidden bg-gray-100">
+                                    <img
+                                      src={project.images[0]}
+                                      alt={project.title}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                  </div>
+                                )}
+                                <div className="p-4">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <h3 className="font-semibold text-navy-900 text-sm leading-tight">{project.title}</h3>
+                                    <span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap ${badge.color}`}>
+                                      {badge.label}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                    <MapPin size={10} /> {project.location}, {project.city}
                                   </p>
-                                  {project.verified && (
-                                    <ShieldCheck size={14} className="text-emerald-500" />
+                                  <div className="flex items-center justify-between mt-2.5">
+                                    <p className="text-sm font-bold text-navy-800">
+                                      ₹{project.startingPrice} {project.priceUnit}+
+                                    </p>
+                                    {project.verified && (
+                                      <ShieldCheck size={14} className="text-emerald-500" />
+                                    )}
+                                  </div>
+                                  {project.configurations.length > 0 && (
+                                    <p className="text-[11px] text-gray-500 mt-1.5">{project.configurations.join(" | ")}</p>
                                   )}
                                 </div>
-                                {project.configurations.length > 0 && (
-                                  <p className="text-[11px] text-gray-500 mt-1.5">{project.configurations.join(" | ")}</p>
-                                )}
+                              </Link>
+                              <div className="px-4 pb-4 pt-0">
+                                <a
+                                  href={`/api/projects/${project.slug}/brochure`}
+                                  download
+                                  className="flex items-center justify-center gap-2 w-full py-2.5 text-xs font-semibold text-gold-800 bg-gold-50 hover:bg-gold-100 border border-gold-200/80 rounded-lg transition-colors"
+                                >
+                                  <Download size={14} className="shrink-0" />
+                                  Download brochure
+                                </a>
                               </div>
-                            </Link>
+                            </div>
                           </MotionCard>
                         );
                       })}
@@ -522,58 +508,69 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                     {projects.map((project) => {
                       const badge = statusBadge(project.projectStatus);
                       return (
-                        <Link
-                          key={project.id}
-                          href={`/projects/${project.slug}`}
-                          className="group block card hover:shadow-lg transition-shadow"
-                        >
-                          <div className="flex flex-col sm:flex-row">
-                            {project.images?.[0] && (
-                              <div className="sm:w-56 h-44 sm:h-auto overflow-hidden bg-gray-100 shrink-0">
-                                <img
-                                  src={project.images[0]}
-                                  alt={project.title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                              </div>
-                            )}
-                            <div className="p-5 flex-1">
-                              <div className="flex items-start justify-between gap-2">
-                                <div>
-                                  <h3 className="font-bold text-navy-900 group-hover:text-gold-600 transition-colors">{project.title}</h3>
-                                  <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                                    <MapPin size={12} /> {project.location}, {project.city}
-                                  </p>
+                        <div key={project.id} className="card hover:shadow-lg transition-shadow overflow-hidden">
+                          <div className="flex flex-col lg:flex-row">
+                            <Link
+                              href={`/projects/${project.slug}`}
+                              className="group flex flex-col sm:flex-row flex-1 min-w-0"
+                            >
+                              {project.images?.[0] && (
+                                <div className="sm:w-56 h-44 sm:min-h-[200px] overflow-hidden bg-gray-100 shrink-0">
+                                  <img
+                                    src={project.images[0]}
+                                    alt={project.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  />
                                 </div>
-                                <span className={`text-xs px-2.5 py-1 rounded-full whitespace-nowrap ${badge.color}`}>
-                                  {badge.label}
-                                </span>
-                              </div>
-                              <div className="flex flex-wrap items-center gap-3 mt-3 text-sm">
-                                <span className="font-bold text-navy-800">₹{project.startingPrice} {project.priceUnit}+</span>
-                                {project.reraNumber && (
-                                  <span className="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <FileCheck size={10} /> RERA
-                                  </span>
-                                )}
-                                {project.verified && (
-                                  <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <ShieldCheck size={10} /> Verified
-                                  </span>
-                                )}
-                                {project.totalUnits && (
-                                  <span className="text-xs text-gray-500">{project.totalUnits} units</span>
-                                )}
-                              </div>
-                              {project.configurations.length > 0 && (
-                                <p className="text-xs text-gray-500 mt-2">{project.configurations.join(" | ")}</p>
                               )}
-                              {project.possessionDate && (
-                                <p className="text-xs text-gray-400 mt-1">Possession: {project.possessionDate}</p>
-                              )}
+                              <div className="p-5 flex-1">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div>
+                                    <h3 className="font-bold text-navy-900 group-hover:text-gold-600 transition-colors">{project.title}</h3>
+                                    <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
+                                      <MapPin size={12} /> {project.location}, {project.city}
+                                    </p>
+                                  </div>
+                                  <span className={`text-xs px-2.5 py-1 rounded-full whitespace-nowrap ${badge.color}`}>
+                                    {badge.label}
+                                  </span>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-3 mt-3 text-sm">
+                                  <span className="font-bold text-navy-800">₹{project.startingPrice} {project.priceUnit}+</span>
+                                  {project.reraNumber && (
+                                    <span className="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded flex items-center gap-1">
+                                      <FileCheck size={10} /> RERA
+                                    </span>
+                                  )}
+                                  {project.verified && (
+                                    <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded flex items-center gap-1">
+                                      <ShieldCheck size={10} /> Verified
+                                    </span>
+                                  )}
+                                  {project.totalUnits && (
+                                    <span className="text-xs text-gray-500">{project.totalUnits} units</span>
+                                  )}
+                                </div>
+                                {project.configurations.length > 0 && (
+                                  <p className="text-xs text-gray-500 mt-2">{project.configurations.join(" | ")}</p>
+                                )}
+                                {project.possessionDate && (
+                                  <p className="text-xs text-gray-400 mt-1">Possession: {project.possessionDate}</p>
+                                )}
+                              </div>
+                            </Link>
+                            <div className="flex items-stretch lg:flex-col lg:justify-center gap-2 p-4 lg:p-5 border-t lg:border-t-0 lg:border-l border-gray-100 bg-gray-50/80 lg:w-44 shrink-0">
+                              <a
+                                href={`/api/projects/${project.slug}/brochure`}
+                                download
+                                className="inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-navy-900 bg-white hover:bg-gold-50 border border-gray-200 hover:border-gold-300 rounded-xl transition-colors w-full"
+                              >
+                                <Download size={18} className="text-gold-600 shrink-0" />
+                                Download brochure
+                              </a>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       );
                     })}
                   </div>
@@ -709,8 +706,8 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                   answer: "Yes, use the Contact Developer form on this page. Our team will connect you with the builder's sales representative.",
                 },
                 {
-                  question: `What is ${profile.name}'s delivery track record?`,
-                  answer: `${profile.name} has ${profile.delivered} delivered projects, ${profile.ongoing} ongoing, and ${profile.upcoming} upcoming projects across ${profile.cities.join(", ")}.`,
+                  question: `What is ${profile.name}'s project pipeline?`,
+                  answer: `${profile.name} has ${profile.totalProjects} total projects, with ${profile.ongoing} ongoing and ${profile.upcoming} upcoming across ${profile.cities.join(", ")}.`,
                 },
                 {
                   question: "Are there active partner opportunities?",
@@ -763,10 +760,17 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                   <span className="text-gray-500">Total Projects</span>
                   <span className="font-semibold text-navy-900">{profile.totalProjects}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Delivered</span>
-                  <span className="font-semibold text-emerald-700">{profile.delivered}</span>
-                </div>
+                {profile.establishedYear != null && yearsExperience != null ? (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-gray-500">Years of experience</span>
+                    <span className="font-semibold text-navy-900 text-right">
+                      {yearsExperience} yr{yearsExperience === 1 ? "" : "s"}{" "}
+                      <span className="text-gray-500 font-normal text-xs block sm:inline sm:ml-1">
+                        (Since {profile.establishedYear})
+                      </span>
+                    </span>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500">Cities Active</span>
                   <span className="font-semibold text-navy-900">{profile.cities.length}</span>
@@ -797,7 +801,6 @@ export default function DeveloperProfileClient({ slug }: { slug: string }) {
                 {[
                   profile.verifiedProjects > 0 && { icon: <ShieldCheck size={14} className="text-emerald-500" />, label: "Verified Developer" },
                   profile.reraProjects > 0 && { icon: <FileCheck size={14} className="text-blue-500" />, label: "RERA Compliant Projects" },
-                  profile.delivered > 0 && { icon: <CheckCircle size={14} className="text-emerald-500" />, label: `${profile.delivered} Projects Delivered` },
                   profile.totalUnits > 0 && { icon: <Users size={14} className="text-navy-500" />, label: `${profile.totalUnits.toLocaleString()}+ Happy Families` },
                   { icon: <TrendingUp size={14} className="text-gold-500" />, label: "Active in Market" },
                 ]

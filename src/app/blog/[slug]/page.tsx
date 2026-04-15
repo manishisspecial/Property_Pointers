@@ -4,7 +4,7 @@ import {
   Facebook, Twitter, Linkedin, Link2, ChevronRight
 } from "lucide-react";
 import prisma from "@/lib/prisma";
-import { formatDate } from "@/lib/utils";
+import { blogBylineDisplay, formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -56,6 +56,9 @@ export default async function BlogPostPage({ params }: Props) {
   });
 
   if (!post || !post.published) notFound();
+
+  const authorName = blogBylineDisplay(post.byline, post.author.name);
+  const authorInitial = authorName.charAt(0);
 
   await prisma.blogPost.update({ where: { slug }, data: { views: { increment: 1 } } });
 
@@ -167,10 +170,10 @@ export default async function BlogPostPage({ params }: Props) {
               <div className="flex items-center justify-between gap-3 mb-8 pb-8 border-b border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-navy-800 flex items-center justify-center text-white text-lg font-bold">
-                    {post.author.name[0]}
+                    {authorInitial}
                   </div>
                   <div>
-                    <p className="font-semibold text-navy-800">{post.author.name}</p>
+                    <p className="font-semibold text-navy-800">{authorName}</p>
                     <p className="text-sm text-gray-500 capitalize">{post.author.role} at Property Pointers</p>
                   </div>
                 </div>
@@ -319,9 +322,9 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Author Card */}
             <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
               <div className="w-20 h-20 rounded-full bg-navy-800 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
-                {post.author.name[0]}
+                {authorInitial}
               </div>
-              <h3 className="font-bold text-navy-800 text-lg">{post.author.name}</h3>
+              <h3 className="font-bold text-navy-800 text-lg">{authorName}</h3>
               <p className="text-sm text-gray-500 capitalize mb-3">{post.author.role} at Property Pointers</p>
               <p className="text-sm text-gray-500 leading-relaxed">
                 Expert in Indian real estate, helping buyers and investors make informed property decisions.

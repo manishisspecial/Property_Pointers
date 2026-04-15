@@ -161,6 +161,7 @@ Buyers can visit the official state RERA website, search for the project name or
 Buyers can file a complaint with the respective state RERA authority, which can investigate the issue and take action against the developer.`,
       coverImage: "/blog/rera-check-project.png",
       category: "legal",
+      byline: "Gaurav Chopra",
       tags: JSON.stringify(["RERA", "property buying", "real estate law", "home buyer guide", "RERA verification", "legal protection"]),
       published: true,
       views: 0,

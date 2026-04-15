@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Calendar, Eye, ArrowRight, BookOpen, Search, Clock, TrendingUp, Mail } from "lucide-react";
 import prisma from "@/lib/prisma";
-import { formatDate } from "@/lib/utils";
+import { blogBylineDisplay, formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -226,9 +226,9 @@ export default async function BlogPage({ searchParams }: Props) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="w-8 h-8 rounded-full bg-navy-800 flex items-center justify-center text-white text-sm font-bold">
-                            {featured.author.name[0]}
+                            {blogBylineDisplay(featured.byline, featured.author.name)[0]}
                           </div>
-                          <span className="text-sm text-gray-600">{featured.author.name}</span>
+                          <span className="text-sm text-gray-600">{blogBylineDisplay(featured.byline, featured.author.name)}</span>
                         </div>
                         <span className="text-sm text-gray-400 flex items-center gap-1">
                           <Eye size={14} /> {featured.views} views
@@ -270,9 +270,9 @@ export default async function BlogPage({ searchParams }: Props) {
                       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-navy-800 flex items-center justify-center text-white text-[10px] font-bold">
-                            {post.author.name[0]}
+                            {blogBylineDisplay(post.byline, post.author.name)[0]}
                           </div>
-                          <span className="text-xs text-gray-500">{post.author.name}</span>
+                          <span className="text-xs text-gray-500">{blogBylineDisplay(post.byline, post.author.name)}</span>
                         </div>
                         <span className="text-gold-500 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                           Read <ArrowRight size={14} />

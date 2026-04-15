@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Save, CheckCircle, Globe, Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { Save, CheckCircle, Globe, Mail, Phone, MapPin, Loader2, Users } from "lucide-react";
 
 interface SiteSettings {
   siteName: string;
@@ -14,6 +14,8 @@ interface SiteSettings {
   instagram: string;
   linkedin: string;
   maintenanceMode: boolean;
+  activeVisitorsDisplay: "exact" | "manual";
+  manualActiveVisitors: number;
 }
 
 const EMPTY: SiteSettings = {
@@ -27,6 +29,8 @@ const EMPTY: SiteSettings = {
   instagram: "",
   linkedin: "",
   maintenanceMode: false,
+  activeVisitorsDisplay: "exact",
+  manualActiveVisitors: 20,
 };
 
 export default function AdminSettingsPage() {
@@ -50,13 +54,18 @@ export default function AdminSettingsPage() {
           instagram: data.instagram ?? "",
           linkedin: data.linkedin ?? "",
           maintenanceMode: data.maintenanceMode ?? false,
+          activeVisitorsDisplay: data.activeVisitorsDisplay === "manual" ? "manual" : "exact",
+          manualActiveVisitors:
+            typeof data.manualActiveVisitors === "number" && !Number.isNaN(data.manualActiveVisitors)
+              ? data.manualActiveVisitors
+              : 20,
         });
       })
       .catch(() => setStatus({ ok: false, text: "Failed to load settings" }))
       .finally(() => setLoading(false));
   }, []);
 
-  function update(field: keyof SiteSettings, value: string | boolean) {
+  function update(field: keyof SiteSettings, value: string | boolean | number) {
     setSettings((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -141,6 +150,64 @@ export default function AdminSettingsPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-6 space-y-5">
+        <h3 className="text-lg font-semibold text-navy-800 flex items-center gap-2">
+          <Users size={20} className="text-gold-500" /> Home page — “Browsing right now”
+        </h3>
+        <p className="text-sm text-gray-500">
+          Controls the number shown in the hero stats on the public home page (unique visitors in the last 15 minutes, or a number you set).
+        </p>
+        <div className="space-y-3">
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="radio"
+              name="activeVisitorsDisplay"
+              className="mt-1"
+              checked={settings.activeVisitorsDisplay === "exact"}
+              onChange={() => update("activeVisitorsDisplay", "exact")}
+            />
+            <span>
+              <span className="font-medium text-navy-800 group-hover:text-navy-900">Exact count</span>
+              <span className="block text-sm text-gray-500">
+                Show the real-time unique visitor count from activity logs (last 15 minutes). Optional env{" "}
+                <code className="text-xs bg-gray-100 px-1 rounded">ACTIVE_VISITORS_FLOOR</code> still applies as a minimum when traffic is low.
+              </span>
+            </span>
+          </label>
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="radio"
+              name="activeVisitorsDisplay"
+              className="mt-1"
+              checked={settings.activeVisitorsDisplay === "manual"}
+              onChange={() => update("activeVisitorsDisplay", "manual")}
+            />
+            <span>
+              <span className="font-medium text-navy-800 group-hover:text-navy-900">Manual number</span>
+              <span className="block text-sm text-gray-500">
+                Always show the number you enter below (e.g. 20). Ignores live traffic and the floor env variable.
+              </span>
+            </span>
+          </label>
+        </div>
+        {settings.activeVisitorsDisplay === "manual" && (
+          <div className="pl-7 pt-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Displayed count</label>
+            <input
+              type="number"
+              min={0}
+              max={9999999}
+              value={settings.manualActiveVisitors}
+              onChange={(e) => {
+                const v = parseInt(e.target.value, 10);
+                update("manualActiveVisitors", Number.isFinite(v) ? Math.min(9_999_999, Math.max(0, v)) : 0);
+              }}
+              className="input-field max-w-xs"
+            />
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
