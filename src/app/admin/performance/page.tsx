@@ -7,6 +7,8 @@ import {
   TrendingUp, Monitor, ArrowUpRight, ChevronDown, ChevronUp,
   Smartphone, Laptop, ExternalLink
 } from "lucide-react";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 export default function AdminPerformancePage() {
   const [activities, setActivities] = useState<any[]>([]);
@@ -98,13 +100,80 @@ export default function AdminPerformancePage() {
     );
   }
 
+  const activityExportColumns: CsvColumn<any>[] = [
+    { header: "ID", accessor: (a) => a.id },
+    { header: "User", accessor: (a) => a.user?.name || "Guest" },
+    { header: "User ID", accessor: (a) => a.userId || "" },
+    { header: "Action", accessor: (a) => a.action },
+    { header: "Page", accessor: (a) => a.page || "" },
+    { header: "City", accessor: (a) => a.city || "" },
+    { header: "Latitude", accessor: (a) => a.latitude ?? "" },
+    { header: "Longitude", accessor: (a) => a.longitude ?? "" },
+    { header: "IP", accessor: (a) => a.ip || "" },
+    { header: "User Agent", accessor: (a) => a.userAgent || "" },
+    { header: "Created At", accessor: (a) => a.createdAt },
+  ];
+
+  const userExportColumns: CsvColumn<any>[] = [
+    { header: "ID", accessor: (u) => u.id },
+    { header: "Name", accessor: (u) => u.name },
+    { header: "Email", accessor: (u) => u.email },
+    { header: "Role", accessor: (u) => u.role },
+    { header: "City", accessor: (u) => u.city || "" },
+    { header: "State", accessor: (u) => u.state || "" },
+    { header: "Latitude", accessor: (u) => u.latitude ?? "" },
+    { header: "Longitude", accessor: (u) => u.longitude ?? "" },
+    { header: "Properties", accessor: (u) => u._count?.properties ?? 0 },
+    { header: "Inquiries", accessor: (u) => u._count?.inquiries ?? 0 },
+    { header: "Favorites", accessor: (u) => u._count?.favorites ?? 0 },
+    { header: "Last Login", accessor: (u) => u.lastLoginAt || "" },
+    { header: "Last Login IP", accessor: (u) => u.lastLoginIp || "" },
+    { header: "Joined", accessor: (u) => u.createdAt },
+  ];
+
+  const exportConfig = (() => {
+    if (viewMode === "users") {
+      return {
+        data: users,
+        columns: userExportColumns,
+        filename: "propertypointers-performance-users",
+      };
+    }
+    if (viewMode === "geo") {
+      return {
+        data: geoUsers,
+        columns: userExportColumns,
+        filename: "propertypointers-performance-geo-users",
+      };
+    }
+    if (viewMode === "activity") {
+      return {
+        data: activities,
+        columns: activityExportColumns,
+        filename: "propertypointers-performance-activity",
+      };
+    }
+    return {
+      data: activities,
+      columns: activityExportColumns,
+      filename: "propertypointers-performance-overview",
+    };
+  })();
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-navy-900 flex items-center gap-2">
-          <Gauge size={24} className="text-gold-500" /> Performance Monitor
-        </h1>
-        <p className="text-sm text-gray-500">Real-time platform performance, user behavior and geo-location tracking</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-navy-900 flex items-center gap-2">
+            <Gauge size={24} className="text-gold-500" /> Performance Monitor
+          </h1>
+          <p className="text-sm text-gray-500">Real-time platform performance, user behavior and geo-location tracking</p>
+        </div>
+        <ExportButton
+          data={exportConfig.data}
+          columns={exportConfig.columns}
+          filename={exportConfig.filename}
+        />
       </div>
 
       {/* Tab Navigation */}

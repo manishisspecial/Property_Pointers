@@ -5,6 +5,8 @@ import {
   Building2, Plus, X, Pencil, Trash2, CheckCircle, XCircle,
   Star, Globe, Phone, Mail, Loader2, Link2,
 } from "lucide-react";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 type Developer = {
   id: string;
@@ -160,21 +162,45 @@ export default function AdminDevelopersPage() {
     if (res.ok) fetchDevelopers();
   }
 
+  const developerExportColumns: CsvColumn<Developer>[] = [
+    { header: "ID", accessor: (d) => d.id },
+    { header: "Name", accessor: (d) => d.name },
+    { header: "Slug", accessor: (d) => d.slug },
+    { header: "Established Year", accessor: (d) => d.establishedYear ?? "" },
+    { header: "Projects", accessor: (d) => d.projectCount },
+    { header: "Operating Cities", accessor: (d) => (d.operatingCities || []).join("; ") },
+    { header: "Cities With Projects", accessor: (d) => (d.cities || []).join("; ") },
+    { header: "Strengths", accessor: (d) => (d.strengths || []).join("; ") },
+    { header: "Website", accessor: (d) => d.website || "" },
+    { header: "Email", accessor: (d) => d.contactEmail || "" },
+    { header: "Phone", accessor: (d) => d.contactPhone || "" },
+    { header: "Verified", accessor: (d) => d.verified },
+    { header: "Featured", accessor: (d) => d.featured },
+    { header: "Created At", accessor: (d) => d.createdAt },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-navy-900">Developers</h1>
           <p className="text-sm text-gray-500">
             Manage developer profiles. Data here enriches the public developer pages.
           </p>
         </div>
-        <button
-          onClick={() => openCreate()}
-          className="btn-primary flex items-center gap-2 text-sm"
-        >
-          <Plus size={16} /> Add Developer
-        </button>
+        <div className="flex items-center gap-2">
+          <ExportButton
+            data={developers}
+            columns={developerExportColumns}
+            filename="propertypointers-developers"
+          />
+          <button
+            onClick={() => openCreate()}
+            className="btn-primary flex items-center gap-2 text-sm"
+          >
+            <Plus size={16} /> Add Developer
+          </button>
+        </div>
       </div>
 
       {/* Unlinked builders */}

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, EyeOff, XCircle } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 type Entry = {
   id: string;
@@ -49,14 +51,31 @@ export default function AdminCommunityPage() {
     if (res.ok) fetchEntries();
   }
 
+  const communityExportColumns: CsvColumn<Entry>[] = [
+    { header: "ID", accessor: (e) => e.id },
+    { header: "Type", accessor: (e) => e.action },
+    { header: "Author", accessor: (e) => e.author },
+    { header: "Text", accessor: (e) => e.text },
+    { header: "Rating", accessor: (e) => e.rating ?? "" },
+    { header: "Page", accessor: (e) => e.page },
+    { header: "Status", accessor: (e) => e.status },
+    { header: "Moderated By", accessor: (e) => e.moderatedBy || "" },
+    { header: "Moderated At", accessor: (e) => e.moderatedAt || "" },
+    {
+      header: "Moderation Updates",
+      accessor: (e) => e.moderationHistory?.length ?? 0,
+    },
+    { header: "Created At", accessor: (e) => e.createdAt },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-navy-900">Community Moderation</h1>
           <p className="text-sm text-gray-500">Approve, reject, or hide project/developer community submissions.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="input-field max-w-[200px]">
             <option value="all">All Types</option>
             <option value="project_review">Project Reviews</option>
@@ -72,6 +91,11 @@ export default function AdminCommunityPage() {
             <option value="rejected">Rejected</option>
             <option value="hidden">Hidden</option>
           </select>
+          <ExportButton
+            data={entries}
+            columns={communityExportColumns}
+            filename="propertypointers-community"
+          />
         </div>
       </div>
 

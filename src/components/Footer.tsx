@@ -157,8 +157,12 @@ export default function Footer() {
             <Link href="/disclaimer" className="hover:text-gold-400 transition-colors">
               Disclaimer
             </Link>
-            <a href="#" className="hover:text-gold-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-gold-400 transition-colors">Terms of Service</a>
+            <Link href="/privacy" className="hover:text-gold-400 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-gold-400 transition-colors">
+              Terms of Service
+            </Link>
             <a href="#" className="hover:text-gold-400 transition-colors">Sitemap</a>
           </div>
         </div>

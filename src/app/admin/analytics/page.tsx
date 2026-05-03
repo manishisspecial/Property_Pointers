@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { timeAgo } from "@/lib/utils";
 import { Activity, MapPin, Clock, Monitor, Globe, User, MousePointer } from "lucide-react";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 export default function AdminAnalyticsPage() {
   const [activities, setActivities] = useState<any[]>([]);
@@ -27,11 +29,32 @@ export default function AdminAnalyticsPage() {
   const locatedVisits = activities.filter((a) => a.latitude).length;
   const uniquePages = new Set(activities.map((a) => a.page).filter(Boolean)).size;
 
+  const activityExportColumns: CsvColumn<any>[] = [
+    { header: "ID", accessor: (a) => a.id },
+    { header: "User", accessor: (a) => a.user?.name || "Guest" },
+    { header: "User ID", accessor: (a) => a.userId || "" },
+    { header: "Action", accessor: (a) => a.action },
+    { header: "Page", accessor: (a) => a.page || "" },
+    { header: "City", accessor: (a) => a.city || "" },
+    { header: "Latitude", accessor: (a) => a.latitude ?? "" },
+    { header: "Longitude", accessor: (a) => a.longitude ?? "" },
+    { header: "IP", accessor: (a) => a.ip || "" },
+    { header: "User Agent", accessor: (a) => a.userAgent || "" },
+    { header: "Created At", accessor: (a) => a.createdAt },
+  ];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-navy-900">Analytics & Activity</h1>
-        <p className="text-sm text-gray-500">Track user behavior and platform activity with geolocation data</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-navy-900">Analytics & Activity</h1>
+          <p className="text-sm text-gray-500">Track user behavior and platform activity with geolocation data</p>
+        </div>
+        <ExportButton
+          data={activities}
+          columns={activityExportColumns}
+          filename="propertypointers-activity"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

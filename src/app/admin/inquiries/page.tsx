@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { timeAgo, formatPrice } from "@/lib/utils";
 import { MessageCircle, User, Building2, Clock, CheckCircle, XCircle } from "lucide-react";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 export default function AdminInquiriesPage() {
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -20,11 +22,36 @@ export default function AdminInquiriesPage() {
     setLoading(false);
   }
 
+  const inquiryExportColumns: CsvColumn<any>[] = [
+    { header: "ID", accessor: (i) => i.id },
+    { header: "Name", accessor: (i) => i.userName },
+    { header: "Email", accessor: (i) => i.userEmail },
+    { header: "Phone", accessor: (i) => i.userPhone || "" },
+    { header: "Property ID", accessor: (i) => i.propertyId },
+    { header: "Property Title", accessor: (i) => i.property?.title || "" },
+    { header: "Property City", accessor: (i) => i.property?.city || "" },
+    { header: "Property Price", accessor: (i) => i.property?.price ?? "" },
+    {
+      header: "Property Price (Display)",
+      accessor: (i) => (i.property?.price ? formatPrice(i.property.price) : ""),
+    },
+    { header: "Message", accessor: (i) => i.message },
+    { header: "Status", accessor: (i) => i.status },
+    { header: "Created At", accessor: (i) => i.createdAt },
+  ];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-navy-900">Inquiries</h1>
-        <p className="text-sm text-gray-500">{inquiries.length} total inquiries</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-navy-900">Inquiries</h1>
+          <p className="text-sm text-gray-500">{inquiries.length} total inquiries</p>
+        </div>
+        <ExportButton
+          data={inquiries}
+          columns={inquiryExportColumns}
+          filename="propertypointers-inquiries"
+        />
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">

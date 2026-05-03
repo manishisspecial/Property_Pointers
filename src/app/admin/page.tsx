@@ -10,6 +10,8 @@ import {
   PieChart, Pie, Cell,
 } from "recharts";
 import { timeAgo } from "@/lib/utils";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 const PIE_COLORS = ["#f59e0b", "#3b82f6", "#10b981", "#8b5cf6", "#ef4444", "#06b6d4", "#ec4899"];
 
@@ -101,17 +103,74 @@ export default function AdminDashboard() {
   const cityData = (data?.propertiesByCity || []).slice(0, 6);
   const projectCityData = (data?.projectsByCity || []).slice(0, 6);
 
+  const summaryRows: { metric: string; value: number | string }[] = [
+    { metric: "Total Views", value: stats.totalViews ?? 0 },
+    { metric: "Total Projects", value: stats.totalProjects ?? 0 },
+    { metric: "Total Leads", value: stats.totalLeads ?? 0 },
+    { metric: "New Leads Today", value: stats.newLeadsToday ?? 0 },
+    { metric: "Total Users", value: stats.totalUsers ?? 0 },
+    { metric: "Total Properties", value: stats.totalProperties ?? 0 },
+    { metric: "Total Developers", value: stats.totalDevelopers ?? 0 },
+    { metric: "Total Inquiries", value: stats.totalInquiries ?? 0 },
+    ...monthlyData.map((m: any) => ({
+      metric: `Monthly · ${m.name} · Users`,
+      value: m.Users ?? 0,
+    })),
+    ...monthlyData.map((m: any) => ({
+      metric: `Monthly · ${m.name} · Properties`,
+      value: m.Properties ?? 0,
+    })),
+    ...monthlyData.map((m: any) => ({
+      metric: `Monthly · ${m.name} · Inquiries`,
+      value: m.Inquiries ?? 0,
+    })),
+    ...typeData.map((t: any) => ({
+      metric: `Properties by Type · ${t.name}`,
+      value: t.value ?? 0,
+    })),
+    ...projectTypeData.map((t: any) => ({
+      metric: `Projects by Type · ${t.name}`,
+      value: t.value ?? 0,
+    })),
+    ...cityData.map((c: any) => ({
+      metric: `Properties by City · ${c.city}`,
+      value: c._count ?? 0,
+    })),
+    ...projectCityData.map((c: any) => ({
+      metric: `Projects by City · ${c.city}`,
+      value: c._count ?? 0,
+    })),
+    ...((data?.usersByRole || []) as any[]).map((u) => ({
+      metric: `Users by Role · ${u.role}`,
+      value: u._count ?? 0,
+    })),
+  ];
+
+  const summaryColumns: CsvColumn<{ metric: string; value: number | string }>[] = [
+    { header: "Metric", accessor: (r) => r.metric },
+    { header: "Value", accessor: (r) => r.value },
+    { header: "Captured At", accessor: () => new Date().toISOString() },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-navy-900">Dashboard</h1>
           <p className="text-sm text-gray-500">Welcome back! Here&apos;s what&apos;s happening today.</p>
         </div>
-        <span className="text-xs text-gray-400 bg-white px-3 py-1.5 rounded-lg shadow-sm">
-          {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-        </span>
+        <div className="flex items-center gap-3">
+          <ExportButton
+            data={summaryRows}
+            columns={summaryColumns}
+            filename="propertypointers-dashboard-summary"
+            label="Export Summary"
+          />
+          <span className="text-xs text-gray-400 bg-white px-3 py-1.5 rounded-lg shadow-sm">
+            {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          </span>
+        </div>
       </div>
 
       {/* Hero Stat Cards */}

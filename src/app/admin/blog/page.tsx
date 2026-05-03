@@ -7,6 +7,18 @@ import {
   Upload, Loader2
 } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
+
+function safeJsonArray(str: string | null | undefined): any[] {
+  if (!str) return [];
+  try {
+    const parsed = JSON.parse(str);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 interface FaqItem {
   question: string;
@@ -172,16 +184,39 @@ export default function AdminBlogPage() {
     } catch {}
   }
 
+  const blogExportColumns: CsvColumn<any>[] = [
+    { header: "ID", accessor: (p) => p.id },
+    { header: "Title", accessor: (p) => p.title },
+    { header: "Slug", accessor: (p) => p.slug },
+    { header: "Category", accessor: (p) => p.category },
+    { header: "Tags", accessor: (p) => safeJsonArray(p.tags).join("; ") },
+    { header: "Excerpt", accessor: (p) => p.excerpt },
+    { header: "Author", accessor: (p) => p.byline || p.author?.name || "" },
+    { header: "Published", accessor: (p) => Boolean(p.published) },
+    { header: "Views", accessor: (p) => p.views ?? 0 },
+    { header: "Meta Title", accessor: (p) => p.metaTitle || "" },
+    { header: "Meta Description", accessor: (p) => p.metaDescription || "" },
+    { header: "Created At", accessor: (p) => p.createdAt },
+    { header: "Updated At", accessor: (p) => p.updatedAt || "" },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-navy-900">Blog Management</h1>
           <p className="text-sm text-gray-500">{posts.length} blog posts</p>
         </div>
-        <button onClick={() => openEditor()} className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> New Post
-        </button>
+        <div className="flex items-center gap-2">
+          <ExportButton
+            data={posts}
+            columns={blogExportColumns}
+            filename="propertypointers-blog"
+          />
+          <button onClick={() => openEditor()} className="btn-primary flex items-center gap-2">
+            <Plus size={18} /> New Post
+          </button>
+        </div>
       </div>
 
       {/* Editor Modal */}

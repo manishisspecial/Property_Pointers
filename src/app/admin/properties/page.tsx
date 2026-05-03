@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatPrice, timeAgo } from "@/lib/utils";
 import { Building2, Eye, CheckCircle, XCircle, Star, Search, Filter, MapPin, Trash2 } from "lucide-react";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 export default function AdminPropertiesPage() {
   const [properties, setProperties] = useState<any[]>([]);
@@ -48,13 +50,42 @@ export default function AdminPropertiesPage() {
     } catch {}
   }
 
+  const propertyExportColumns: CsvColumn<any>[] = [
+    { header: "ID", accessor: (p) => p.id },
+    { header: "Title", accessor: (p) => p.title },
+    { header: "Type", accessor: (p) => p.type },
+    { header: "Listing Type", accessor: (p) => p.listingType },
+    { header: "Category", accessor: (p) => p.category },
+    { header: "City", accessor: (p) => p.city },
+    { header: "State", accessor: (p) => p.state },
+    { header: "Locality", accessor: (p) => p.locality || p.address },
+    { header: "Price (INR)", accessor: (p) => p.price },
+    { header: "Price (Display)", accessor: (p) => formatPrice(p.price) },
+    { header: "Bedrooms", accessor: (p) => p.bedrooms },
+    { header: "Bathrooms", accessor: (p) => p.bathrooms },
+    { header: "Area (sq.ft)", accessor: (p) => p.area },
+    { header: "Status", accessor: (p) => p.status },
+    { header: "Verified", accessor: (p) => Boolean(p.verified) },
+    { header: "Featured", accessor: (p) => Boolean(p.featured) },
+    { header: "Owner", accessor: (p) => p.owner?.name || "" },
+    { header: "Owner Email", accessor: (p) => p.owner?.email || "" },
+    { header: "Owner Phone", accessor: (p) => p.owner?.phone || "" },
+    { header: "Views", accessor: (p) => p.views || 0 },
+    { header: "Created At", accessor: (p) => p.createdAt },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-navy-900">Manage Properties</h1>
           <p className="text-sm text-gray-500">{total} total properties</p>
         </div>
+        <ExportButton
+          data={properties}
+          columns={propertyExportColumns}
+          filename="propertypointers-properties"
+        />
       </div>
 
       {/* Filters */}

@@ -7,6 +7,8 @@ import {
   MapPin, Calendar, IndianRupee, Pencil, ChevronLeft, ChevronRight,
   Loader2, Image as ImageIcon, Upload
 } from "lucide-react";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 interface Project {
   id: string;
@@ -228,17 +230,49 @@ export default function AdminProjectsPage() {
   const totalPages = Math.ceil(total / 10);
   const currentPage = parseInt(filter.page);
 
+  const projectExportColumns: CsvColumn<Project>[] = [
+    { header: "ID", accessor: (p) => p.id },
+    { header: "Title", accessor: (p) => p.title },
+    { header: "Slug", accessor: (p) => p.slug },
+    { header: "Builder", accessor: (p) => p.builderName },
+    { header: "Property Type", accessor: (p) => p.propertyType },
+    { header: "Status", accessor: (p) => p.projectStatus },
+    { header: "Possession", accessor: (p) => p.possessionDate || "" },
+    { header: "Location", accessor: (p) => p.location },
+    { header: "City", accessor: (p) => p.city },
+    { header: "State", accessor: (p) => p.state },
+    { header: "RERA Number", accessor: (p) => p.reraNumber || "" },
+    { header: "Starting Price", accessor: (p) => p.startingPrice },
+    { header: "Price Unit", accessor: (p) => p.priceUnit },
+    { header: "Price (Display)", accessor: (p) => formatPrice(p.startingPrice, p.priceUnit) },
+    { header: "Configurations", accessor: (p) => safeParseJSON(p.configurations).join("; ") },
+    { header: "Total Area", accessor: (p) => p.totalArea || "" },
+    { header: "Total Units", accessor: (p) => p.totalUnits ?? "" },
+    { header: "Amenities", accessor: (p) => safeParseJSON(p.amenities).join("; ") },
+    { header: "Verified", accessor: (p) => p.verified },
+    { header: "Featured", accessor: (p) => p.featured },
+    { header: "Views", accessor: (p) => p.views },
+    { header: "Created At", accessor: (p) => p.createdAt },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-navy-900">Manage Projects</h1>
           <p className="text-sm text-gray-500">{total} total projects</p>
         </div>
-        <button onClick={openCreateModal}
-          className="flex items-center gap-2 bg-gold-500 hover:bg-gold-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
-          <Plus size={16} /> Add Project
-        </button>
+        <div className="flex items-center gap-2">
+          <ExportButton
+            data={projects}
+            columns={projectExportColumns}
+            filename="propertypointers-projects"
+          />
+          <button onClick={openCreateModal}
+            className="flex items-center gap-2 bg-gold-500 hover:bg-gold-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+            <Plus size={16} /> Add Project
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

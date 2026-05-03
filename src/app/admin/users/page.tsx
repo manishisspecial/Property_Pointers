@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { formatDate, timeAgo } from "@/lib/utils";
 import { Users, MapPin, Shield, Building2, Heart, MessageCircle, Clock, Globe, Lock, X, CheckCircle, AlertCircle } from "lucide-react";
+import ExportButton from "@/components/admin/ExportButton";
+import type { CsvColumn } from "@/lib/csv";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -68,13 +70,37 @@ export default function AdminUsersPage() {
     setResetting(false);
   }
 
+  const userExportColumns: CsvColumn<any>[] = [
+    { header: "ID", accessor: (u) => u.id },
+    { header: "Name", accessor: (u) => u.name },
+    { header: "Email", accessor: (u) => u.email },
+    { header: "Phone", accessor: (u) => u.phone || "" },
+    { header: "Role", accessor: (u) => u.role },
+    { header: "Verified", accessor: (u) => Boolean(u.verified) },
+    { header: "City", accessor: (u) => u.city || "" },
+    { header: "State", accessor: (u) => u.state || "" },
+    { header: "Latitude", accessor: (u) => u.latitude ?? "" },
+    { header: "Longitude", accessor: (u) => u.longitude ?? "" },
+    { header: "Properties", accessor: (u) => u._count?.properties ?? 0 },
+    { header: "Inquiries", accessor: (u) => u._count?.inquiries ?? 0 },
+    { header: "Favorites", accessor: (u) => u._count?.favorites ?? 0 },
+    { header: "Last Login", accessor: (u) => u.lastLoginAt || "" },
+    { header: "Last Login IP", accessor: (u) => u.lastLoginIp || "" },
+    { header: "Joined", accessor: (u) => u.createdAt },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-navy-900">Manage Users</h1>
           <p className="text-sm text-gray-500">{total} registered users</p>
         </div>
+        <ExportButton
+          data={users}
+          columns={userExportColumns}
+          filename="propertypointers-users"
+        />
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-4 flex gap-3">

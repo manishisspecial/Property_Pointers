@@ -37,7 +37,6 @@ export default function HomePage() {
   const [featured, setFeatured] = useState<PropertyType[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [stats, setStats] = useState({ properties: 0, users: 0, cities: 7 });
-  const [activeVisitors, setActiveVisitors] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -48,25 +47,15 @@ export default function HomePage() {
       params.set("limit", "8");
       if (selectedCity) params.set("city", selectedCity.name);
 
-      const [propRes, blogRes, visitorsRes] = await Promise.all([
+      const [propRes, blogRes] = await Promise.all([
         fetch(`/api/properties?${params.toString()}`),
         fetch("/api/blog?limit=3"),
-        fetch("/api/public/active-visitors"),
       ]);
       const propData = await propRes.json();
       const blogData = await blogRes.json();
-      let visitorsData: { activeVisitors?: number } = {};
-      try {
-        visitorsData = await visitorsRes.json();
-      } catch {
-        visitorsData = {};
-      }
       setFeatured(propData.properties || []);
       setBlogPosts(blogData.posts || []);
       setStats((prev) => ({ ...prev, properties: propData.total || prev.properties }));
-      if (typeof visitorsData.activeVisitors === "number") {
-        setActiveVisitors(visitorsData.activeVisitors);
-      }
     } catch {
       setFeatured([]);
     }
@@ -121,33 +110,17 @@ export default function HomePage() {
           <SearchBar className="max-w-4xl mx-auto" />
 
           <div className="flex flex-wrap justify-center gap-6 mt-12">
-            {(
-              [
-                {
-                  value:
-                    activeVisitors != null
-                      ? new Intl.NumberFormat("en-IN").format(activeVisitors)
-                      : "…",
-                  label: "Browsing right now",
-                  live: true,
-                },
-                {
-                  value: `${stats.properties ? new Intl.NumberFormat("en-IN").format(stats.properties) : "10,000"}+`,
-                  label: "Listed Properties",
-                },
-                { value: "1000+", label: "Happy Customers" },
-                { value: `${stats.cities}`, label: "Cities Served" },
-                { value: "100%", label: "Verified Listings" },
-              ] as { value: string; label: string; live?: boolean }[]
-            ).map((stat) => (
+            {[
+              {
+                value: `${stats.properties ? new Intl.NumberFormat("en-IN").format(stats.properties) : "10,000"}+`,
+                label: "Listed Properties",
+              },
+              { value: "1000+", label: "Happy Customers" },
+              { value: `${stats.cities}`, label: "Cities Served" },
+              { value: "100%", label: "Verified Listings" },
+            ].map((stat) => (
               <div key={stat.label} className="text-center px-6 max-w-[11rem]">
                 <div className="flex items-center justify-center gap-2 min-h-[2.25rem]">
-                  {stat.live && (
-                    <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
-                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                    </span>
-                  )}
                   <p className="text-2xl md:text-3xl font-bold text-gold-600 tabular-nums">{stat.value}</p>
                 </div>
                 <p className="text-sm text-gray-500 mt-1 leading-snug">{stat.label}</p>
