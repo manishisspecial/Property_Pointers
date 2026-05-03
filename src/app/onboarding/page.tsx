@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Building2, Handshake, Store } from "lucide-react";
 import Logo from "@/components/Logo";
+import CharCounter from "@/components/onboarding/CharCounter";
+import GuidelinesPanel from "@/components/onboarding/GuidelinesPanel";
+import type { OnboardingRole } from "@/lib/content-guidelines";
+import { ONBOARDING_CHAR_LIMITS } from "@/lib/content-guidelines";
 import { defaultDashboardHref, roleNeedsProfileOnboarding } from "@/lib/role-dashboard";
 
 const PARTNER_CATEGORIES = [
@@ -138,6 +142,10 @@ export default function OnboardingPage() {
   }
 
   const role = user.role;
+  const onboardingRole = role as OnboardingRole;
+  const Lp = ONBOARDING_CHAR_LIMITS.partner;
+  const Lv = ONBOARDING_CHAR_LIMITS.vendor;
+  const Ld = ONBOARDING_CHAR_LIMITS.developer;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16 px-4">
@@ -152,6 +160,8 @@ export default function OnboardingPage() {
             experience. You only do this once.
           </p>
         </div>
+
+        <GuidelinesPanel role={onboardingRole} />
 
         <form onSubmit={onSubmit} className="card p-6 sm:p-8 space-y-4">
           {role === "partner" && (
@@ -172,6 +182,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setCompany(e.target.value)}
                   className="input-field mt-1"
                   placeholder="Your company or firm name"
+                  maxLength={Lp.company}
                   required
                 />
               </div>
@@ -198,6 +209,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setCity(e.target.value)}
                   className="input-field mt-1"
                   placeholder="e.g. Delhi NCR"
+                  maxLength={Lp.city}
                 />
               </div>
               <div>
@@ -217,6 +229,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setReraLicense(e.target.value)}
                   className="input-field mt-1"
                   placeholder="Registration number"
+                  maxLength={Lp.reraLicense}
                 />
               </div>
               <div>
@@ -226,7 +239,9 @@ export default function OnboardingPage() {
                   onChange={(e) => setPDetails(e.target.value)}
                   className="input-field mt-1 min-h-[100px]"
                   placeholder="Brief description (optional)"
+                  maxLength={Lp.details}
                 />
+                <CharCounter current={pDetails.length} max={Lp.details} />
               </div>
             </>
           )}
@@ -248,6 +263,7 @@ export default function OnboardingPage() {
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
                   className="input-field mt-1"
+                  maxLength={Lv.businessName}
                   required
                 />
               </div>
@@ -258,6 +274,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setVCategory(e.target.value)}
                   className="input-field mt-1"
                   placeholder="e.g. Legal, MEP, Branding"
+                  maxLength={Lv.category}
                   required
                 />
               </div>
@@ -268,6 +285,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setVCity(e.target.value)}
                   className="input-field mt-1"
                   placeholder="City you operate from"
+                  maxLength={Lv.city}
                 />
               </div>
               <div>
@@ -278,6 +296,7 @@ export default function OnboardingPage() {
                   className="input-field mt-1"
                   placeholder="https://"
                   type="url"
+                  maxLength={Lv.portfolio}
                 />
               </div>
               <div>
@@ -287,7 +306,9 @@ export default function OnboardingPage() {
                   onChange={(e) => setVDetails(e.target.value)}
                   className="input-field mt-1 min-h-[100px]"
                   placeholder="Optional"
+                  maxLength={Lv.details}
                 />
+                <CharCounter current={vDetails.length} max={Lv.details} />
               </div>
             </>
           )}
@@ -310,6 +331,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setCompanyName(e.target.value)}
                   className="input-field mt-1"
                   placeholder="As registered or marketed"
+                  maxLength={Ld.companyName}
                   required
                 />
               </div>
@@ -319,6 +341,7 @@ export default function OnboardingPage() {
                   value={dCity}
                   onChange={(e) => setDCity(e.target.value)}
                   className="input-field mt-1"
+                  maxLength={Ld.city}
                   required
                 />
               </div>
@@ -330,6 +353,7 @@ export default function OnboardingPage() {
                   className="input-field mt-1"
                   placeholder="https://"
                   type="url"
+                  maxLength={Ld.website}
                 />
               </div>
               <div>
@@ -338,6 +362,7 @@ export default function OnboardingPage() {
                   value={reraNumber}
                   onChange={(e) => setReraNumber(e.target.value)}
                   className="input-field mt-1"
+                  maxLength={Ld.reraNumber}
                 />
               </div>
               <div>
@@ -347,7 +372,9 @@ export default function OnboardingPage() {
                   onChange={(e) => setAbout(e.target.value)}
                   className="input-field mt-1 min-h-[100px]"
                   placeholder="Short overview (optional)"
+                  maxLength={Ld.about}
                 />
+                <CharCounter current={about.length} max={Ld.about} />
               </div>
             </>
           )}
