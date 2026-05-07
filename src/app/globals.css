@@ -73,3 +73,45 @@
 .animate-pulse-slow {
   animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Blog Content Heading Styles */
+.blog-content h1 {
+  @apply text-4xl md:text-5xl font-bold text-navy-900 mt-8 mb-4 leading-tight;
+}
+
+.blog-content h2 {
+  @apply text-3xl md:text-4xl font-bold text-navy-800 mt-8 mb-4 leading-tight;
+}
+
+.blog-content h3 {
+  @apply text-2xl md:text-3xl font-semibold text-navy-700 mt-6 mb-3 leading-snug;
+}
+
+.blog-content h4 {
+  @apply text-xl md:text-2xl font-semibold text-navy-700 mt-5 mb-2 leading-snug;
+}
+
+.blog-content h5 {
+  @apply text-lg md:text-xl font-semibold text-navy-600 mt-4 mb-2 leading-snug;
+}
+
+.blog-content h6 {
+  @apply text-base md:text-lg font-semibold text-navy-600 mt-4 mb-2 leading-snug;
+}
+
+.blog-content p {
+  @apply text-gray-700 mb-4 leading-relaxed;
+}
+
+.blog-content a {
+  @apply text-gold-600 hover:text-gold-700 underline;
+}
+
+.blog-content ul,
+.blog-content ol {
+  @apply mb-4 ml-6;
+}
+
+.blog-content li {
+  @apply text-gray-700 mb-2 leading-relaxed;
+}

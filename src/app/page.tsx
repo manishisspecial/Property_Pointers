@@ -12,6 +12,16 @@ import PropertyCard from "@/components/PropertyCard";
 import { useCity } from "@/context/CityContext";
 import { PropertyType } from "@/types";
 
+// Meta tags configuration for homepage
+const PAGE_META = {
+  title: "Property Pointers - India's #1 Real Estate Platform",
+  description: "Find your dream property with Property Pointers. Buy, sell, or rent residential and commercial properties with verified listings, virtual tours, and zero brokerage.",
+  keywords: "real estate, property, buy, sell, rent, apartment, house, villa, commercial, India, Noida, Delhi NCR",
+  ogImage: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1200&h=630&fit=crop",
+  ogTitle: "Property Pointers - India's #1 Real Estate Platform",
+  ogDescription: "Find your dream property with Property Pointers. Buy, sell, or rent residential and commercial properties with verified listings, virtual tours, and zero brokerage.",
+};
+
 const SERVICE_CITIES = [
   { name: "Delhi", img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=400&h=300&fit=crop" },
   { name: "Noida", img: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&h=300&fit=crop" },
@@ -38,6 +48,57 @@ export default function HomePage() {
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [stats, setStats] = useState({ properties: 0, users: 0, cities: 7 });
   const [loading, setLoading] = useState(true);
+
+  // Update meta tags dynamically
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Update title
+      document.title = PAGE_META.title;
+      
+      // Update or create meta description
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.setAttribute('content', PAGE_META.description);
+      
+      // Update or create meta keywords
+      let metaKeywords = document.querySelector('meta[name="keywords"]');
+      if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+      }
+      metaKeywords.setAttribute('content', PAGE_META.keywords);
+      
+      // Update OG tags
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) {
+        ogTitle = document.createElement('meta');
+        ogTitle.setAttribute('property', 'og:title');
+        document.head.appendChild(ogTitle);
+      }
+      ogTitle.setAttribute('content', PAGE_META.ogTitle);
+      
+      let ogDescription = document.querySelector('meta[property="og:description"]');
+      if (!ogDescription) {
+        ogDescription = document.createElement('meta');
+        ogDescription.setAttribute('property', 'og:description');
+        document.head.appendChild(ogDescription);
+      }
+      ogDescription.setAttribute('content', PAGE_META.ogDescription);
+      
+      let ogImage = document.querySelector('meta[property="og:image"]');
+      if (!ogImage) {
+        ogImage = document.createElement('meta');
+        ogImage.setAttribute('property', 'og:image');
+        document.head.appendChild(ogImage);
+      }
+      ogImage.setAttribute('content', PAGE_META.ogImage);
+    }
+  }, []);
 
   const fetchData = useCallback(async () => {
     setLoading(true);

@@ -1,0 +1,23 @@
+# robots.txt for Property Pointers
+# Allow all crawlers to index the website
+
+User-agent: *
+Allow: /
+
+# Disallow admin and sensitive paths
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /.next/
+Disallow: /private/
+
+# Disallow specific file types that shouldn't be indexed
+Disallow: *.pdf$
+Disallow: *.doc$
+Disallow: *.docx$
+
+# Crawl delay for bots
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://propertypointers.com/sitemap.xml
