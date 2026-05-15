@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 const DEFAULT_TEXT =
   "Hi, I'm on Property Pointers and would like to speak with your team.";
+const DEFAULT_DIGITS = "919217434838";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -13,19 +14,39 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
-export default function WhatsAppFloat() {
-  const [href, setHref] = useState(
-    () => `https://wa.me/919990074072?text=${encodeURIComponent(DEFAULT_TEXT)}`
+function PhoneIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z" />
+    </svg>
   );
+}
+
+export default function WhatsAppFloat() {
+  const [whatsappHref, setWhatsappHref] = useState(
+    () => `https://wa.me/${DEFAULT_DIGITS}?text=${encodeURIComponent(DEFAULT_TEXT)}`
+  );
+  const [telHref, setTelHref] = useState(() => `tel:+${DEFAULT_DIGITS}`);
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/public/contact")
       .then((r) => r.json())
-      .then((data: { whatsappDigits?: string }) => {
-        if (cancelled || !data?.whatsappDigits) return;
+      .then((data: { whatsappDigits?: string; displayPhone?: string }) => {
+        if (cancelled) return;
+        const digits = data?.whatsappDigits || DEFAULT_DIGITS;
         const q = encodeURIComponent(DEFAULT_TEXT);
-        setHref(`https://wa.me/${data.whatsappDigits}?text=${q}`);
+        setWhatsappHref(`https://wa.me/${digits}?text=${q}`);
+        setTelHref(`tel:+${digits}`);
       })
       .catch(() => {});
     return () => {
@@ -34,17 +55,29 @@ export default function WhatsAppFloat() {
   }, []);
 
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] hover:bg-[#20BD5C] text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 group"
-      aria-label="Chat on WhatsApp"
-    >
-      <WhatsAppIcon className="w-7 h-7" />
-      <span className="absolute bottom-full right-0 mb-2 bg-navy-800 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-        WhatsApp us
-      </span>
-    </a>
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      <a
+        href={telHref}
+        className="relative w-14 h-14 bg-navy-800 hover:bg-navy-900 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 group"
+        aria-label="Call us"
+      >
+        <PhoneIcon className="w-7 h-7" />
+        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-navy-800 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          Call us
+        </span>
+      </a>
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative w-14 h-14 bg-[#25D366] hover:bg-[#20BD5C] text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 group"
+        aria-label="Chat on WhatsApp"
+      >
+        <WhatsAppIcon className="w-7 h-7" />
+        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-navy-800 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          WhatsApp us
+        </span>
+      </a>
+    </div>
   );
 }

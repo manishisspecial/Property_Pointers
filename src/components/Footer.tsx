@@ -69,7 +69,7 @@ export default function Footer() {
               {[
                 { label: "About Us", href: "/about" },
                 { label: "Careers", href: "/careers" },
-                { label: "Blogs", href: "/insights" },
+                { label: "Blogs", href: "/blog" },
                 { label: "Buy Property", href: "/properties?type=sale" },
                 { label: "Rent Property", href: "/properties?type=rent" },
                 { label: "Post Property", href: "/post-property" },

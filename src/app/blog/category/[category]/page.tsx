@@ -2,14 +2,10 @@ import Link from "next/link";
 import { Calendar, Eye, ArrowRight, BookOpen, Search, Clock, TrendingUp, Mail } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { blogBylineDisplay, formatDate } from "@/lib/utils";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-
-export const metadata = {
-  title: "Blog - Property Pointers | Real Estate Tips, Guides & Market Insights",
-  description: "Read expert articles on property buying, selling, renting, market trends, investment tips, home loans, and real estate guides for India.",
-  keywords: "real estate blog, property tips, home buying guide, property investment, market trends, Noida real estate, Delhi NCR properties",
-};
 
 const CATEGORIES = [
   { value: "all", label: "All Posts" },
@@ -27,7 +23,24 @@ function readTime(content: string) {
   return Math.max(1, Math.ceil(content.split(/\s+/).length / 200));
 }
 
-async function getBlogPosts(category?: string, search?: string) {
+interface Props {
+  params: Promise<{ category: string }>;
+  searchParams: Promise<{ search?: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { category } = await params;
+  const cat = CATEGORIES.find((c) => c.value === category);
+  if (!cat || category === "all") {
+    return { title: "Blog - Property Pointers" };
+  }
+  return {
+    title: `${cat.label} - Property Pointers Blog`,
+    description: `Read expert articles on ${cat.label.toLowerCase()} - tips, guides, and insights for Indian real estate.`,
+  };
+}
+
+async function getBlogPosts(category: string, search?: string) {
   try {
     const where: any = { published: true };
     if (category && category !== "all") {
@@ -63,20 +76,21 @@ async function getPopularPosts() {
   }
 }
 
-interface Props {
-  searchParams: Promise<{ category?: string; search?: string }>;
-}
+export default async function BlogCategoryPage({ params, searchParams }: Props) {
+  const { category } = await params;
+  const { search } = await searchParams;
 
-export default async function BlogPage({ searchParams }: Props) {
-  const { category, search } = await searchParams;
+  const validCategory = CATEGORIES.find((c) => c.value === category);
+  if (!validCategory) {
+    notFound();
+  }
+
   const [posts, popularPosts] = await Promise.all([
     getBlogPosts(category, search),
     getPopularPosts(),
   ]);
 
-  const featured = !category && !search ? (posts.find((p) => p.views > 0) || posts[0]) : null;
-  const rest = featured ? posts.filter((p) => p.id !== featured.id) : posts;
-  const activeCategory = category || "all";
+  const activeCategory = category;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -95,7 +109,7 @@ export default async function BlogPage({ searchParams }: Props) {
           </p>
 
           {/* Search Bar */}
-          <form action="/blog" method="GET" className="max-w-xl mx-auto relative">
+          <form action={`/blog/category/${category}`} method="GET" className="max-w-xl mx-auto relative">
             <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -104,7 +118,6 @@ export default async function BlogPage({ searchParams }: Props) {
               placeholder="Search articles, guides, tips..."
               className="w-full pl-12 pr-28 py-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent text-sm"
             />
-            {category && <input type="hidden" name="category" value={category} />}
             <button
               type="submit"
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-gold-500 hover:bg-gold-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
@@ -143,28 +156,24 @@ export default async function BlogPage({ searchParams }: Props) {
       </div>
 
       {/* Active filter indicator */}
-      {(category || search) && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-          <div className="flex items-center gap-3 flex-wrap">
-            {search && (
-              <span className="inline-flex items-center gap-1.5 bg-gold-50 text-gold-700 px-3 py-1.5 rounded-full text-sm font-medium">
-                Results for &ldquo;{search}&rdquo;
-                <Link href={category ? `/blog/category/${category}` : "/blog"} className="ml-1 hover:text-gold-900">&times;</Link>
-              </span>
-            )}
-            {category && (
-              <span className="inline-flex items-center gap-1.5 bg-navy-50 text-navy-700 px-3 py-1.5 rounded-full text-sm font-medium capitalize">
-                {category.replace("-", " ")}
-                <Link href={search ? `/blog?search=${search}` : "/blog"} className="ml-1 hover:text-navy-900">&times;</Link>
-              </span>
-            )}
-            <Link href="/blog" className="text-sm text-gray-500 hover:text-red-500 font-medium">
-              Clear all
-            </Link>
-            <span className="text-sm text-gray-400">{posts.length} article{posts.length !== 1 ? "s" : ""} found</span>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div className="flex items-center gap-3 flex-wrap">
+          {search && (
+            <span className="inline-flex items-center gap-1.5 bg-gold-50 text-gold-700 px-3 py-1.5 rounded-full text-sm font-medium">
+              Results for &ldquo;{search}&rdquo;
+              <Link href={`/blog/category/${category}`} className="ml-1 hover:text-gold-900">&times;</Link>
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1.5 bg-navy-50 text-navy-700 px-3 py-1.5 rounded-full text-sm font-medium capitalize">
+            {category.replace("-", " ")}
+            <Link href={search ? `/blog?search=${search}` : "/blog"} className="ml-1 hover:text-navy-900">&times;</Link>
+          </span>
+          <Link href="/blog" className="text-sm text-gray-500 hover:text-red-500 font-medium">
+            Clear all
+          </Link>
+          <span className="text-sm text-gray-400">{posts.length} article{posts.length !== 1 ? "s" : ""} found</span>
         </div>
-      )}
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {posts.length === 0 ? (
@@ -188,60 +197,9 @@ export default async function BlogPage({ searchParams }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              {/* Featured Post */}
-              {featured && (
-                <Link href={`/blog/${featured.slug}`} className="block mb-10 group">
-                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-shadow">
-                    <div className="h-64 md:h-80 bg-gray-200 overflow-hidden relative">
-                      {featured.coverImage ? (
-                        <img src={featured.coverImage} alt={featured.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-navy-100 to-navy-200">
-                          <BookOpen size={64} className="text-navy-400" />
-                        </div>
-                      )}
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-gold-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
-                          FEATURED
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6 md:p-8">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="px-3 py-1 bg-gold-100 text-gold-700 text-xs font-semibold rounded-full capitalize">
-                          {featured.category.replace("-", " ")}
-                        </span>
-                        <span className="text-sm text-gray-400 flex items-center gap-1">
-                          <Calendar size={14} /> {formatDate(featured.createdAt)}
-                        </span>
-                        <span className="text-sm text-gray-400 flex items-center gap-1">
-                          <Clock size={14} /> {readTime(featured.content)} min read
-                        </span>
-                      </div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-navy-900 mb-3 group-hover:text-gold-600 transition-colors">
-                        {featured.title}
-                      </h2>
-                      <p className="text-gray-500 mb-4 leading-relaxed line-clamp-3">{featured.excerpt}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-navy-800 flex items-center justify-center text-white text-sm font-bold">
-                            {blogBylineDisplay(featured.byline, featured.author.name)[0]}
-                          </div>
-                          <span className="text-sm text-gray-600">{blogBylineDisplay(featured.byline, featured.author.name)}</span>
-                        </div>
-                        <span className="text-sm text-gray-400 flex items-center gap-1">
-                          <Eye size={14} /> {featured.views} views
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              )}
-
               {/* Post Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {rest.map((post) => (
+                {posts.map((post) => (
                   <Link key={post.id} href={`/blog/${post.slug}`} className="card group block">
                     <div className="h-48 bg-gray-200 overflow-hidden">
                       {post.coverImage ? (

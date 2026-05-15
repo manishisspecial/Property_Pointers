@@ -45,7 +45,7 @@ export default function ProjectDetailPage() {
   const [leadLoading, setLeadLoading] = useState(false);
   const [leadStatus, setLeadStatus] = useState<{ ok: boolean; text: string } | null>(null);
   const [leadAction, setLeadAction] = useState("project_get_price_details");
-  const [sitePhone, setSitePhone] = useState("+91-9990074072");
+  const [sitePhone, setSitePhone] = useState("+91 92174 34838");
 
   useEffect(() => {
     if (slug) fetchProject();

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { formatDate } from "@/lib/utils";
 import {
   BookOpen, Plus, Edit, Trash2, Eye, EyeOff, CheckCircle, X, Save, Calendar,
-  Upload, Loader2
+  Upload, Loader2, Tag, FolderPlus
 } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import ExportButton from "@/components/admin/ExportButton";
@@ -25,6 +25,12 @@ interface FaqItem {
   answer: string;
 }
 
+interface BlogCategory {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 function toSlug(value: string) {
   return value
     .toLowerCase()
@@ -38,6 +44,10 @@ export default function AdminBlogPage() {
   const [loading, setLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
   const [editingPost, setEditingPost] = useState<any>(null);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryLoading, setCategoryLoading] = useState(false);
   const [form, setForm] = useState({
     title: "",
     slug: "",
@@ -47,6 +57,7 @@ export default function AdminBlogPage() {
     metaDescription: "",
     metaTags: "",
     schemaJson: "",
+    canonicalUrl: "",
     coverImage: "",
     category: "general",
     tags: "",
@@ -57,6 +68,7 @@ export default function AdminBlogPage() {
 
   useEffect(() => {
     fetchPosts();
+    fetchCategories();
   }, []);
 
   async function fetchPosts() {
@@ -66,6 +78,42 @@ export default function AdminBlogPage() {
       setPosts(data.posts || []);
     } catch {}
     setLoading(false);
+  }
+
+  async function fetchCategories() {
+    try {
+      const res = await fetch("/api/admin/blog-categories");
+      const data = await res.json();
+      setCategories(data.categories || []);
+    } catch {}
+  }
+
+  async function addCategory() {
+    if (!newCategoryName.trim()) return;
+    setCategoryLoading(true);
+    try {
+      const res = await fetch("/api/admin/blog-categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newCategoryName.trim() }),
+      });
+      if (res.ok) {
+        setNewCategoryName("");
+        fetchCategories();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to add category");
+      }
+    } catch {}
+    setCategoryLoading(false);
+  }
+
+  async function deleteCategory(id: string, name: string) {
+    if (!confirm(`Delete category "${name}"? Posts using it will keep their current category value.`)) return;
+    try {
+      await fetch(`/api/admin/blog-categories?id=${id}`, { method: "DELETE" });
+      fetchCategories();
+    } catch {}
   }
 
   function openEditor(post?: any) {
@@ -80,6 +128,7 @@ export default function AdminBlogPage() {
         metaDescription: post.metaDescription || "",
         metaTags: JSON.parse(post.metaTags || "[]").join(", "),
         schemaJson: post.schemaJson || "",
+        canonicalUrl: post.canonicalUrl || "",
         coverImage: post.coverImage || "",
         category: post.category,
         tags: JSON.parse(post.tags || "[]").join(", "),
@@ -106,6 +155,7 @@ export default function AdminBlogPage() {
         metaDescription: "",
         metaTags: "",
         schemaJson: "",
+        canonicalUrl: "",
         coverImage: "",
         category: "general",
         tags: "",
@@ -213,6 +263,9 @@ export default function AdminBlogPage() {
             columns={blogExportColumns}
             filename="propertypointers-blog"
           />
+          <button onClick={() => setShowCategoryManager(true)} className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">
+            <Tag size={18} /> Categories
+          </button>
           <button onClick={() => openEditor()} className="btn-primary flex items-center gap-2">
             <Plus size={18} /> New Post
           </button>
@@ -302,20 +355,37 @@ export default function AdminBlogPage() {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Canonical URL</label>
+                <input
+                  type="url"
+                  value={form.canonicalUrl}
+                  onChange={(e) => setForm({ ...form, canonicalUrl: e.target.value })}
+                  className="input-field"
+                  placeholder="https://example.com/original-article"
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave blank to auto-set the published page URL as canonical.</p>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
-                  <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input-field">
-                    <option value="general">General</option>
-                    <option value="buying-guide">Buying Guide</option>
-                    <option value="selling-tips">Selling Tips</option>
-                    <option value="market-trends">Market Trends</option>
-                    <option value="investment">Investment</option>
-                    <option value="home-loans">Home Loans</option>
-                    <option value="legal">Legal & RERA</option>
-                    <option value="interior">Interior & Vastu</option>
-                    <option value="nri">NRI Guide</option>
-                  </select>
+                  <div className="flex gap-2">
+                    <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input-field flex-1">
+                      <option value="general">General</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => setShowCategoryManager(true)}
+                      className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 transition-colors shrink-0"
+                      title="Manage Categories"
+                    >
+                      <Tag size={16} />
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Tags (comma-separated)</label>
@@ -399,6 +469,83 @@ export default function AdminBlogPage() {
               <button onClick={savePost} className="btn-primary flex items-center gap-2">
                 <Save size={16} /> {editingPost ? "Update Post" : "Create Post"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Category Manager Modal */}
+      {showCategoryManager && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-lg font-bold text-navy-900 flex items-center gap-2">
+                <Tag size={20} /> Manage Blog Categories
+              </h2>
+              <button onClick={() => setShowCategoryManager(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addCategory()}
+                  className="input-field flex-1"
+                  placeholder="New category name..."
+                />
+                <button
+                  onClick={addCategory}
+                  disabled={categoryLoading || !newCategoryName.trim()}
+                  className="btn-primary flex items-center gap-2 shrink-0 disabled:opacity-50"
+                >
+                  {categoryLoading ? <Loader2 size={16} className="animate-spin" /> : <FolderPlus size={16} />}
+                  Add
+                </button>
+              </div>
+
+              <div className="border rounded-xl overflow-hidden">
+                <div className="bg-gray-50 px-4 py-2.5 border-b">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Categories ({categories.length + 1})
+                  </p>
+                </div>
+                <div className="max-h-64 overflow-y-auto divide-y">
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-navy-800">General</p>
+                      <p className="text-xs text-gray-400">general (default)</p>
+                    </div>
+                  </div>
+                  {categories.map((cat) => (
+                    <div key={cat.id} className="flex items-center justify-between px-4 py-3 group">
+                      <div>
+                        <p className="text-sm font-medium text-navy-800">{cat.name}</p>
+                        <p className="text-xs text-gray-400">{cat.slug}</p>
+                      </div>
+                      <button
+                        onClick={() => deleteCategory(cat.id, cat.name)}
+                        className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Delete category"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  {categories.length === 0 && (
+                    <div className="px-4 py-6 text-center text-sm text-gray-400">
+                      No custom categories yet. Add one above.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500">
+                Deleting a category does not remove it from existing posts.
+              </p>
             </div>
           </div>
         </div>

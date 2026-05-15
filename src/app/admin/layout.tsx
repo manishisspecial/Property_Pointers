@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Building2, Users, BarChart3, MessageCircle, Settings,
-  Activity, ChevronRight, LogOut, Menu, X, Shield, BookOpen, Landmark, ExternalLink, Gauge
+  Activity, ChevronRight, LogOut, Menu, X, Shield, BookOpen, Landmark, ExternalLink, Gauge, Mail
 } from "lucide-react";
 import Logo from "@/components/Logo";
 
@@ -18,6 +18,7 @@ const SIDEBAR_ITEMS = [
   { href: "/admin/inquiries", icon: MessageCircle, label: "Inquiries" },
   { href: "/admin/community", icon: MessageCircle, label: "Community" },
   { href: "/admin/blog", icon: BookOpen, label: "Blog" },
+  { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
   { href: "/admin/performance", icon: Gauge, label: "Performance" },
   { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
   { href: "/admin/settings", icon: Settings, label: "Settings" },

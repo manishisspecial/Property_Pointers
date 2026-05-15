@@ -64,6 +64,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
         metaDescription: data.metaDescription ?? undefined,
         metaTags: metaTags ? JSON.stringify(metaTags) : undefined,
         schemaJson: data.schemaJson ?? undefined,
+        canonicalUrl: data.canonicalUrl === undefined
+          ? undefined
+          : data.canonicalUrl?.trim() || null,
         faqs: faqs ? JSON.stringify(faqs) : undefined,
         coverImage: data.coverImage ?? undefined,
         category: data.category ?? undefined,

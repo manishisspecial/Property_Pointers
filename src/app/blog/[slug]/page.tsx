@@ -7,6 +7,8 @@ import prisma from "@/lib/prisma";
 import { blogBylineDisplay, formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import TableOfContents from "@/components/TableOfContents";
+import NewsletterPopup from "@/components/NewsletterPopup";
 
 export const dynamic = "force-dynamic";
 
@@ -35,10 +37,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tags = parseJsonArray(post.metaTags || post.tags || "[]");
   const metaTitle = post.metaTitle || `${post.title} | Property Pointers Blog`;
   const metaDescription = post.metaDescription || post.excerpt;
+  const canonical = post.canonicalUrl || `https://propertypointers.com/blog/${slug}`;
   return {
     title: metaTitle,
     description: metaDescription,
     keywords: tags.join(", "),
+    alternates: {
+      canonical,
+    },
     openGraph: {
       title: metaTitle,
       description: metaDescription,
@@ -116,7 +122,7 @@ export default async function BlogPostPage({ params }: Props) {
           <ChevronRight size={14} />
           <Link href="/blog" className="hover:text-gold-500">Blog</Link>
           <ChevronRight size={14} />
-          <Link href={`/blog?category=${post.category}`} className="hover:text-gold-500 capitalize">
+          <Link href={`/blog/category/${post.category}`} className="hover:text-gold-500 capitalize">
             {post.category.replace("-", " ")}
           </Link>
           <ChevronRight size={14} />
@@ -331,8 +337,11 @@ export default async function BlogPostPage({ params }: Props) {
               </p>
             </div>
 
+            {/* Table of Contents */}
+            <TableOfContents />
+
             {/* Quick Links */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm sticky top-24">
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
               <h3 className="text-lg font-bold text-navy-900 mb-4">Explore More</h3>
               <div className="space-y-2">
                 <Link href="/properties?type=sale" className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-navy-50 hover:text-navy-800 transition-colors">
@@ -352,6 +361,9 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Newsletter Popup */}
+      <NewsletterPopup />
     </div>
   );
 }

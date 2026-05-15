@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
         metaDescription: data.metaDescription || null,
         metaTags: JSON.stringify(metaTags),
         schemaJson: data.schemaJson || null,
+        canonicalUrl: data.canonicalUrl?.trim() || null,
         faqs: JSON.stringify(faqs),
         coverImage: data.coverImage || null,
         category: data.category || "general",

@@ -153,6 +153,13 @@ model ChatMessage {
   createdAt DateTime @default(now())
 }
 
+model BlogCategory {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+}
+
 model BlogPost {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   title      String
@@ -162,8 +169,9 @@ model BlogPost {
   metaTitle  String?
   metaDescription String?
   metaTags   String   @default("[]")
-  schemaJson String?
-  faqs       String   @default("[]")
+  schemaJson   String?
+  canonicalUrl String?
+  faqs         String   @default("[]")
   coverImage String?
   category   String   @default("general")
   tags       String   @default("[]")
@@ -254,7 +262,7 @@ model SiteSettings {
   siteName               String  @default("Property Pointers")
   siteDescription        String  @default("India's #1 Real Estate Platform")
   contactEmail           String  @default("propertypointersofficial@gmail.com")
-  contactPhone           String  @default("+91-9990074072")
+  contactPhone           String  @default("+91 92174 34838")
   address                String  @default("701, GDITL NorthEx, Netaji Subhash Place, New Delhi - 110034")
   facebook               String? @default("https://www.facebook.com/share/1CQ4czxaZu/?mibextid=wwXIfr")
   twitter                String?
@@ -264,4 +272,14 @@ model SiteSettings {
   /// "exact" = count from activity logs; "manual" = show manualActiveVisitors
   activeVisitorsDisplay  String  @default("exact")
   manualActiveVisitors   Int     @default(20)
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  source    String?
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -424,7 +424,7 @@ async function main() {
 
   const siteContact = {
     contactEmail: "propertypointersofficial@gmail.com",
-    contactPhone: "+91-9990074072",
+    contactPhone: "+91 92174 34838",
     address: "701, GDITL NorthEx, Netaji Subhash Place, New Delhi - 110034",
     facebook: "https://www.facebook.com/share/1CQ4czxaZu/?mibextid=wwXIfr",
     linkedin: "https://www.linkedin.com/company/propertypointersofficial/",

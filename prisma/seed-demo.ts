@@ -35,7 +35,7 @@ async function main() {
       operatingCities: JSON.stringify(["Noida", "Greater Noida", "Gurgaon", "Delhi"]),
       website: "https://www.propertypointers.com",
       contactEmail: "sales@propertypointersdev.com",
-      contactPhone: "+91-9990074072",
+      contactPhone: "+91 92174 34838",
       featured: true,
       verified: true,
     },
