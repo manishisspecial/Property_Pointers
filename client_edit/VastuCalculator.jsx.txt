@@ -1,0 +1,881 @@
+import { useState, useRef, useCallback } from "react";
+
+// ─── Vastu Knowledge Base ────────────────────────────────────────────────────
+
+const DIRECTIONS = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
+
+const ROOM_LABELS = {
+  mainEntrance: "Main Entrance",
+  kitchen: "Kitchen",
+  masterBedroom: "Master Bedroom",
+  poojaRoom: "Pooja Room",
+  livingRoom: "Living Room",
+  toilet: "Toilet / Bathroom",
+  staircase: "Staircase",
+  waterTank: "Water Tank (Overhead)",
+  septicTank: "Septic Tank",
+};
+
+const VASTU_RULES = {
+  mainEntrance: {
+    ideal: ["North", "North-East", "East"],
+    good: ["North-West", "West"],
+    bad: ["South", "South-West", "South-East"],
+    idealMsg: "Excellent — North/North-East/East entrance invites prosperity and positive energy.",
+    goodMsg: "Acceptable — North-West or West entrance is generally neutral.",
+    badMsg: "Inauspicious — South or South-West entrance can obstruct prosperity. Consider remedial measures.",
+    weight: 18,
+  },
+  kitchen: {
+    ideal: ["South-East"],
+    good: ["North-West"],
+    bad: ["North-East", "South-West", "North"],
+    idealMsg: "Ideal — South-East (Agni corner) is perfect for the kitchen.",
+    goodMsg: "Acceptable — North-West kitchen is considered workable.",
+    badMsg: "Problematic placement. North-East or South-West kitchen can cause health issues. Remediation advised.",
+    weight: 15,
+  },
+  masterBedroom: {
+    ideal: ["South-West"],
+    good: ["South", "West"],
+    bad: ["North-East", "South-East"],
+    idealMsg: "Excellent — South-West master bedroom promotes stability and restful sleep.",
+    goodMsg: "Good — South or West bedroom is acceptable for the master suite.",
+    badMsg: "Unfavourable — North-East or South-East master bedroom may disturb sleep and health.",
+    weight: 15,
+  },
+  poojaRoom: {
+    ideal: ["North-East", "East"],
+    good: ["North"],
+    bad: ["South", "South-West", "West"],
+    idealMsg: "Perfect — North-East/East Pooja room amplifies positive spiritual energy.",
+    goodMsg: "Acceptable — North direction is workable for prayer space.",
+    badMsg: "Inauspicious — Pooja room in South, South-West, or West is not recommended.",
+    weight: 12,
+  },
+  livingRoom: {
+    ideal: ["North", "East", "North-East"],
+    good: ["North-West", "West"],
+    bad: ["South-West"],
+    idealMsg: "Excellent — North/East living room promotes social harmony and well-being.",
+    goodMsg: "Acceptable — North-West or West living room is generally fine.",
+    badMsg: "Avoid South-West for living room as it may create restlessness.",
+    weight: 10,
+  },
+  toilet: {
+    ideal: ["North-West", "West"],
+    good: ["South", "South-East"],
+    bad: ["North-East", "South-West", "East"],
+    idealMsg: "Good — North-West/West toilet is the most favourable placement.",
+    goodMsg: "Workable — South or South-East toilet is acceptable.",
+    badMsg: "Problematic — Toilet in North-East or East can severely impact health and finances.",
+    weight: 12,
+  },
+  staircase: {
+    ideal: ["South", "South-West", "West"],
+    good: ["North-West"],
+    bad: ["North-East", "Centre"],
+    idealMsg: "Ideal — South/South-West/West staircase is considered auspicious.",
+    goodMsg: "Acceptable — North-West staircase is workable.",
+    badMsg: "Avoid North-East staircase as it can block positive energy flow.",
+    weight: 8,
+  },
+  waterTank: {
+    ideal: ["North-West", "West", "South-West"],
+    good: ["North"],
+    bad: ["North-East", "South-East"],
+    idealMsg: "Good — North-West/West/South-West is ideal for overhead water storage.",
+    goodMsg: "Acceptable placement.",
+    badMsg: "Avoid placing overhead tank in North-East — it is considered inauspicious.",
+    weight: 5,
+  },
+  septicTank: {
+    ideal: ["North-West", "South-East"],
+    good: ["West"],
+    bad: ["North-East", "South-West", "East"],
+    idealMsg: "Ideal placement for septic tank.",
+    goodMsg: "Acceptable placement.",
+    badMsg: "Septic tank in North-East or South-West can have severe negative Vastu effects.",
+    weight: 5,
+  },
+};
+
+const PROPERTY_TYPES = ["Apartment / Flat", "Independent House / Villa", "Plot / Land", "Builder Floor", "Penthouse", "Row House"];
+
+function calcVastu(rooms, facing) {
+  let totalScore = 0;
+  let maxScore = 0;
+  const positives = [];
+  const issues = [];
+  const roomAnalysis = {};
+
+  // Facing direction bonus
+  const facingBonus = { "North": 5, "North-East": 5, "East": 4, "North-West": 3, "West": 2, "South-East": 1, "South": 0, "South-West": 0 };
+  const facingScore = facingBonus[facing] ?? 2;
+  totalScore += facingScore;
+  maxScore += 5;
+
+  if (facingScore >= 4) {
+    positives.push(`Property faces ${facing} — considered highly auspicious for wealth and health.`);
+  } else if (facingScore <= 1) {
+    issues.push(`${facing}-facing property may require Vastu remedies at the entrance.`);
+  }
+
+  Object.entries(rooms).forEach(([key, direction]) => {
+    if (!direction || !VASTU_RULES[key]) return;
+    const rule = VASTU_RULES[key];
+    maxScore += rule.weight;
+
+    if (rule.ideal.includes(direction)) {
+      totalScore += rule.weight;
+      roomAnalysis[key] = { status: "ideal", msg: rule.idealMsg, score: rule.weight, max: rule.weight };
+      positives.push(`${ROOM_LABELS[key]} in ${direction} — ${rule.idealMsg}`);
+    } else if (rule.good.includes(direction)) {
+      totalScore += Math.round(rule.weight * 0.65);
+      roomAnalysis[key] = { status: "good", msg: rule.goodMsg, score: Math.round(rule.weight * 0.65), max: rule.weight };
+    } else if (rule.bad.includes(direction)) {
+      totalScore += Math.round(rule.weight * 0.1);
+      roomAnalysis[key] = { status: "bad", msg: rule.badMsg, score: Math.round(rule.weight * 0.1), max: rule.weight };
+      issues.push(`${ROOM_LABELS[key]} in ${direction}: ${rule.badMsg}`);
+    } else {
+      totalScore += Math.round(rule.weight * 0.45);
+      roomAnalysis[key] = { status: "neutral", msg: "Direction is neither strongly favourable nor unfavourable.", score: Math.round(rule.weight * 0.45), max: rule.weight };
+    }
+  });
+
+  const pct = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
+  let grade, gradeColor;
+  if (pct >= 80) { grade = "Excellent"; gradeColor = "#22c55e"; }
+  else if (pct >= 65) { grade = "Good"; gradeColor = "#C9A84C"; }
+  else if (pct >= 45) { grade = "Average"; gradeColor = "#f97316"; }
+  else { grade = "Needs Attention"; gradeColor = "#ef4444"; }
+
+  const recommendations = [];
+  if (issues.some(i => i.includes("Entrance") || i.includes("entrance"))) {
+    recommendations.push("Place a Vastu pyramid or copper swastik at the main entrance to mitigate south-facing effects.");
+  }
+  if (issues.some(i => i.includes("Kitchen"))) {
+    recommendations.push("Ensure the cook faces East while cooking; use sea salt in corners to neutralise kitchen Vastu doshas.");
+  }
+  if (issues.some(i => i.includes("Toilet"))) {
+    recommendations.push("Keep the toilet lid closed at all times; use black tourmaline or salt lamps near the toilet area.");
+  }
+  if (issues.some(i => i.includes("Pooja"))) {
+    recommendations.push("If Pooja room cannot be relocated, place idols facing East/West and use yellow or white decor.");
+  }
+  if (pct >= 80) {
+    recommendations.push("Overall excellent Vastu profile. Maintain clean, clutter-free spaces to retain positive energy flow.");
+  }
+  recommendations.push("Consult a certified Vastu expert before making structural changes based on this indicative analysis.");
+  recommendations.push("Verify all directions using a magnetic compass on-site for accuracy.");
+
+  return { score: pct, grade, gradeColor, positives, issues, recommendations, roomAnalysis };
+}
+
+// ─── PDF Generator ────────────────────────────────────────────────────────────
+
+async function generatePDF(formData, rooms, result, floorPlanDataUrl) {
+  const { jsPDF } = await import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const W = 210, H = 297;
+  const NAVY = [15, 32, 68];
+  const GOLD = [201, 168, 76];
+  const WHITE = [255, 255, 255];
+  const LIGHT = [248, 248, 252];
+
+  // Header band
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, W, 38, "F");
+
+  // Gold accent line
+  doc.setFillColor(...GOLD);
+  doc.rect(0, 38, W, 2, "F");
+
+  // Logo / title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.setTextColor(...WHITE);
+  doc.text("PropertyPointers", 14, 18);
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...GOLD);
+  doc.text("Real Estate Ecosystem Platform", 14, 25);
+
+  doc.setFontSize(13);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...WHITE);
+  doc.text("Vastu Analysis Report", 14, 34);
+
+  // Report meta (right side)
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(180, 190, 210);
+  const dateStr = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  doc.text(`Generated: ${dateStr}`, W - 14, 18, { align: "right" });
+  doc.text("Indicative Vastu Guidance", W - 14, 25, { align: "right" });
+
+  let y = 48;
+
+  // Property details card
+  doc.setFillColor(...LIGHT);
+  doc.roundedRect(12, y, W - 24, 46, 3, 3, "F");
+  doc.setDrawColor(...GOLD);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(12, y, W - 24, 46, 3, 3, "S");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(...NAVY);
+  doc.text("PROPERTY & OWNER DETAILS", 18, y + 8);
+
+  const details = [
+    ["Owner Name", formData.name || "—"],
+    ["City", formData.city || "—"],
+    ["Locality", formData.location || "—"],
+    ["Property Type", formData.propertyType || "—"],
+    ["Facing Direction", formData.facing || "—"],
+    ["Contact", formData.contact || "—"],
+  ];
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  details.forEach(([label, val], i) => {
+    const col = i < 3 ? 0 : 1;
+    const row = i % 3;
+    const cx = col === 0 ? 18 : 110;
+    doc.setTextColor(100, 110, 130);
+    doc.text(label + ":", cx, y + 16 + row * 9);
+    doc.setTextColor(...NAVY);
+    doc.setFont("helvetica", "bold");
+    doc.text(val, cx + 30, y + 16 + row * 9);
+    doc.setFont("helvetica", "normal");
+  });
+  y += 52;
+
+  // Score card
+  const scoreCardH = 44;
+  doc.setFillColor(...NAVY);
+  doc.roundedRect(12, y, W - 24, scoreCardH, 3, 3, "F");
+
+  // Score circle area
+  doc.setFillColor(...GOLD);
+  doc.circle(38, y + scoreCardH / 2, 14, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.setTextColor(...NAVY);
+  doc.text(String(result.score), 38, y + scoreCardH / 2 + 2, { align: "center" });
+  doc.setFontSize(7);
+  doc.text("/100", 38, y + scoreCardH / 2 + 8, { align: "center" });
+
+  doc.setFontSize(20);
+  doc.setTextColor(...GOLD);
+  doc.setFont("helvetica", "bold");
+  doc.text(result.grade, 60, y + 16);
+
+  doc.setFontSize(9);
+  doc.setTextColor(180, 200, 230);
+  doc.setFont("helvetica", "normal");
+  doc.text("Overall Vastu Grade", 60, y + 24);
+
+  // Score bar
+  const barX = 60, barY = y + 30, barW = 120, barH = 5;
+  doc.setFillColor(40, 55, 100);
+  doc.roundedRect(barX, barY, barW, barH, 2, 2, "F");
+  doc.setFillColor(...GOLD);
+  doc.roundedRect(barX, barY, barW * result.score / 100, barH, 2, 2, "F");
+
+  y += scoreCardH + 8;
+
+  // Floor plan image (if available)
+  if (floorPlanDataUrl) {
+    try {
+      const imgH = 52;
+      doc.setFillColor(...LIGHT);
+      doc.roundedRect(12, y, W - 24, imgH + 10, 3, 3, "F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(12, y, W - 24, imgH + 10, 3, 3, "S");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(...NAVY);
+      doc.text("UPLOADED FLOOR PLAN", 18, y + 8);
+      doc.addImage(floorPlanDataUrl, "JPEG", W / 2 - 40, y + 12, 80, imgH - 10);
+      y += imgH + 16;
+    } catch (_) {}
+  }
+
+  // Room-wise analysis
+  const roomKeys = Object.keys(rooms).filter(k => rooms[k]);
+  if (roomKeys.length > 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...NAVY);
+    doc.text("ROOM-WISE VASTU ANALYSIS", 14, y);
+    y += 6;
+
+    const statusColor = { ideal: [34, 197, 94], good: [201, 168, 76], bad: [239, 68, 68], neutral: [100, 116, 139] };
+    const statusLabel = { ideal: "Ideal", good: "Good", bad: "Needs Attention", neutral: "Neutral" };
+
+    roomKeys.forEach((key) => {
+      if (y > 255) { doc.addPage(); y = 20; }
+      const analysis = result.roomAnalysis[key];
+      if (!analysis) return;
+      const color = statusColor[analysis.status] || [100, 116, 139];
+      const rowH = 16;
+
+      doc.setFillColor(...LIGHT);
+      doc.roundedRect(12, y, W - 24, rowH, 2, 2, "F");
+      doc.setFillColor(...color);
+      doc.roundedRect(12, y, 3, rowH, 1, 1, "F");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(...NAVY);
+      doc.text(ROOM_LABELS[key], 19, y + 6);
+
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(80, 90, 110);
+      doc.setFontSize(7);
+      const msgLines = doc.splitTextToSize(analysis.msg, 110);
+      doc.text(msgLines[0] || "", 19, y + 12);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(...color);
+      doc.text(`${rooms[key]}  |  ${statusLabel[analysis.status]}`, W - 18, y + 7, { align: "right" });
+      doc.setTextColor(80, 100, 140);
+      doc.setFontSize(7);
+      doc.text(`${analysis.score}/${analysis.max} pts`, W - 18, y + 13, { align: "right" });
+
+      y += rowH + 3;
+    });
+    y += 4;
+  }
+
+  // Positive points
+  if (result.positives.length > 0) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(34, 120, 70);
+    doc.text("✓  POSITIVE VASTU POINTS", 14, y);
+    y += 6;
+    result.positives.slice(0, 5).forEach(pt => {
+      if (y > 265) { doc.addPage(); y = 20; }
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(40, 80, 60);
+      const lines = doc.splitTextToSize("• " + pt, W - 30);
+      doc.text(lines, 16, y);
+      y += lines.length * 5 + 2;
+    });
+    y += 4;
+  }
+
+  // Issues
+  if (result.issues.length > 0) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(180, 50, 40);
+    doc.text("⚠  VASTU ISSUES FOUND", 14, y);
+    y += 6;
+    result.issues.slice(0, 5).forEach(issue => {
+      if (y > 265) { doc.addPage(); y = 20; }
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(140, 50, 40);
+      const lines = doc.splitTextToSize("• " + issue, W - 30);
+      doc.text(lines, 16, y);
+      y += lines.length * 5 + 2;
+    });
+    y += 4;
+  }
+
+  // Recommendations
+  if (y > 230) { doc.addPage(); y = 20; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(...NAVY);
+  doc.text("PRACTICAL RECOMMENDATIONS", 14, y);
+  y += 6;
+  result.recommendations.forEach(rec => {
+    if (y > 265) { doc.addPage(); y = 20; }
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(50, 60, 90);
+    const lines = doc.splitTextToSize("→ " + rec, W - 30);
+    doc.text(lines, 16, y);
+    y += lines.length * 5 + 2;
+  });
+  y += 8;
+
+  // CTA Band
+  if (y > 250) { doc.addPage(); y = 20; }
+  doc.setFillColor(...GOLD);
+  doc.roundedRect(12, y, W - 24, 22, 3, 3, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(...NAVY);
+  doc.text("Explore properties, compare developers, connect with realty advisors", W / 2, y + 9, { align: "center" });
+  doc.text("and discover vendors at  PropertyPointers.com", W / 2, y + 17, { align: "center" });
+  y += 28;
+
+  // Disclaimer
+  if (y > 265) { doc.addPage(); y = 20; }
+  doc.setFillColor(245, 245, 250);
+  doc.roundedRect(12, y, W - 24, 22, 2, 2, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(120, 120, 140);
+  doc.text("DISCLAIMER", 18, y + 7);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  const disclaimer = "This Vastu analysis is purely indicative and based on traditional Vastu Shastra principles. It does not constitute professional architectural, structural, legal, or engineering advice. Scores and recommendations should not replace site inspections, professional consultations, or due diligence. PropertyPointers makes no claims of accuracy or completeness.";
+  const dLines = doc.splitTextToSize(disclaimer, W - 36);
+  doc.text(dLines, 18, y + 13);
+
+  // Footer
+  doc.setFillColor(...NAVY);
+  doc.rect(0, H - 12, W, 12, "F");
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(140, 160, 200);
+  doc.text("© PropertyPointers.com  |  Indicative Vastu Guidance  |  Not a substitute for professional advice", W / 2, H - 5, { align: "center" });
+
+  doc.save(`PropertyPointers_Vastu_Report_${formData.name || "Property"}.pdf`);
+}
+
+// ─── UI Components ────────────────────────────────────────────────────────────
+
+const STEPS = ["Details", "Floor Plan", "Room Directions", "Report"];
+
+function StepIndicator({ current }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, marginBottom: 36 }}>
+      {STEPS.map((s, i) => (
+        <div key={s} style={{ display: "flex", alignItems: "center" }}>
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 6
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: i < current ? "#C9A84C" : i === current ? "#0F2044" : "#e5e7eb",
+              border: i === current ? "2px solid #C9A84C" : "2px solid transparent",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: i < current ? "#0F2044" : i === current ? "#C9A84C" : "#9ca3af",
+              fontWeight: 700, fontSize: 14, transition: "all 0.3s"
+            }}>
+              {i < current ? "✓" : i + 1}
+            </div>
+            <span style={{ fontSize: 11, fontWeight: i === current ? 700 : 400, color: i === current ? "#0F2044" : "#9ca3af", whiteSpace: "nowrap" }}>{s}</span>
+          </div>
+          {i < STEPS.length - 1 && (
+            <div style={{ width: 60, height: 2, background: i < current ? "#C9A84C" : "#e5e7eb", margin: "0 4px", marginBottom: 22, transition: "background 0.3s" }} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Input({ label, value, onChange, placeholder, type = "text", required }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <label style={{ fontSize: 12, fontWeight: 600, color: "#0F2044", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        {label}{required && <span style={{ color: "#C9A84C", marginLeft: 3 }}>*</span>}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          padding: "10px 14px", borderRadius: 8, border: "1.5px solid #e2e8f0",
+          fontSize: 14, color: "#0F2044", background: "#fff", outline: "none",
+          transition: "border-color 0.2s",
+          fontFamily: "inherit"
+        }}
+        onFocus={e => e.target.style.borderColor = "#C9A84C"}
+        onBlur={e => e.target.style.borderColor = "#e2e8f0"}
+      />
+    </div>
+  );
+}
+
+function Select({ label, value, onChange, options, required }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <label style={{ fontSize: 12, fontWeight: 600, color: "#0F2044", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        {label}{required && <span style={{ color: "#C9A84C", marginLeft: 3 }}>*</span>}
+      </label>
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        style={{
+          padding: "10px 14px", borderRadius: 8, border: "1.5px solid #e2e8f0",
+          fontSize: 14, color: value ? "#0F2044" : "#9ca3af", background: "#fff", outline: "none",
+          cursor: "pointer", fontFamily: "inherit"
+        }}
+        onFocus={e => e.target.style.borderColor = "#C9A84C"}
+        onBlur={e => e.target.style.borderColor = "#e2e8f0"}
+      >
+        <option value="">Select {label}</option>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function Card({ children, style }) {
+  return (
+    <div style={{
+      background: "#fff", borderRadius: 16, padding: "28px 32px",
+      boxShadow: "0 2px 20px rgba(15,32,68,0.08)", border: "1px solid #f0f0f8",
+      ...style
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function SectionTitle({ children, sub }) {
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <h2 style={{ fontSize: 20, fontWeight: 800, color: "#0F2044", margin: 0, fontFamily: "'Georgia', serif" }}>{children}</h2>
+      {sub && <p style={{ fontSize: 13, color: "#64748b", margin: "6px 0 0", fontWeight: 400 }}>{sub}</p>}
+    </div>
+  );
+}
+
+const STATUS_META = {
+  ideal: { bg: "#f0fdf4", border: "#86efac", badge: "#16a34a", label: "Ideal ✦" },
+  good: { bg: "#fffbeb", border: "#fcd34d", badge: "#d97706", label: "Good" },
+  bad: { bg: "#fef2f2", border: "#fca5a5", badge: "#dc2626", label: "Needs Attention" },
+  neutral: { bg: "#f8fafc", border: "#cbd5e1", badge: "#64748b", label: "Neutral" },
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export default function VastuCalculator() {
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState({ name: "", contact: "", city: "", location: "", propertyType: "", facing: "" });
+  const [rooms, setRooms] = useState({ mainEntrance: "", kitchen: "", masterBedroom: "", poojaRoom: "", livingRoom: "", toilet: "", staircase: "", waterTank: "", septicTank: "" });
+  const [floorPlan, setFloorPlan] = useState(null);
+  const [floorPlanDataUrl, setFloorPlanDataUrl] = useState(null);
+  const [result, setResult] = useState(null);
+  const [generating, setGenerating] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const fileRef = useRef();
+
+  const setField = (f) => (v) => setForm(p => ({ ...p, [f]: v }));
+  const setRoom = (r) => (v) => setRooms(p => ({ ...p, [r]: v }));
+
+  const handleFile = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFloorPlan(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setFloorPlanDataUrl(ev.target.result);
+    reader.readAsDataURL(file);
+  }, []);
+
+  const step1Valid = form.name && form.city && form.propertyType && form.facing;
+  const step3Valid = Object.values(rooms).some(Boolean);
+
+  const handleGenerate = () => {
+    setGenerating(true);
+    setTimeout(() => {
+      setResult(calcVastu(rooms, form.facing));
+      setGenerating(false);
+      setStep(3);
+    }, 1200);
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      await generatePDF(form, rooms, result, floorPlanDataUrl);
+    } catch (e) {
+      alert("PDF generation failed. Please try again.");
+    }
+    setDownloading(false);
+  };
+
+  const gradeColors = { Excellent: "#16a34a", Good: "#d97706", Average: "#ea580c", "Needs Attention": "#dc2626" };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #f8f9fc 0%, #eef2ff 100%)", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+      {/* Header */}
+      <div style={{ background: "#0F2044", padding: "0 24px" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+          <div>
+            <span style={{ color: "#C9A84C", fontWeight: 800, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "'Georgia', serif" }}>PropertyPointers</span>
+            <span style={{ color: "#7c8db5", fontSize: 11, marginLeft: 10, fontWeight: 400 }}>Real Estate Ecosystem</span>
+          </div>
+          <div style={{ background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.4)", borderRadius: 20, padding: "4px 14px" }}>
+            <span style={{ color: "#C9A84C", fontSize: 12, fontWeight: 600 }}>✦ Vastu Calculator</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero */}
+      <div style={{ background: "linear-gradient(135deg, #0F2044 0%, #1a3060 100%)", padding: "40px 24px 48px", marginBottom: -20, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(201,168,76,0.06)" }} />
+        <div style={{ position: "absolute", bottom: -60, left: "30%", width: 300, height: 300, borderRadius: "50%", background: "rgba(201,168,76,0.04)" }} />
+        <div style={{ maxWidth: 860, margin: "0 auto", position: "relative" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: 20, padding: "4px 14px", marginBottom: 16 }}>
+            <span style={{ fontSize: 12, color: "#C9A84C", fontWeight: 600 }}>✦ Indicative Vastu Guidance</span>
+          </div>
+          <h1 style={{ color: "#fff", fontSize: 32, fontWeight: 800, margin: "0 0 10px", fontFamily: "'Georgia', serif", lineHeight: 1.2 }}>Vastu Score Calculator</h1>
+          <p style={{ color: "#94a3b8", fontSize: 15, margin: 0, maxWidth: 540 }}>Get an indicative Vastu analysis of your property based on direction placements. Upload your floor plan and receive a detailed branded report.</p>
+        </div>
+      </div>
+
+      {/* Main */}
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "40px 24px 60px" }}>
+        <StepIndicator current={step} />
+
+        {/* STEP 0: Property Details */}
+        {step === 0 && (
+          <Card>
+            <SectionTitle sub="Enter your property and owner details to personalise your Vastu report.">Property & Owner Details</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px 24px" }}>
+              <Input label="Your Name" value={form.name} onChange={setField("name")} placeholder="e.g. Rajesh Sharma" required />
+              <Input label="Mobile / Email (optional)" value={form.contact} onChange={setField("contact")} placeholder="For report reference" />
+              <Input label="City" value={form.city} onChange={setField("city")} placeholder="e.g. Mumbai" required />
+              <Input label="Locality / Area" value={form.location} onChange={setField("location")} placeholder="e.g. Andheri West" />
+              <Select label="Property Type" value={form.propertyType} onChange={setField("propertyType")} options={PROPERTY_TYPES} required />
+              <Select label="Property Facing Direction" value={form.facing} onChange={setField("facing")} options={DIRECTIONS} required />
+            </div>
+            <div style={{ marginTop: 28, display: "flex", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setStep(1)}
+                disabled={!step1Valid}
+                style={{
+                  background: step1Valid ? "linear-gradient(135deg, #0F2044, #1a3880)" : "#e2e8f0",
+                  color: step1Valid ? "#C9A84C" : "#9ca3af",
+                  border: step1Valid ? "1px solid #C9A84C" : "none",
+                  borderRadius: 10, padding: "12px 32px", fontSize: 14, fontWeight: 700,
+                  cursor: step1Valid ? "pointer" : "not-allowed", letterSpacing: "0.03em"
+                }}
+              >
+                Continue →
+              </button>
+            </div>
+          </Card>
+        )}
+
+        {/* STEP 1: Floor Plan */}
+        {step === 1 && (
+          <Card>
+            <SectionTitle sub="Upload your floor plan image. This will be included in your PDF report.">Upload Floor Plan</SectionTitle>
+            <div
+              onClick={() => fileRef.current.click()}
+              style={{
+                border: "2px dashed #C9A84C", borderRadius: 14, padding: "48px 24px",
+                textAlign: "center", cursor: "pointer", background: floorPlan ? "#fffbeb" : "#fafbff",
+                transition: "background 0.2s"
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "#fffbeb"}
+              onMouseLeave={e => e.currentTarget.style.background = floorPlan ? "#fffbeb" : "#fafbff"}
+            >
+              {floorPlanDataUrl ? (
+                <div>
+                  <img src={floorPlanDataUrl} alt="Floor plan" style={{ maxHeight: 200, maxWidth: "100%", borderRadius: 8, marginBottom: 12 }} />
+                  <p style={{ color: "#16a34a", fontWeight: 600, margin: 0 }}>✓ {floorPlan.name}</p>
+                  <p style={{ color: "#64748b", fontSize: 12, margin: "4px 0 0" }}>Click to replace</p>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>🏗️</div>
+                  <p style={{ color: "#0F2044", fontWeight: 700, fontSize: 16, margin: "0 0 6px" }}>Click to upload floor plan</p>
+                  <p style={{ color: "#94a3b8", fontSize: 13, margin: 0 }}>JPG, PNG, PDF accepted · Optional but recommended</p>
+                </div>
+              )}
+              <input ref={fileRef} type="file" accept="image/*,.pdf" onChange={handleFile} style={{ display: "none" }} />
+            </div>
+            <div style={{ marginTop: 12, padding: "10px 14px", background: "#f0f9ff", borderRadius: 8, border: "1px solid #bae6fd" }}>
+              <p style={{ margin: 0, fontSize: 12, color: "#0369a1" }}>💡 <strong>Tip:</strong> Upload a clear photo or scan of your architect's floor plan. Room directions are still entered manually below for accurate Vastu analysis.</p>
+            </div>
+            <div style={{ marginTop: 28, display: "flex", justifyContent: "space-between" }}>
+              <button onClick={() => setStep(0)} style={{ background: "none", border: "1.5px solid #e2e8f0", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>← Back</button>
+              <button onClick={() => setStep(2)} style={{ background: "linear-gradient(135deg, #0F2044, #1a3880)", color: "#C9A84C", border: "1px solid #C9A84C", borderRadius: 10, padding: "12px 32px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                Continue →
+              </button>
+            </div>
+          </Card>
+        )}
+
+        {/* STEP 2: Room Directions */}
+        {step === 2 && (
+          <Card>
+            <SectionTitle sub="Select the direction each room/element is located within your property. Use a compass for best accuracy.">Room Placement & Directions</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 24px" }}>
+              {Object.entries(ROOM_LABELS).map(([key, label]) => (
+                <div key={key} style={{
+                  background: rooms[key] ? "#f8faff" : "#fafbff", borderRadius: 10, padding: "14px 16px",
+                  border: `1.5px solid ${rooms[key] ? "#C9A84C" : "#e2e8f0"}`, transition: "all 0.2s"
+                }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#0F2044", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 8 }}>{label}</label>
+                  <select
+                    value={rooms[key]}
+                    onChange={e => setRoom(key)(e.target.value)}
+                    style={{ width: "100%", padding: "8px 10px", borderRadius: 7, border: "1.5px solid #e2e8f0", fontSize: 13, color: rooms[key] ? "#0F2044" : "#9ca3af", background: "#fff", cursor: "pointer", fontFamily: "inherit" }}
+                  >
+                    <option value="">Select direction</option>
+                    {DIRECTIONS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 12, padding: "10px 14px", background: "#fefce8", borderRadius: 8, border: "1px solid #fde047" }}>
+              <p style={{ margin: 0, fontSize: 12, color: "#854d0e" }}>⚠ Select at least a few rooms for a meaningful analysis. You can skip rooms that are not applicable.</p>
+            </div>
+            <div style={{ marginTop: 28, display: "flex", justifyContent: "space-between" }}>
+              <button onClick={() => setStep(1)} style={{ background: "none", border: "1.5px solid #e2e8f0", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>← Back</button>
+              <button
+                onClick={handleGenerate}
+                disabled={!step3Valid || generating}
+                style={{
+                  background: step3Valid ? "linear-gradient(135deg, #C9A84C, #b8922e)" : "#e2e8f0",
+                  color: step3Valid ? "#0F2044" : "#9ca3af",
+                  border: "none", borderRadius: 10, padding: "12px 32px", fontSize: 14,
+                  fontWeight: 700, cursor: step3Valid ? "pointer" : "not-allowed"
+                }}
+              >
+                {generating ? "⟳ Calculating..." : "✦ Generate Vastu Report"}
+              </button>
+            </div>
+          </Card>
+        )}
+
+        {/* STEP 3: Report */}
+        {step === 3 && result && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {/* Score Hero */}
+            <div style={{ background: "linear-gradient(135deg, #0F2044 0%, #1e3a70 100%)", borderRadius: 16, padding: "32px", color: "#fff", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: -30, right: -30, width: 160, height: 160, borderRadius: "50%", background: "rgba(201,168,76,0.08)" }} />
+              <div style={{ position: "absolute", bottom: -50, left: "40%", width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.03)" }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 32, position: "relative" }}>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{
+                    width: 100, height: 100, borderRadius: "50%",
+                    background: "linear-gradient(135deg, #C9A84C, #f0c96a)",
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 0 40px rgba(201,168,76,0.4)"
+                  }}>
+                    <span style={{ fontSize: 32, fontWeight: 900, color: "#0F2044", lineHeight: 1 }}>{result.score}</span>
+                    <span style={{ fontSize: 11, color: "#0F2044", fontWeight: 600 }}>/100</span>
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ marginBottom: 6 }}>
+                    <span style={{ background: gradeColors[result.grade] || "#16a34a", color: "#fff", borderRadius: 20, padding: "3px 14px", fontSize: 13, fontWeight: 700 }}>{result.grade}</span>
+                  </div>
+                  <h2 style={{ color: "#fff", fontSize: 24, fontWeight: 800, margin: "8px 0 4px", fontFamily: "'Georgia', serif" }}>Overall Vastu Score</h2>
+                  <p style={{ color: "#94a3b8", fontSize: 13, margin: "0 0 12px" }}>{form.name} · {form.city} · {form.facing}-facing {form.propertyType}</p>
+                  <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 8, height: 8, overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: `${result.score}%`, background: "linear-gradient(90deg, #C9A84C, #f0c96a)", borderRadius: 8, transition: "width 1s ease" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Positives + Issues */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+              <Card style={{ borderTop: "3px solid #16a34a" }}>
+                <h3 style={{ color: "#16a34a", fontWeight: 800, fontSize: 14, margin: "0 0 14px", textTransform: "uppercase", letterSpacing: "0.06em" }}>✓ Positive Vastu Points</h3>
+                {result.positives.length === 0
+                  ? <p style={{ color: "#64748b", fontSize: 13 }}>No strong positives detected with current selections.</p>
+                  : result.positives.map((p, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "flex-start" }}>
+                      <span style={{ color: "#C9A84C", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✦</span>
+                      <p style={{ fontSize: 13, color: "#374151", margin: 0, lineHeight: 1.5 }}>{p}</p>
+                    </div>
+                  ))}
+              </Card>
+              <Card style={{ borderTop: "3px solid #dc2626" }}>
+                <h3 style={{ color: "#dc2626", fontWeight: 800, fontSize: 14, margin: "0 0 14px", textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Issues Found</h3>
+                {result.issues.length === 0
+                  ? <p style={{ color: "#16a34a", fontSize: 13, fontWeight: 600 }}>✓ No major Vastu issues detected.</p>
+                  : result.issues.map((iss, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "flex-start" }}>
+                      <span style={{ color: "#ef4444", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>!</span>
+                      <p style={{ fontSize: 13, color: "#374151", margin: 0, lineHeight: 1.5 }}>{iss}</p>
+                    </div>
+                  ))}
+              </Card>
+            </div>
+
+            {/* Room-wise */}
+            <Card>
+              <h3 style={{ color: "#0F2044", fontWeight: 800, fontSize: 16, margin: "0 0 20px", fontFamily: "'Georgia', serif" }}>Room-wise Vastu Analysis</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {Object.entries(rooms).filter(([, v]) => v).map(([key, dir]) => {
+                  const analysis = result.roomAnalysis[key];
+                  if (!analysis) return null;
+                  const meta = STATUS_META[analysis.status] || STATUS_META.neutral;
+                  return (
+                    <div key={key} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: meta.bg, borderRadius: 10, border: `1px solid ${meta.border}` }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                          <span style={{ fontWeight: 700, fontSize: 14, color: "#0F2044" }}>{ROOM_LABELS[key]}</span>
+                          <span style={{ background: meta.badge, color: "#fff", borderRadius: 12, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>{meta.label}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: 12, color: "#64748b", lineHeight: 1.4 }}>{analysis.msg}</p>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ fontWeight: 800, fontSize: 16, color: "#0F2044" }}>{dir}</div>
+                        <div style={{ fontSize: 11, color: "#94a3b8" }}>{analysis.score}/{analysis.max} pts</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            {/* Recommendations */}
+            <Card>
+              <h3 style={{ color: "#0F2044", fontWeight: 800, fontSize: 16, margin: "0 0 16px", fontFamily: "'Georgia', serif" }}>Practical Recommendations</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {result.recommendations.map((r, i) => (
+                  <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "12px 14px", background: "#f8faff", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 16, flexShrink: 0 }}>→</span>
+                    <p style={{ margin: 0, fontSize: 13, color: "#374151", lineHeight: 1.5 }}>{r}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* CTA */}
+            <div style={{ background: "linear-gradient(135deg, #C9A84C, #b8922e)", borderRadius: 14, padding: "24px 28px", textAlign: "center" }}>
+              <p style={{ color: "#0F2044", fontWeight: 800, fontSize: 16, margin: "0 0 6px", fontFamily: "'Georgia', serif" }}>Explore India's Real Estate Ecosystem</p>
+              <p style={{ color: "#0F2044", fontSize: 13, margin: "0 0 14px", opacity: 0.8 }}>Compare developers · Connect with realty advisors · Discover vendors</p>
+              <span style={{ background: "#0F2044", color: "#C9A84C", borderRadius: 8, padding: "8px 22px", fontSize: 14, fontWeight: 700 }}>PropertyPointers.com</span>
+            </div>
+
+            {/* Disclaimer */}
+            <div style={{ padding: "14px 18px", background: "#f8f9fa", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+              <p style={{ margin: 0, fontSize: 12, color: "#64748b", lineHeight: 1.6 }}>
+                <strong style={{ color: "#374151" }}>Disclaimer:</strong> This Vastu analysis is purely indicative and based on traditional Vastu Shastra principles. It does not constitute professional architectural, structural, legal, or engineering advice. Scores and recommendations should not replace on-site inspections, professional consultations, or due diligence. PropertyPointers makes no claims of accuracy or completeness.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+              <button onClick={() => { setStep(0); setResult(null); setFloorPlan(null); setFloorPlanDataUrl(null); setForm({ name: "", contact: "", city: "", location: "", propertyType: "", facing: "" }); setRooms(Object.fromEntries(Object.keys(rooms).map(k => [k, ""]))); }}
+                style={{ background: "#fff", border: "1.5px solid #0F2044", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 600, color: "#0F2044", cursor: "pointer" }}>
+                ← New Analysis
+              </button>
+              <button onClick={handleDownload} disabled={downloading}
+                style={{ background: downloading ? "#94a3b8" : "linear-gradient(135deg, #0F2044, #1a3880)", color: "#C9A84C", border: "1px solid #C9A84C", borderRadius: 10, padding: "12px 32px", fontSize: 14, fontWeight: 700, cursor: downloading ? "not-allowed" : "pointer" }}>
+                {downloading ? "⟳ Generating PDF..." : "↓ Download PDF Report"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

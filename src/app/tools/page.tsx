@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Calculator, TrendingUp, IndianRupee, Sprout, ArrowRight } from "lucide-react";
+import { Calculator, TrendingUp, IndianRupee, Sprout, Compass, ArrowRight } from "lucide-react";
 
 const TOOLS = [
-  { title: "EMI", href: "/calculator?tool=emi", icon: <Calculator size={18} className="text-blue-600" /> },
-  { title: "ROI", href: "/calculator?tool=roi", icon: <TrendingUp size={18} className="text-emerald-600" /> },
-  { title: "Rental Yield", href: "/calculator?tool=rental-yield", icon: <IndianRupee size={18} className="text-gold-600" /> },
-  { title: "Vastu", href: "/calculator?tool=vastu", icon: <Sprout size={18} className="text-green-600" /> },
+  { title: "EMI Calculator", href: "/calculator?tool=emi", icon: <Calculator size={18} className="text-blue-600" />, desc: "Calculate your monthly EMI" },
+  { title: "ROI Calculator", href: "/calculator?tool=roi", icon: <TrendingUp size={18} className="text-emerald-600" />, desc: "Return on investment" },
+  { title: "Rental Yield", href: "/calculator?tool=rental-yield", icon: <IndianRupee size={18} className="text-gold-600" />, desc: "Rental yield analysis" },
+  { title: "Vastu Score Calculator", href: "/tools/vastu-calculator", icon: <Compass size={18} className="text-green-600" />, desc: "Room-wise Vastu analysis" },
+  { title: "Vastu AI Advisor", href: "/insights/vastu", icon: <Sprout size={18} className="text-emerald-600" />, desc: "AI-powered floor plan analysis" },
 ];
 
 export default function ToolsPage() {
@@ -20,7 +21,7 @@ export default function ToolsPage() {
             Quick calculators to help you plan better. (These route to the existing calculator page.)
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
             {TOOLS.map((t) => (
               <Link
                 key={t.href}
@@ -33,7 +34,7 @@ export default function ToolsPage() {
                   </span>
                   <div className="min-w-0">
                     <p className="font-semibold text-navy-900 truncate">{t.title}</p>
-                    <p className="text-sm text-gray-500 truncate">Open calculator</p>
+                    <p className="text-sm text-gray-500 truncate">{t.desc}</p>
                   </div>
                 </div>
                 <ArrowRight size={18} className="text-gray-400 group-hover:text-navy-800 transition-colors shrink-0" />

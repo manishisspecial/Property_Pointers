@@ -71,10 +71,16 @@ export default function VastuInsightsPage() {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
-                href="/calculator?tool=emi"
+                href="/tools/vastu-calculator"
                 className="inline-flex items-center gap-2 rounded-xl bg-gold-500 px-4 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400 transition-colors"
               >
-                <Calculator size={16} /> Try calculators
+                <Compass size={16} /> Vastu Score Calculator
+              </Link>
+              <Link
+                href="/calculator?tool=emi"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+              >
+                <Calculator size={16} /> EMI Calculator
               </Link>
               <Link
                 href="/properties?type=sale"

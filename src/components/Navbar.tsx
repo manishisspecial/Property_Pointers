@@ -32,6 +32,7 @@ import {
   BookOpen,
   Newspaper,
   Sprout,
+  Compass,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { useCity } from "@/context/CityContext";
@@ -267,6 +268,7 @@ const NAV_ITEMS: NavItemConfig[] = [
         { label: "ROI", href: "/calculator?tool=roi", icon: <TrendingUp size={16} className="text-emerald-500" /> },
         { label: "Rental Yield", href: "/calculator?tool=rental-yield", icon: <IndianRupee size={16} className="text-gold-500" /> },
         { label: "Vastu", href: "/insights/vastu", icon: <Sprout size={16} className="text-green-500" /> },
+        { label: "Vastu Calculator", href: "/tools/vastu-calculator", icon: <Compass size={16} className="text-teal-500" /> },
       ],
       cities: {
         title: "Featured Reads",
@@ -277,6 +279,7 @@ const NAV_ITEMS: NavItemConfig[] = [
           { name: "Latest blogs", href: "/blog" },
           { name: "RERA & legal guides", href: "/blog" },
           { name: "Interiors & Vastu", href: "/insights/vastu" },
+          { name: "Vastu Score Calculator", href: "/tools/vastu-calculator" },
         ],
       },
       stats: [
