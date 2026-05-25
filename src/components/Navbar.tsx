@@ -65,6 +65,7 @@ interface MegaMenuData {
 
 interface NavItemConfig {
   label: string;
+  shortLabel?: string;
   href: string;
   mega?: MegaMenuData;
 }
@@ -100,12 +101,12 @@ const NAV_ITEMS: NavItemConfig[] = [
       },
       stats: [
         { label: "Active Listings", value: "100+" },
-        { label: "Verified Listings", value: "20+" },
+        { label: "Quality-Checked", value: "20+" },
         { label: "Cities Covered", value: "5+" },
       ],
       highlight: {
-        title: "Explore Verified Properties",
-        description: "Shortlist listings with verified details and genuine owners.",
+        title: "Explore Quality-Checked Properties",
+        description: "Shortlist listings with quality-checked details and genuine owners.",
         href: "/properties?type=sale&verified=true",
         cta: "Explore",
         icon: <Shield size={20} className="text-gold-500" />,
@@ -140,12 +141,12 @@ const NAV_ITEMS: NavItemConfig[] = [
       },
       stats: [
         { label: "Active Listings", value: "100+" },
-        { label: "Verified Listings", value: "20+" },
+        { label: "Quality-Checked", value: "20+" },
         { label: "Cities Covered", value: "5+" },
       ],
       highlight: {
         title: "List Your Property",
-        description: "Get genuine tenants fast. Zero brokerage, verified leads.",
+        description: "List your property and connect with genuine tenants directly.",
         href: "/post-property",
         cta: "Post FREE",
         icon: <Plus size={20} className="text-gold-500" />,
@@ -188,33 +189,36 @@ const NAV_ITEMS: NavItemConfig[] = [
     },
   },
   {
-    label: "Partners",
-    href: "/partners",
+    label: "Realty Advisors",
+    shortLabel: "Advisors",
+    href: "/realty-advisors",
     mega: {
       items: [
-        { label: "All Partners", href: "/partners", icon: <Users size={16} className="text-blue-500" /> },
-        { label: "Join As Partner", href: "/partners/join", icon: <Plus size={16} className="text-gold-500" /> },
+        { label: "All Realty Advisors", href: "/realty-advisors", icon: <Users size={16} className="text-blue-500" /> },
+        { label: "Join As Advisor", href: "/realty-advisors/join", icon: <Plus size={16} className="text-gold-500" /> },
+        { label: "Top Advisors", href: "/realty-advisors/top", icon: <TrendingUp size={16} className="text-emerald-500" /> },
+        { label: "By Locality", href: "/realty-advisors/by-locality", icon: <MapPin size={16} className="text-purple-500" /> },
       ],
       cities: {
-        title: "Partner Categories",
+        title: "Advisor Specialisations",
         links: [
-          { name: "Channel Partners", href: "/partners?category=Channel+Partner" },
-          { name: "Project Sales", href: "/partners?category=Project+Sales" },
-          { name: "Rental Services", href: "/partners?category=Rental+Services" },
-          { name: "Investment Advisory", href: "/partners?category=Investment+Advisory" },
-          { name: "View All", href: "/partners" },
+          { name: "Residential Advisors", href: "/realty-advisors?specialisation=residential" },
+          { name: "Commercial Advisors", href: "/realty-advisors?specialisation=commercial" },
+          { name: "Investment Advisors", href: "/realty-advisors?specialisation=investment" },
+          { name: "Rental Advisors", href: "/realty-advisors?specialisation=rental" },
+          { name: "View All", href: "/realty-advisors" },
         ],
       },
       stats: [
-        { label: "Partners", value: "100+" },
-        { label: "Verified", value: "50+" },
+        { label: "Advisors", value: "Growing" },
+        { label: "Specialisations", value: "4+" },
         { label: "Cities", value: "5+" },
       ],
       highlight: {
-        title: "Become a Partner",
-        description: "Join India's fastest-growing real estate partner network. Free to apply.",
-        href: "/partners/join",
-        cta: "Apply",
+        title: "Become a Realty Advisor",
+        description: "Build your digital identity. Showcase expertise and get direct buyer leads.",
+        href: "/realty-advisors/join",
+        cta: "Join Now",
         icon: <Users size={20} className="text-gold-500" />,
       },
     },
@@ -296,8 +300,30 @@ const NAV_ITEMS: NavItemConfig[] = [
       },
     },
   },
-  { label: "About", href: "/about" },
-  { label: "Careers", href: "/careers" },
+  {
+    label: "Company",
+    href: "/about",
+    mega: {
+      items: [
+        { label: "About Us", href: "/about", icon: <Building2 size={16} className="text-blue-500" /> },
+        { label: "Careers", href: "/careers", icon: <Briefcase size={16} className="text-green-500" /> },
+        { label: "Trust & Safety", href: "/trust-and-safety", icon: <Shield size={16} className="text-emerald-500" /> },
+        { label: "Contact Us", href: "/about#contact", icon: <MapPin size={16} className="text-purple-500" /> },
+      ],
+      stats: [
+        { label: "Cities", value: "7+" },
+        { label: "Categories", value: "12+" },
+        { label: "Growing", value: "Daily" },
+      ],
+      highlight: {
+        title: "Early Partner Program",
+        description: "Join early and get priority visibility for developers, advisors, and vendors.",
+        href: "/partners/early-partner-program",
+        cta: "Learn More",
+        icon: <TrendingUp size={20} className="text-gold-500" />,
+      },
+    },
+  },
 ];
 
 export default function Navbar() {
@@ -374,52 +400,66 @@ export default function Navbar() {
               <Logo variant="dark" size="sm" />
             </Link>
 
-            {/* City Selector */}
+            {/* City Selector — visible only at 2xl (1536px+) to avoid overflow */}
             {isLoaded && (
               <button
                 onClick={openPicker}
-                className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] xl:text-[13px] font-medium transition-all border border-gray-200 text-navy-700 hover:bg-gray-100 bg-gray-50"
+                aria-label="Change city"
+                className="hidden 2xl:flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all border border-gray-200 text-navy-800 hover:border-gold-400 hover:bg-gold-50 bg-white shadow-sm"
               >
-                <MapPin size={14} className="text-gold-500" />
-                <span className="max-w-[100px] truncate">
+                <MapPin size={15} className="text-gold-500 shrink-0" />
+                <span className="max-w-[110px] truncate">
                   {selectedCity ? selectedCity.name : "All India"}
                 </span>
-                <ChevronDown size={12} className="opacity-60" />
+                <ChevronDown size={13} className="text-navy-500" />
               </button>
             )}
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center justify-center flex-1 min-w-0 mx-2 xl:mx-4 gap-0.5 xl:gap-1 rounded-xl px-1.5 py-1 border bg-gray-50/90 border-gray-200">
+          <div className="hidden lg:flex items-center justify-center flex-1 min-w-0 mx-2 xl:mx-4">
             {NAV_ITEMS.map((item) => {
-              const showOnlyOnXl = item.label === "About" || item.label === "Careers";
               return (
                 <div
                   key={item.label}
-                  className={`relative shrink-0 ${showOnlyOnXl ? "hidden xl:block" : ""}`}
+                  className="relative"
                   onMouseEnter={() => item.mega && handleMouseEnter(item.label)}
                   onMouseLeave={handleMouseLeave}
                 >
                   {item.mega ? (
                     <button
                       type="button"
-                      className={`flex items-center gap-0.5 text-[12px] xl:text-[13px] font-medium px-2 xl:px-2.5 py-1.5 rounded-lg transition-all text-navy-700 hover:bg-white hover:text-navy-900 ${
-                        activeDropdown === item.label ? "bg-white text-navy-900 shadow-sm" : ""
+                      className={`flex items-center gap-1 text-[13px] font-medium px-2.5 py-2 rounded-lg transition-all whitespace-nowrap text-navy-700 hover:bg-gray-50 hover:text-navy-900 ${
+                        activeDropdown === item.label ? "bg-gray-50 text-navy-900" : ""
                       }`}
                       onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
                     >
-                      {item.label}
+                      {item.shortLabel ? (
+                        <>
+                          <span className="xl:hidden">{item.shortLabel}</span>
+                          <span className="hidden xl:inline">{item.label}</span>
+                        </>
+                      ) : (
+                        item.label
+                      )}
                       <ChevronDown
-                        size={13}
-                        className={`opacity-80 shrink-0 transition-transform duration-200 ${activeDropdown === item.label ? "rotate-180" : ""}`}
+                        size={12}
+                        className={`opacity-60 shrink-0 transition-transform duration-200 ${activeDropdown === item.label ? "rotate-180" : ""}`}
                       />
                     </button>
                   ) : (
                     <Link
                       href={item.href}
-                      className="flex items-center gap-1 text-[12px] xl:text-[13px] font-medium px-2 xl:px-2.5 py-1.5 rounded-lg transition-all text-navy-700 hover:bg-white hover:text-navy-900"
+                      className="flex items-center gap-1 text-[13px] font-medium px-2.5 py-2 rounded-lg transition-all whitespace-nowrap text-navy-700 hover:bg-gray-50 hover:text-navy-900"
                     >
-                      {item.label}
+                      {item.shortLabel ? (
+                        <>
+                          <span className="xl:hidden">{item.shortLabel}</span>
+                          <span className="hidden xl:inline">{item.label}</span>
+                        </>
+                      ) : (
+                        item.label
+                      )}
                     </Link>
                   )}
                 </div>
@@ -428,16 +468,22 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Right Side */}
-          <div className="hidden lg:flex items-center gap-2 shrink-0">
+          <div className="hidden lg:flex items-center gap-1.5 shrink-0">
             <Link
               href="/post-property"
-              className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-600 text-white font-semibold px-3 xl:px-3.5 py-1.5 xl:py-2 rounded-lg transition-all text-[12px] xl:text-[13px] whitespace-nowrap shadow-sm"
+              onClick={() => { if (typeof window !== "undefined" && (window as any).gtag) (window as any).gtag("event", "post_property_click", { event_category: "cta_click" }); }}
+              className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-600 text-white font-semibold px-3 py-1.5 rounded-lg transition-all text-[13px] whitespace-nowrap shadow-sm"
             >
-              <Plus size={16} />
-              Post Property
-              <span className="bg-white/20 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1 hidden 2xl:inline">
-                FREE
-              </span>
+              <Plus size={14} />
+              <span className="hidden xl:inline">Post Property</span>
+              <span className="xl:hidden">Post</span>
+            </Link>
+            <Link
+              href="/partners/early-partner-program"
+              onClick={() => { if (typeof window !== "undefined" && (window as any).gtag) (window as any).gtag("event", "join_partner_click", { event_category: "cta_click" }); }}
+              className="hidden 2xl:flex items-center gap-1 bg-navy-800 hover:bg-navy-700 text-white font-semibold px-3 py-1.5 rounded-lg transition-all text-[13px] whitespace-nowrap shadow-sm"
+            >
+              Partner Program
             </Link>
 
             {user ? (
@@ -502,16 +548,16 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Link
                   href="/auth/login"
-                  className="text-[12px] xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-lg transition-all whitespace-nowrap text-navy-800 hover:bg-gray-100"
+                  className="text-[13px] font-medium px-2.5 py-1.5 rounded-lg transition-all whitespace-nowrap text-navy-800 hover:bg-gray-100"
                 >
                   Login
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="text-[12px] xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-lg bg-navy-800 text-white hover:bg-navy-700 transition-all whitespace-nowrap"
+                  className="text-[13px] font-medium px-2.5 py-1.5 rounded-lg border border-navy-800 text-navy-800 hover:bg-navy-800 hover:text-white transition-all whitespace-nowrap"
                 >
                   Register
                 </Link>

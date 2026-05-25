@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MapPin, Bed, Bath, Maximize, Eye, CheckCircle, Star, Building2 } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Maximize, CheckCircle, Star, Building2, ArrowRight, Phone } from "lucide-react";
 import { formatPrice, timeAgo } from "@/lib/utils";
 import { PropertyType } from "@/types";
 import { useState } from "react";
@@ -29,8 +29,9 @@ export default function PropertyCard({ property }: { property: PropertyType }) {
         {images.length > 0 ? (
           <img
             src={images[0]}
-            alt={property.title}
+            alt={`${property.title} - ${property.locality}, ${property.city}`}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-navy-100 to-navy-200">
@@ -38,7 +39,7 @@ export default function PropertyCard({ property }: { property: PropertyType }) {
           </div>
         )}
 
-        <div className="absolute top-3 left-3 flex gap-2">
+        <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
           <span className={`px-2.5 py-1 rounded-md text-xs font-bold text-white ${
             property.type === "sale" ? "bg-green-500" : property.type === "rent" ? "bg-blue-500" : "bg-purple-500"
           }`}>
@@ -59,19 +60,20 @@ export default function PropertyCard({ property }: { property: PropertyType }) {
         >
           <Heart size={16} fill={liked ? "white" : "none"} />
         </button>
-
-        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-          <Eye size={12} /> {property.views}
-        </div>
       </div>
 
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-semibold text-navy-800 text-lg leading-tight group-hover:text-gold-600 transition-colors line-clamp-1">
+          <h3 className="font-semibold text-navy-800 text-base leading-tight group-hover:text-gold-600 transition-colors line-clamp-2">
             {property.title}
           </h3>
           {property.verified && (
-            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
+            <span className="relative group/tip shrink-0 mt-0.5">
+              <CheckCircle size={18} className="text-gold-500" />
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-navy-800 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none">
+                Quality-checked where marked
+              </span>
+            </span>
           )}
         </div>
 
@@ -105,6 +107,22 @@ export default function PropertyCard({ property }: { property: PropertyType }) {
             <p className="text-xs text-gray-400">{timeAgo(property.createdAt)}</p>
             <p className="text-xs text-gray-500 capitalize">{property.ownerType}</p>
           </div>
+        </div>
+
+        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+          <span className="flex-1 text-center py-2 rounded-lg bg-gold-50 text-gold-700 text-xs font-semibold hover:bg-gold-100 transition-colors">
+            View Details
+          </span>
+          <span
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(`https://wa.me/?text=${encodeURIComponent(`Hi, I'm interested in: ${property.title} - ${property.locality}, ${property.city}. ${window.location.origin}/properties/${property.id}`)}`, "_blank");
+            }}
+            className="flex-1 text-center py-2 rounded-lg bg-green-50 text-green-700 text-xs font-semibold hover:bg-green-100 transition-colors cursor-pointer flex items-center justify-center gap-1"
+          >
+            <Phone size={12} /> Enquire
+          </span>
         </div>
       </div>
     </Link>

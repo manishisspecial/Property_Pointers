@@ -43,13 +43,14 @@ export default function Footer() {
   return (
     <footer className="gradient-navy text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+          {/* Brand Column */}
+          <div className="lg:col-span-1 min-w-0">
             <div className="mb-4">
-              <Logo variant="light" size="lg" />
+              <Logo variant="light" size="md" />
             </div>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-              India&apos;s most trusted real estate platform. Find your dream property with verified listings, virtual tours, and zero brokerage options.
+              PropertyPointers is a real estate ecosystem platform helping users discover properties, compare developers, connect with realty advisors, explore real estate vendors and make informed property decisions with tools and insights.
             </p>
             {socials.length > 0 && (
               <div className="flex gap-3">
@@ -63,21 +64,17 @@ export default function Footer() {
             )}
           </div>
 
+          {/* Property Search */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Quick Links</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">Property Search</h3>
             <ul className="space-y-3">
               {[
-                { label: "About Us", href: "/about" },
-                { label: "Careers", href: "/careers" },
-                { label: "Blogs", href: "/blog" },
                 { label: "Buy Property", href: "/properties?type=sale" },
                 { label: "Rent Property", href: "/properties?type=rent" },
+                { label: "Commercial Property", href: "/properties?category=office" },
+                { label: "New Launch Projects", href: "/properties?type=sale&new_launch=true" },
+                { label: "Plots & Land", href: "/properties?category=plot" },
                 { label: "Post Property", href: "/post-property" },
-                { label: "Offices", href: "/properties?category=office" },
-                { label: "Shops", href: "/properties?category=shop" },
-                { label: "Studio Apartments", href: "/properties?category=studio" },
-                { label: "Plots/Land", href: "/properties?category=plot" },
-                { label: "EMI Calculator", href: "/calculator" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm hover:text-gold-400 transition-colors flex items-center gap-1">
@@ -88,62 +85,94 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Ecosystem */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Our Service Areas</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">Ecosystem</h3>
             <ul className="space-y-3">
-              {["Delhi", "Noida", "Greater Noida", "Gurugram", "Ghaziabad", "Jaipur", "Pune"].map((city) => (
-                <li key={city}>
-                  <Link href={`/properties?city=${city}`} className="text-sm hover:text-gold-400 transition-colors flex items-center gap-1">
-                    <ArrowRight size={12} /> Properties in {city}
+              {[
+                { label: "Developers", href: "/developers" },
+                { label: "List Your Project", href: "/developers/join" },
+                { label: "Realty Advisors", href: "/realty-advisors" },
+                { label: "Join Advisor Network", href: "/realty-advisors/join" },
+                { label: "Vendors", href: "/vendors" },
+                { label: "List Your Service", href: "/vendors/join" },
+                { label: "Early Partner Program", href: "/partners/early-partner-program" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm hover:text-gold-400 transition-colors flex items-center gap-1">
+                    <ArrowRight size={12} /> {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
+          {/* Resources */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Contact Us</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">Resources</h3>
+            <ul className="space-y-3">
+              {[
+                { label: "Blog & Insights", href: "/blog" },
+                { label: "Market Reports", href: "/insights/market-trends" },
+                { label: "EMI Calculator", href: "/calculator?tool=emi" },
+                { label: "ROI Calculator", href: "/calculator?tool=roi" },
+                { label: "Vastu Guide", href: "/insights/vastu" },
+                { label: "Trust & Safety", href: "/trust-and-safety" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm hover:text-gold-400 transition-colors flex items-center gap-1">
+                    <ArrowRight size={12} /> {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company + Contact */}
+          <div>
+            <h3 className="text-white font-semibold text-lg mb-4">Company</h3>
+            <ul className="space-y-3 mb-6">
+              {[
+                { label: "About Us", href: "/about" },
+                { label: "Careers", href: "/careers" },
+                { label: "Pricing", href: "/pricing" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm hover:text-gold-400 transition-colors flex items-center gap-1">
+                    <ArrowRight size={12} /> {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
             {s ? (
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {s.address && (
                   <li className="flex items-start gap-3">
-                    <MapPin size={18} className="text-gold-400 mt-0.5 shrink-0" />
-                    <span className="text-sm">{s.address}</span>
+                    <MapPin size={16} className="text-gold-400 mt-0.5 shrink-0" />
+                    <span className="text-xs">{s.address}</span>
                   </li>
                 )}
                 {s.contactPhone && (
                   <li className="flex items-center gap-3">
-                    <Phone size={18} className="text-gold-400 shrink-0" />
-                    <a href={`tel:+${phoneDigits}`} className="text-sm hover:text-gold-400 transition-colors">{s.contactPhone}</a>
+                    <Phone size={16} className="text-gold-400 shrink-0" />
+                    <a href={`tel:+${phoneDigits}`} className="text-xs hover:text-gold-400 transition-colors">{s.contactPhone}</a>
                   </li>
                 )}
                 {s.contactEmail && (
                   <li className="flex items-center gap-3">
-                    <Mail size={18} className="text-gold-400 shrink-0" />
-                    <a href={`mailto:${s.contactEmail}`} className="text-sm hover:text-gold-400 transition-colors">{s.contactEmail}</a>
+                    <Mail size={16} className="text-gold-400 shrink-0" />
+                    <a href={`mailto:${s.contactEmail}`} className="text-xs hover:text-gold-400 transition-colors">{s.contactEmail}</a>
                   </li>
                 )}
               </ul>
             ) : (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-5 bg-white/5 rounded animate-pulse" />
+                  <div key={i} className="h-4 bg-white/5 rounded animate-pulse" />
                 ))}
               </div>
             )}
-            <div className="mt-6">
-              <h4 className="text-white font-medium text-sm mb-2">Newsletter</h4>
-              <form className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-3 py-2 bg-white/10 rounded-lg text-sm text-white placeholder-gray-400 border border-white/10 focus:border-gold-400 outline-none"
-                />
-                <button className="px-4 py-2 bg-gold-500 hover:bg-gold-600 text-white rounded-lg text-sm font-medium transition-colors">
-                  Subscribe
-                </button>
-              </form>
-            </div>
           </div>
         </div>
       </div>
@@ -151,19 +180,13 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} Property Pointers. All rights reserved.
+            &copy; {new Date().getFullYear()} PropertyPointers. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-400">
-            <Link href="/disclaimer" className="hover:text-gold-400 transition-colors">
-              Disclaimer
-            </Link>
-            <Link href="/privacy" className="hover:text-gold-400 transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-gold-400 transition-colors">
-              Terms of Service
-            </Link>
-            <a href="#" className="hover:text-gold-400 transition-colors">Sitemap</a>
+            <Link href="/disclaimer" className="hover:text-gold-400 transition-colors">Disclaimer</Link>
+            <Link href="/privacy" className="hover:text-gold-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-gold-400 transition-colors">Terms of Service</Link>
+            <Link href="/sitemap.xml" className="hover:text-gold-400 transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

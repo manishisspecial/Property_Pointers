@@ -5,13 +5,41 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import GeoTracker from "@/components/GeoTracker";
 
 export const metadata: Metadata = {
-  title: "Property Pointers - India's #1 Real Estate Platform",
+  title: "PropertyPointers — Beyond Listings. India's Complete Real Estate Ecosystem",
   description:
-    "Find your dream property with Property Pointers. Buy, sell, or rent residential and commercial properties with verified listings, virtual tours, and zero brokerage.",
+    "Discover properties, compare developers, connect with realty advisors, explore real estate vendors, and make smarter property decisions with insights and tools.",
   keywords:
-    "real estate, property, buy, sell, rent, apartment, house, villa, commercial, India, Noida, Delhi NCR",
+    "real estate ecosystem, property, buy, sell, rent, developers, realty advisors, vendors, tools, insights, India, Noida, Delhi NCR, Gurugram, Jaipur, Pune",
   verification: {
     google: "Y2q6CDereTjf1FW6F3D-B3sRZUk_6gdowaQid9UV0fs",
+  },
+  openGraph: {
+    title: "PropertyPointers — Beyond Listings. India's Complete Real Estate Ecosystem",
+    description: "Discover properties, compare developers, connect with realty advisors, explore real estate vendors, and make smarter property decisions with insights and tools.",
+    siteName: "PropertyPointers",
+    type: "website",
+  },
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "PropertyPointers",
+  url: "https://propertypointers.com",
+  logo: "https://propertypointers.com/logo.png",
+  description: "India's complete real estate ecosystem — properties, developers, realty advisors, vendors, tools, and insights.",
+  sameAs: [],
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "PropertyPointers",
+  url: "https://propertypointers.com",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://propertypointers.com/properties?q={search_term_string}",
+    "query-input": "required name=search_term_string",
   },
 };
 
@@ -33,6 +61,14 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-8LQN9CSJZT');`
         }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50">
         <LayoutShell>{children}</LayoutShell>

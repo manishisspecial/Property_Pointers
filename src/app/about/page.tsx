@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import AboutClient from "./AboutClient";
 
 export const metadata: Metadata = {
-  title: "About Us | Property Pointers",
+  title: "About PropertyPointers | India's Complete Real Estate Ecosystem",
   description:
-    "Property Pointers connects buyers, sellers, and developers with verified listings, trusted partners, and tools that make Indian real estate simpler and more transparent.",
+    "Learn how PropertyPointers connects properties, developers, realty advisors, vendors, market insights and smart tools to simplify India's real estate journey.",
 };
 
 export default function AboutPage() {

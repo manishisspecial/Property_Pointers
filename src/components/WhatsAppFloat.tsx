@@ -55,28 +55,24 @@ export default function WhatsAppFloat() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-      <a
-        href={telHref}
-        className="relative w-14 h-14 bg-navy-800 hover:bg-navy-900 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 group"
-        aria-label="Call us"
-      >
-        <PhoneIcon className="w-7 h-7" />
-        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-navy-800 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          Call us
-        </span>
-      </a>
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
       <a
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="relative w-14 h-14 bg-[#25D366] hover:bg-[#20BD5C] text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 group"
+        className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5C] text-white rounded-full shadow-lg pl-3 pr-4 py-2 transition-all hover:scale-105"
         aria-label="Chat on WhatsApp"
       >
-        <WhatsAppIcon className="w-7 h-7" />
-        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-navy-800 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          WhatsApp us
-        </span>
+        <WhatsAppIcon className="w-4 h-4" />
+        <span className="text-xs font-semibold">WhatsApp</span>
+      </a>
+      <a
+        href={telHref}
+        className="flex items-center gap-2 bg-navy-800 hover:bg-navy-900 text-white rounded-full shadow-lg pl-3 pr-4 py-2 transition-all hover:scale-105"
+        aria-label="Call us"
+      >
+        <PhoneIcon className="w-4 h-4" />
+        <span className="text-xs font-semibold">Call</span>
       </a>
     </div>
   );
