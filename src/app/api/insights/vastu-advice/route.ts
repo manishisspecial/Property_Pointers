@@ -44,49 +44,54 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
 
-    if (apiKey && file.type.startsWith("image/")) {
+    if (geminiKey && file.type.startsWith("image/")) {
       try {
         const buffer = await file.arrayBuffer();
         const base64 = Buffer.from(buffer).toString("base64");
 
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-          },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 4096,
-            system: buildVastuSystemPrompt(),
-            messages: [
-              {
-                role: "user",
-                content: [
-                  {
-                    type: "image",
-                    source: {
-                      type: "base64",
-                      media_type: file.type,
-                      data: base64,
-                    },
-                  },
-                  {
-                    type: "text",
-                    text: buildVastuUserPrompt(northHint),
-                  },
-                ],
+        const mimeType = file.type as string;
+        const systemPrompt = buildVastuSystemPrompt();
+        const userPrompt = buildVastuUserPrompt(northHint);
+
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              system_instruction: {
+                parts: [{ text: systemPrompt }],
               },
-            ],
-          }),
-        });
+              contents: [
+                {
+                  parts: [
+                    {
+                      inline_data: {
+                        mime_type: mimeType,
+                        data: base64,
+                      },
+                    },
+                    { text: userPrompt },
+                  ],
+                },
+              ],
+              generationConfig: {
+                temperature: 0.4,
+                maxOutputTokens: 4096,
+              },
+            }),
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
-          const rawText = data.content?.map((b: { text?: string }) => b.text || "").join("") || "";
+          const rawText =
+            data?.candidates?.[0]?.content?.parts
+              ?.map((p: { text?: string }) => p.text || "")
+              .join("") || "";
+
           const parsed = parseAIVastuResponse(rawText);
 
           if (parsed) {
@@ -100,6 +105,9 @@ export async function POST(req: NextRequest) {
               },
             });
           }
+        } else {
+          const errData = await response.json().catch(() => null);
+          console.error("Gemini API error:", response.status, errData);
         }
       } catch (aiError) {
         console.error("AI analysis failed, falling back to rule-based:", aiError);
