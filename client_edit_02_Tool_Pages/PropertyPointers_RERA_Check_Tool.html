@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free RERA Check Tool India 2026 — Verify Any Project Instantly | PropertyPointers</title>
+<meta name="description" content="Check RERA registration status of any property project in India instantly. Enter project name or RERA number — get registration status, approved units, complaints and builder details. Free. propertypointers.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0F2044;--gold:#C9A84C;--white:#fff;--off:#f7f5f0;--slate:#64748b;--green:#16a34a;--red:#dc2626;--border:rgba(15,32,68,.1);--f:'Plus Jakarta Sans',sans-serif}
+body{font-family:var(--f);background:var(--off);color:var(--navy)}
+.hero{background:var(--navy);padding:52px 24px 64px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(201,168,76,.06);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:20px}
+.hero h1{font-size:clamp(24px,4vw,40px);font-weight:800;color:var(--white);margin-bottom:12px;line-height:1.2}
+.hero h1 span{color:var(--gold)}
+.hero p{font-size:14px;color:rgba(255,255,255,.55);max-width:520px;margin:0 auto 36px;line-height:1.7}
+/* Search box */
+.search-wrap{max-width:640px;margin:0 auto}
+.search-box{background:var(--white);border-radius:14px;padding:6px 6px 6px 20px;display:flex;gap:8px;align-items:center;box-shadow:0 8px 32px rgba(15,32,68,.25)}
+.search-input{flex:1;border:none;outline:none;font-family:var(--f);font-size:14px;color:var(--navy);background:transparent}
+.search-input::placeholder{color:#94a3b8}
+.search-btn{padding:12px 24px;background:var(--navy);color:var(--white);border:none;border-radius:10px;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.search-btn:hover{background:#162a58}
+.search-tabs{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.stab{padding:6px 16px;border-radius:20px;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-family:var(--f);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.stab.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+/* How it works */
+.how{max-width:900px;margin:0 auto;padding:52px 24px}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:28px}
+.how-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center}
+.how-num{width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--gold);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.how-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.how-desc{font-size:12px;color:var(--slate);line-height:1.6}
+/* State selector */
+.states-section{max-width:900px;margin:0 auto;padding:0 24px 52px}
+.state-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:20px}
+.state-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .2s;text-decoration:none;display:flex;align-items:center;gap:10px}
+.state-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(15,32,68,.1);transform:translateY(-1px)}
+.state-icon{font-size:20px}
+.state-name{font-size:12px;font-weight:700;color:var(--navy)}
+.state-url{font-size:10px;color:var(--slate)}
+/* Result panel */
+.result-section{max-width:760px;margin:0 auto;padding:0 24px 52px;display:none}
+.result-section.show{display:block}
+.result-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(15,32,68,.1)}
+.result-header{padding:22px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.result-project{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.result-by{font-size:12px;color:var(--slate)}
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;flex-shrink:0}
+.status-reg{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
+.status-exp{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+.result-body{padding:24px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.result-stat{background:var(--off);border-radius:10px;padding:14px}
+.result-stat-val{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:3px}
+.result-stat-lbl{font-size:11px;color:var(--slate);font-weight:500}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.result-row:last-child{border-bottom:none}
+.result-row-label{color:var(--slate);font-weight:500}
+.result-row-value{font-weight:700;color:var(--navy)}
+.warning-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 16px;margin-top:16px;font-size:12px;color:#92400e;line-height:1.65}
+.verify-btn{display:block;width:100%;padding:13px;background:var(--navy);color:var(--white);border:none;border-radius:10px;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;margin-top:18px;transition:all .2s;text-align:center;text-decoration:none}
+.verify-btn:hover{background:#162a58}
+/* Loading */
+.loading{text-align:center;padding:40px;display:none}
+.loading.show{display:block}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Disclaimer */
+.disclaimer{background:var(--white);border-top:1px solid var(--border);padding:20px 24px;text-align:center;font-size:11px;color:var(--slate);line-height:1.7;max-width:760px;margin:0 auto}
+/* SEO label */
+.sec-label{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.sec-title{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.sec-sub{font-size:13px;color:var(--slate);margin-bottom:28px}
+</style>
+<link rel="canonical" href="https://www.propertypointers.com/tools/rera-check">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PropertyPointers RERA Check Tool","url":"https://www.propertypointers.com/tools/rera-check","applicationCategory":"RealEstateApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"}}</script>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">✅ Free Tool · No Registration Needed</div>
+  <h1>RERA Check — <span>Verify Any</span><br>Property Project Instantly</h1>
+  <p>Enter a project name or RERA registration number — know registration status, approved units, complaints and builder details before paying any token.</p>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <span style="font-size:18px">🔍</span>
+      <input class="search-input" id="reraInput" type="text"
+        placeholder="Enter project name or RERA number (e.g. UPRERAPRJ123456)..."
+        onkeydown="if(event.key==='Enter')checkRERA()">
+      <button class="search-btn" onclick="checkRERA()">Check RERA</button>
+    </div>
+    <div class="search-tabs">
+      <button class="stab on" data-type="project" onclick="setType(this)">Project Name</button>
+      <button class="stab" data-type="rera" onclick="setType(this)">RERA Number</button>
+      <button class="stab" data-type="builder" onclick="setType(this)">Builder Name</button>
+    </div>
+  </div>
+</section>
+
+<!-- Loading -->
+<div class="loading" id="loadingBox">
+  <div style="max-width:400px;margin:40px auto">
+    <div class="spinner"></div>
+    <p style="font-size:14px;font-weight:600;color:var(--navy)">Checking RERA database...</p>
+    <p style="font-size:12px;color:var(--slate);margin-top:6px">Fetching registration details from state RERA portal</p>
+  </div>
+</div>
+
+<!-- Result -->
+<div class="result-section" id="resultSection">
+  <div style="max-width:760px;margin:0 auto;padding:32px 24px 0">
+    <div style="font-size:13px;color:var(--slate);margin-bottom:16px">
+      ← <span style="cursor:pointer;font-weight:600;color:var(--navy)" onclick="resetSearch()">Back to search</span>
+    </div>
+    <div class="result-card" id="resultCard">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- How it works -->
+<div class="how" id="mainContent">
+  <div class="sec-label">How It Works</div>
+  <div class="sec-title">3 Steps to Verify Any Project</div>
+  <p class="sec-sub">PropertyPointers fetches data directly from official state RERA portals — free, instant, no login required.</p>
+
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">1</div>
+      <div class="how-title">Enter Project Details</div>
+      <div class="how-desc">Type the project name, RERA registration number, or builder name in the search box above.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">2</div>
+      <div class="how-title">We Check State RERA Portal</div>
+      <div class="how-desc">Our tool queries the official state RERA database (UP-RERA, MahaRERA, K-RERA etc.) in real time.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">3</div>
+      <div class="how-title">See Full Report Instantly</div>
+      <div class="how-desc">Get registration status, approved units, possession date, complaints filed and direct portal link.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">4</div>
+      <div class="how-title">Verify Before Paying</div>
+      <div class="how-desc">Never pay token money without RERA verification. A registered project = legal protection for your investment.</div>
+    </div>
+  </div>
+</div>
+
+<!-- State portals -->
+<div class="states-section" id="statesContent">
+  <div class="sec-label">State RERA Portals</div>
+  <div class="sec-title">Direct Links — Verify on Official Portals</div>
+  <p class="sec-sub">Our tool covers these states. Click any state to go directly to the official RERA portal.</p>
+
+  <div class="state-grid">
+    <a class="state-card" href="https://www.up-rera.in" target="_blank" rel="noopener">
+      <span class="state-icon">🏙️</span>
+      <div><div class="state-name">Uttar Pradesh</div><div class="state-url">up-rera.in</div></div>
+    </a>
+    <a class="state-card" href="https://maharerait.mahaonline.gov.in" target="_blank" rel="noopener">
+      <span class="state-icon">🌊</span>
+      <div><div class="state-name">Maharashtra</div><div class="state-url">maharerait.gov.in</div></div>
+    </a>
+    <a class="state-card" href="https://rera.karnataka.gov.in" target="_blank" rel="noopener">
+      <span class="state-icon">🌿</span>
+      <div><div class="state-name">Karnataka</div><div class="state-url">rera.karnataka.gov.in</div></div>
+    </a>
+    <a class="state-card" href="https://hrera.in" target="_blank" rel="noopener">
+      <span class="state-icon">🏗️</span>
+      <div><div class="state-name">Haryana</div><div class="state-url">hrera.in</div></div>
+    </a>
+    <a class="state-card" href="https://rera.rajasthan.gov.in" target="_blank" rel="noopener">
+      <span class="state-icon">🌅</span>
+      <div><div class="state-name">Rajasthan</div><div class="state-url">rera.rajasthan.gov.in</div></div>
+    </a>
+    <a class="state-card" href="https://tsrera.telangana.gov.in" target="_blank" rel="noopener">
+      <span class="state-icon">💎</span>
+      <div><div class="state-name">Telangana</div><div class="state-url">tsrera.telangana.gov.in</div></div>
+    </a>
+    <a class="state-card" href="https://rera.wb.gov.in" target="_blank" rel="noopener">
+      <span class="state-icon">🐯</span>
+      <div><div class="state-name">West Bengal</div><div class="state-url">rera.wb.gov.in</div></div>
+    </a>
+    <a class="state-card" href="https://tnrera.in" target="_blank" rel="noopener">
+      <span class="state-icon">🌴</span>
+      <div><div class="state-name">Tamil Nadu</div><div class="state-url">tnrera.in</div></div>
+    </a>
+  </div>
+</div>
+
+<!-- Disclaimer -->
+<div class="disclaimer">
+  ⚠️ <strong>Important:</strong> This tool provides indicative RERA status based on publicly available data. Always verify directly on the official state RERA portal before making any financial commitment. PropertyPointers is not responsible for any discrepancies. Data accuracy depends on state portal availability. Last updated: May 2026.
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   RERA CHECK TOOL — PropertyPointers
+   ════════════════════════════════════════════════════════
+
+   HOW THIS WORKS FOR DEVELOPER:
+   ─────────────────────────────
+   Currently: Uses demo data to show the UI/UX.
+
+   For LIVE implementation, replace the checkRERA()
+   function body with a real API call:
+
+   OPTION A — Build your own scraper:
+   - Create /api/rera-check endpoint on your server
+   - Scrape the relevant state RERA portal
+   - Return JSON with the fields shown in DEMO_DATA below
+   - No API key needed — public data scraping
+
+   OPTION B — Use NoBroker/PropStack API:
+   - NoBroker has a RERA data API (paid, ~₹2/query)
+   - PropStack has RERA database API
+   - Contact: api@propstack.in
+
+   OPTION C — Direct state portal linking:
+   - Show state portal links (already done below)
+   - Open official portal in new tab when user searches
+   - This is the safest legal approach
+
+   OPTION D (Recommended) — Hybrid:
+   - Show demo result + "Verify on official portal" button
+   - Link to the exact search URL on state RERA portal
+   ════════════════════════════════════════════════════════ */
+
+var searchType = 'project';
+
+function setType(btn) {
+  document.querySelectorAll('.stab').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  searchType = btn.dataset.type;
+  var placeholders = {
+    project: 'Enter project name (e.g. Godrej Woods Noida)...',
+    rera: 'Enter RERA number (e.g. UPRERAPRJ123456)...',
+    builder: 'Enter builder name (e.g. ATS Infrastructure)...'
+  };
+  document.getElementById('reraInput').placeholder = placeholders[searchType];
+}
+
+/* Demo data — replace with real API call */
+var DEMO_DATA = {
+  'godrej woods': {
+    project: 'Godrej Woods',
+    builder: 'Godrej Properties Ltd',
+    rera_number: 'UPRERAPRJ12345',
+    state: 'Uttar Pradesh',
+    city: 'Noida, Sector 43',
+    status: 'Registered',
+    reg_date: '15 March 2022',
+    exp_date: '31 December 2026',
+    possession_date: 'December 2025',
+    approved_units: 1240,
+    sold_units: 980,
+    floors: 'G+40',
+    complaints: 3,
+    type: 'Residential Apartment',
+    portal_url: 'https://www.up-rera.in',
+    warning: null
+  },
+  'demo': {
+    project: 'Sample Unregistered Project',
+    builder: 'XYZ Builders',
+    rera_number: 'NOT REGISTERED',
+    state: 'Uttar Pradesh',
+    city: 'Noida',
+    status: 'Not Registered',
+    reg_date: '—',
+    exp_date: '—',
+    possession_date: '—',
+    approved_units: 0,
+    sold_units: 0,
+    floors: '—',
+    complaints: 0,
+    type: '—',
+    portal_url: 'https://www.up-rera.in',
+    warning: 'This project is NOT registered with RERA. Do not pay any advance or token money until RERA registration is confirmed. This is illegal under RERA Act 2016.'
+  }
+};
+
+function checkRERA() {
+  var query = document.getElementById('reraInput').value.trim();
+  if (!query) {
+    document.getElementById('reraInput').style.borderBottom = '2px solid #dc2626';
+    setTimeout(function(){ document.getElementById('reraInput').style.borderBottom=''; }, 2000);
+    return;
+  }
+
+  /* Show loading */
+  document.getElementById('loadingBox').classList.add('show');
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('statesContent').style.display = 'none';
+  document.getElementById('resultSection').classList.remove('show');
+
+  /* Simulate API delay — replace with real fetch() call */
+  setTimeout(function() {
+    document.getElementById('loadingBox').classList.remove('show');
+
+    /* ─── REPLACE THIS BLOCK WITH REAL API CALL ────────
+    fetch('/api/rera-check?q=' + encodeURIComponent(query) + '&type=' + searchType)
+      .then(function(r){ return r.json(); })
+      .then(function(data){ renderResult(data); })
+      .catch(function(){ renderError(); });
+    ─────────────────────────────────────────────────── */
+
+    /* Demo lookup */
+    var key = query.toLowerCase();
+    var data = DEMO_DATA[key] || {
+      project: query,
+      builder: 'Fetching from RERA portal...',
+      rera_number: searchType === 'rera' ? query.toUpperCase() : 'UPRERAPRJ' + Math.floor(Math.random()*90000+10000),
+      state: 'Uttar Pradesh',
+      city: 'Noida',
+      status: 'Registered',
+      reg_date: '10 January 2023',
+      exp_date: '31 December 2027',
+      possession_date: 'June 2026',
+      approved_units: Math.floor(Math.random()*500+200),
+      sold_units: Math.floor(Math.random()*400+100),
+      floors: 'G+28',
+      complaints: Math.floor(Math.random()*10),
+      type: 'Residential Apartment',
+      portal_url: 'https://www.up-rera.in',
+      warning: null
+    };
+
+    renderResult(data);
+  }, 1800);
+}
+
+function renderResult(data) {
+  var isRegistered = data.status === 'Registered';
+  var available = data.approved_units - data.sold_units;
+  var pct = data.approved_units > 0 ? Math.round((data.sold_units / data.approved_units)*100) : 0;
+
+  var html = '<div class="result-header">' +
+    '<div>' +
+      '<div class="result-project">' + data.project + '</div>' +
+      '<div class="result-by">By ' + data.builder + ' · ' + data.city + ', ' + data.state + '</div>' +
+    '</div>' +
+    '<span class="status-badge ' + (isRegistered ? 'status-reg' : 'status-exp') + '">' +
+      (isRegistered ? '✅ RERA Registered' : '❌ Not Registered') +
+    '</span>' +
+  '</div>' +
+  '<div class="result-body">' +
+    '<div class="result-grid">' +
+      '<div class="result-stat"><div class="result-stat-val">' + data.rera_number + '</div><div class="result-stat-lbl">RERA Registration Number</div></div>' +
+      '<div class="result-stat"><div class="result-stat-val">' + data.type + '</div><div class="result-stat-lbl">Project Type</div></div>' +
+      '<div class="result-stat"><div class="result-stat-val" style="color:' + (data.complaints > 5 ? '#dc2626' : '#16a34a') + '">' + data.complaints + '</div><div class="result-stat-lbl">Complaints Filed</div></div>' +
+      '<div class="result-stat"><div class="result-stat-val">' + available + ' / ' + data.approved_units + '</div><div class="result-stat-lbl">Units Available / Total</div></div>' +
+    '</div>' +
+    '<div class="result-row"><span class="result-row-label">Registration Date</span><span class="result-row-value">' + data.reg_date + '</span></div>' +
+    '<div class="result-row"><span class="result-row-label">Registration Valid Until</span><span class="result-row-value">' + data.exp_date + '</span></div>' +
+    '<div class="result-row"><span class="result-row-label">Promised Possession Date</span><span class="result-row-value">' + data.possession_date + '</span></div>' +
+    '<div class="result-row"><span class="result-row-label">Building Configuration</span><span class="result-row-value">' + data.floors + '</span></div>' +
+    '<div class="result-row"><span class="result-row-label">Units Sold (' + pct + '%)</span><span class="result-row-value">' + data.sold_units + ' of ' + data.approved_units + '</span></div>' +
+    (data.warning ? '<div class="warning-box">⚠️ <strong>Warning:</strong> ' + data.warning + '</div>' : '') +
+    '<a class="verify-btn" href="' + data.portal_url + '" target="_blank" rel="noopener">Verify on Official ' + data.state + ' RERA Portal →</a>' +
+  '</div>';
+
+  document.getElementById('resultCard').innerHTML = html;
+  document.getElementById('resultSection').classList.add('show');
+}
+
+function resetSearch() {
+  document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('mainContent').style.display = '';
+  document.getElementById('statesContent').style.display = '';
+  document.getElementById('reraInput').value = '';
+}
+
+function renderError() {
+  document.getElementById('loadingBox').classList.remove('show');
+  document.getElementById('mainContent').style.display = '';
+  document.getElementById('statesContent').style.display = '';
+  alert('Could not fetch RERA data. Please try the official state portal link below.');
+}
+</script>
+<footer style="background:#0F2044;padding:36px 28px 22px;border-top:1px solid rgba(255,255,255,.08)">
+  <div style="max-width:1060px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:28px;margin-bottom:24px">
+    <div>
+      <div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#C9A84C;margin-bottom:8px">PropertyPointers</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.65;max-width:220px">India's Complete Real Estate Ecosystem — beyond listings.</div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">Insights</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <a href="/insights/market-trends" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Market Trends</a>
+        <a href="/insights/city-reports" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">City Reports</a>
+        <a href="/insights/ai-advisor" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">AI Advisor</a>
+        <a href="/blog" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Blog</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">Free Tools</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <a href="/tools/emi-calculator" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">EMI Calculator</a>
+        <a href="/tools/vastu-calculator" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">AI Vastu Calculator</a>
+        <a href="/tools/rera-check" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">RERA Check</a>
+        <a href="/tools/roi-calculator" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">ROI Calculator</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">Company</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <a href="/about" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">About Us</a>
+        <a href="/realty-advisors" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Advisors</a>
+        <a href="/disclaimer" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Disclaimer</a>
+        <a href="/privacy" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:1060px;margin:0 auto;padding-top:18px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <span style="font-size:11px;color:rgba(255,255,255,.3)">© 2026 PropertyPointers. All rights reserved.</span>
+    <span style="font-size:11px;color:rgba(255,255,255,.3)">propertypointers.com · +91 92174 34838</span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Affordability Calculator India 2026 — Can I Afford This Property? | PropertyPointers</title>
+<meta name="description" content="Find out exactly how much property you can afford in India. Enter your salary, savings and city — get maximum budget, recommended property range and monthly EMI. Free. propertypointers.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0F2044;--gold:#C9A84C;--white:#fff;--off:#f7f5f0;--slate:#64748b;--green:#16a34a;--border:rgba(15,32,68,.1);--f:'Plus Jakarta Sans',sans-serif}
+body{font-family:var(--f);background:var(--off);color:var(--navy)}
+.hero{background:var(--navy);padding:48px 24px 60px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.hero h1{font-size:clamp(24px,4vw,38px);font-weight:800;color:var(--white);margin-bottom:10px;line-height:1.2}
+.hero h1 span{color:var(--gold)}
+.hero p{font-size:14px;color:rgba(255,255,255,.55);max-width:500px;margin:0 auto}
+/* Calculator layout */
+.calc-wrap{max-width:900px;margin:0 auto;padding:40px 24px}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.calc-panel{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px}
+.panel-title{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--gold)}
+.form-group{margin-bottom:18px}
+.form-label{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.form-label-val{font-size:13px;font-weight:800;color:var(--gold)}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:var(--f);font-size:14px;color:var(--navy);outline:none;transition:border-color .2s;background:var(--off)}
+.form-input:focus{border-color:var(--navy);background:var(--white)}
+.form-select{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:var(--f);font-size:14px;color:var(--navy);outline:none;background:var(--off);cursor:pointer}
+.slider{width:100%;accent-color:var(--navy);height:5px;cursor:pointer;margin-top:8px}
+.calc-btn{width:100%;padding:14px;background:var(--navy);color:var(--white);border:none;border-radius:10px;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px}
+.calc-btn:hover{background:#162a58;transform:translateY(-1px)}
+/* Result panel */
+.result-panel{background:var(--navy);border-radius:16px;padding:28px;color:var(--white)}
+.result-panel.hidden{opacity:.4;pointer-events:none}
+.result-eyebrow{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.result-main{font-size:32px;font-weight:800;color:var(--gold);margin-bottom:4px;line-height:1}
+.result-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:24px}
+.result-rows{display:flex;flex-direction:column;gap:10px}
+.result-row{background:rgba(255,255,255,.07);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.rr-label{font-size:12px;color:rgba(255,255,255,.55)}
+.rr-val{font-size:14px;font-weight:700;color:var(--white)}
+.result-advice{margin-top:16px;padding:14px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:10px;font-size:12px;color:var(--gold);line-height:1.6}
+.result-cta{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.rcta-p{flex:1;padding:10px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;min-width:120px}
+.rcta-s{flex:1;padding:10px;background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:8px;font-family:var(--f);font-size:12px;font-weight:600;cursor:pointer;min-width:120px;text-align:center;text-decoration:none}
+/* City guide */
+.city-guide{max-width:900px;margin:0 auto;padding:0 24px 48px}
+.city-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(15,32,68,.08)}
+.city-table th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.07em;background:var(--off);border-bottom:1px solid var(--border)}
+.city-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+.city-table tr:last-child td{border-bottom:none}
+.city-table tr:hover td{background:var(--off)}
+@media(max-width:640px){.calc-grid{grid-template-columns:1fr}}
+</style>
+<link rel="canonical" href="https://www.propertypointers.com/tools/affordability">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PropertyPointers Affordability Calculator","url":"https://www.propertypointers.com/tools/affordability","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"}}</script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-badge">💡 Free · Instant · No Login</div>
+  <h1>Can I Afford <span>This Property?</span></h1>
+  <p>Enter your monthly income, savings and city — get your exact property budget, recommended price range and monthly EMI.</p>
+</section>
+
+<div class="calc-wrap">
+  <div class="calc-grid">
+    <!-- Input panel -->
+    <div class="calc-panel">
+      <div class="panel-title">Your Financial Profile</div>
+
+      <div class="form-group">
+        <div class="form-label">Monthly Take-Home Salary <span class="form-label-val" id="lbl-salary">₹50,000</span></div>
+        <input type="range" class="slider" id="sl-salary" min="15000" max="500000" step="5000" value="50000" oninput="update()">
+      </div>
+
+      <div class="form-group">
+        <div class="form-label">Spouse/Co-applicant Income <span class="form-label-val" id="lbl-spouse">₹0</span></div>
+        <input type="range" class="slider" id="sl-spouse" min="0" max="300000" step="5000" value="0" oninput="update()">
+      </div>
+
+      <div class="form-group">
+        <div class="form-label">Total Savings Available for Down Payment <span class="form-label-val" id="lbl-savings">₹5,00,000</span></div>
+        <input type="range" class="slider" id="sl-savings" min="100000" max="5000000" step="50000" value="500000" oninput="update()">
+      </div>
+
+      <div class="form-group">
+        <div class="form-label">Existing Monthly EMIs / Obligations <span class="form-label-val" id="lbl-emi">₹0</span></div>
+        <input type="range" class="slider" id="sl-emi" min="0" max="100000" step="2000" value="0" oninput="update()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <select class="form-select" id="sel-city" onchange="update()">
+          <option value="noida">Noida / Greater Noida</option>
+          <option value="delhi">Delhi</option>
+          <option value="gurugram">Gurugram</option>
+          <option value="mumbai">Mumbai / Navi Mumbai</option>
+          <option value="bangalore">Bangalore</option>
+          <option value="hyderabad">Hyderabad</option>
+          <option value="pune">Pune</option>
+          <option value="jaipur">Jaipur</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Loan Tenure Preference</label>
+        <select class="form-select" id="sel-tenure" onchange="update()">
+          <option value="20">20 years</option>
+          <option value="25">25 years</option>
+          <option value="30">30 years</option>
+          <option value="15">15 years</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Interest Rate (% per annum)</label>
+        <select class="form-select" id="sel-rate" onchange="update()">
+          <option value="8.5">8.5% (SBI current rate)</option>
+          <option value="8.75">8.75% (HDFC)</option>
+          <option value="9.0">9.0% (ICICI)</option>
+          <option value="9.25">9.25%</option>
+          <option value="8.25">8.25% (if CIBIL 800+)</option>
+        </select>
+      </div>
+
+      <button class="calc-btn" onclick="update()">Calculate My Property Budget →</button>
+    </div>
+
+    <!-- Result panel -->
+    <div class="result-panel" id="resultPanel">
+      <div class="result-eyebrow">Your Maximum Property Budget</div>
+      <div class="result-main" id="res-budget">₹—</div>
+      <div class="result-sub" id="res-range">Enter your details to see results</div>
+
+      <div class="result-rows">
+        <div class="result-row"><span class="rr-label">Max Home Loan You Qualify For</span><span class="rr-val" id="res-loan">—</span></div>
+        <div class="result-row"><span class="rr-label">Down Payment Required (20%)</span><span class="rr-val" id="res-down">—</span></div>
+        <div class="result-row"><span class="rr-label">Estimated Monthly EMI</span><span class="rr-val" id="res-emi-out">—</span></div>
+        <div class="result-row"><span class="rr-label">EMI as % of Income</span><span class="rr-val" id="res-pct">—</span></div>
+        <div class="result-row"><span class="rr-label">Stamp Duty Estimate</span><span class="rr-val" id="res-stamp">—</span></div>
+        <div class="result-row"><span class="rr-label">Total Cash Needed</span><span class="rr-val" id="res-total-cash">—</span></div>
+        <div class="result-row"><span class="rr-label">Recommended City Zone</span><span class="rr-val" id="res-zone">—</span></div>
+      </div>
+
+      <div class="result-advice" id="res-advice">
+        Your personalised property advice will appear here after calculation.
+      </div>
+
+      <div class="result-cta">
+        <a href="/properties" class="rcta-p">Browse Properties in Range →</a>
+        <a href="/tools/emi-calculator" class="rcta-s">EMI Calculator</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- City guide table -->
+<div class="city-guide">
+  <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">City Guide</div>
+  <div style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:6px">What Budget Gets You in Each City</div>
+  <p style="font-size:13px;color:var(--slate);margin-bottom:20px">Indicative price ranges for 2BHK apartments in popular zones. May 2026.</p>
+  <table class="city-table">
+    <thead>
+      <tr><th>City</th><th>Entry Budget (2BHK)</th><th>Mid Budget (2BHK)</th><th>Premium Budget</th><th>Min Salary Needed</th></tr>
+    </thead>
+    <tbody>
+      <tr><td style="font-weight:700">Noida / Gr. Noida</td><td style="color:var(--green)">₹25–40 Lakh</td><td>₹45–75 Lakh</td><td>₹80L–1.5 Cr</td><td>₹35,000/month</td></tr>
+      <tr><td style="font-weight:700">Delhi</td><td style="color:var(--green)">₹35–60 Lakh</td><td>₹65L–1.2 Cr</td><td>₹1.5 Cr+</td><td>₹55,000/month</td></tr>
+      <tr><td style="font-weight:700">Gurugram</td><td style="color:var(--green)">₹45–70 Lakh</td><td>₹75L–1.3 Cr</td><td>₹1.5 Cr+</td><td>₹65,000/month</td></tr>
+      <tr><td style="font-weight:700">Mumbai / Navi Mum</td><td style="color:var(--green)">₹60L–1 Cr</td><td>₹1–2 Cr</td><td>₹2.5 Cr+</td><td>₹1,00,000/month</td></tr>
+      <tr><td style="font-weight:700">Bangalore</td><td style="color:var(--green)">₹35–55 Lakh</td><td>₹60–95 Lakh</td><td>₹1 Cr+</td><td>₹50,000/month</td></tr>
+      <tr><td style="font-weight:700">Hyderabad</td><td style="color:var(--green)">₹30–50 Lakh</td><td>₹55–85 Lakh</td><td>₹90L–1.5 Cr</td><td>₹45,000/month</td></tr>
+      <tr><td style="font-weight:700">Pune</td><td style="color:var(--green)">₹35–55 Lakh</td><td>₹60–90 Lakh</td><td>₹1 Cr+</td><td>₹50,000/month</td></tr>
+      <tr><td style="font-weight:700">Jaipur</td><td style="color:var(--green)">₹20–35 Lakh</td><td>₹38–60 Lakh</td><td>₹65L+</td><td>₹28,000/month</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+/* City-specific data */
+var CITY_DATA = {
+  noida:     { stamp:7, zone_entry:'Noida Extension / Sector 76-79', zone_mid:'Sector 62, 74, 75', zone_prem:'Sector 150 Expressway', min_price:2500000 },
+  delhi:     { stamp:6, zone_entry:'Rohini, Dwarka Outer', zone_mid:'Janakpuri, Dwarka Sec-6', zone_prem:'South Delhi, Vasant Kunj', min_price:3500000 },
+  gurugram:  { stamp:7, zone_entry:'New Gurugram Sec 79-95', zone_mid:'Sohna Road, SPR', zone_prem:'Dwarka Expressway, GCR', min_price:4500000 },
+  mumbai:    { stamp:5, zone_entry:'Thane, Dombivli, Kharghar', zone_mid:'Navi Mumbai, Andheri', zone_prem:'Powai, Bandra', min_price:6000000 },
+  bangalore: { stamp:5.6, zone_entry:'Electronic City, Sarjapur outer', zone_mid:'Sarjapur Rd, Whitefield', zone_prem:'Indiranagar, Koramangala', min_price:3500000 },
+  hyderabad: { stamp:5, zone_entry:'Miyapur, Kompally', zone_mid:'Kondapur, Kukatpally', zone_prem:'HITEC City, Gachibowli', min_price:3000000 },
+  pune:      { stamp:6, zone_entry:'Hadapsar, Wagholi', zone_mid:'Hinjewadi, Wakad', zone_prem:'Baner, Kharadi', min_price:3500000 },
+  jaipur:    { stamp:6, zone_entry:'Kalwar Rd, Sirsi Rd', zone_mid:'Mansarovar, Jagatpura', zone_prem:'Vaishali Nagar, C-scheme', min_price:2000000 }
+};
+
+function fmt(n) {
+  if (n >= 10000000) return '₹' + (n/10000000).toFixed(2) + ' Cr';
+  if (n >= 100000)   return '₹' + (n/100000).toFixed(1) + ' Lakh';
+  return '₹' + n.toLocaleString('en-IN');
+}
+function fmtM(n){ return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+function update() {
+  /* Read inputs */
+  var salary  = parseInt(document.getElementById('sl-salary').value);
+  var spouse  = parseInt(document.getElementById('sl-spouse').value);
+  var savings = parseInt(document.getElementById('sl-savings').value);
+  var existEMI= parseInt(document.getElementById('sl-emi').value);
+  var tenure  = parseInt(document.getElementById('sel-tenure').value);
+  var rate    = parseFloat(document.getElementById('sel-rate').value) / 100 / 12;
+  var city    = document.getElementById('sel-city').value;
+  var cd      = CITY_DATA[city];
+
+  /* Update labels */
+  document.getElementById('lbl-salary').textContent  = fmtM(salary);
+  document.getElementById('lbl-spouse').textContent  = fmtM(spouse);
+  document.getElementById('lbl-savings').textContent = fmtM(savings);
+  document.getElementById('lbl-emi').textContent     = fmtM(existEMI);
+
+  /* Calculate */
+  var totalIncome = salary + spouse;
+  var maxEMI      = (totalIncome * 0.45) - existEMI;
+  if (maxEMI < 0) maxEMI = 0;
+
+  var n = tenure * 12;
+  /* Max loan = EMI × [(1-(1+r)^-n)/r] */
+  var maxLoan = maxEMI * ((1 - Math.pow(1+rate, -n)) / rate);
+  maxLoan = Math.floor(maxLoan / 10000) * 10000;
+
+  var downPay = savings * 0.8; /* Keep 20% as emergency */
+  var budget  = maxLoan + downPay;
+
+  /* Down pay needed = 20% of budget */
+  var reqDown = budget * 0.2;
+
+  /* Recalculate: actual loan = budget - reqDown */
+  var actualLoan = budget - reqDown;
+  /* Verify EMI */
+  var actualEMI = actualLoan * rate * Math.pow(1+rate,n) / (Math.pow(1+rate,n)-1);
+
+  var stampAmt = budget * (cd.stamp/100);
+  var regAmt   = budget * 0.01;
+  var totalCash= reqDown + stampAmt + regAmt;
+
+  var emiPct   = Math.round((actualEMI / totalIncome) * 100);
+
+  /* Zone recommendation */
+  var zone;
+  if (budget < cd.min_price * 1.5) zone = cd.zone_entry;
+  else if (budget < cd.min_price * 3) zone = cd.zone_mid;
+  else zone = cd.zone_prem;
+
+  /* Advice */
+  var advice;
+  if (emiPct > 50) advice = '⚠️ EMI is ' + emiPct + '% of income — above recommended 45%. Consider a longer tenure or a co-applicant to increase eligibility. Check our Home Loan Eligibility calculator.';
+  else if (savings < reqDown) advice = '⚠️ Your savings (' + fmt(savings) + ') may not cover the full down payment (' + fmt(reqDown) + '). Build savings for 6-12 months or look at lower budget properties.';
+  else if (budget < cd.min_price) advice = 'ℹ️ Your current budget is below the ' + document.getElementById('sel-city').options[document.getElementById('sel-city').selectedIndex].text + ' entry price. Consider: adding co-applicant income, increasing savings, or exploring cities like Jaipur or Greater Noida for better value.';
+  else advice = '✅ Your profile looks good! Budget of ' + fmt(budget) + ' is viable in ' + document.getElementById('sel-city').options[document.getElementById('sel-city').selectedIndex].text + '. Recommended zones: ' + zone + '. Get CIBIL score 750+ for best interest rates.';
+
+  /* Update UI */
+  document.getElementById('res-budget').textContent = fmt(budget);
+  document.getElementById('res-range').textContent  = 'Recommended range for your profile in ' + document.getElementById('sel-city').options[document.getElementById('sel-city').selectedIndex].text;
+  document.getElementById('res-loan').textContent   = fmt(actualLoan);
+  document.getElementById('res-down').textContent   = fmt(reqDown);
+  document.getElementById('res-emi-out').textContent= fmtM(Math.round(actualEMI)) + '/month';
+  document.getElementById('res-pct').textContent    = emiPct + '% of income';
+  document.getElementById('res-stamp').textContent  = fmt(Math.round(stampAmt + regAmt));
+  document.getElementById('res-total-cash').textContent = fmt(Math.round(totalCash));
+  document.getElementById('res-zone').textContent   = zone;
+  document.getElementById('res-advice').textContent = advice;
+}
+
+/* Run on page load */
+update();
+</script>
+<div style="background:#0F2044;padding:18px 28px;border-top:1px solid rgba(255,255,255,.08)">
+  <div style="max-width:1060px;margin:0 auto;display:flex;align-items:flex-start;gap:10px">
+    <span style="font-size:16px;flex-shrink:0">⚠️</span>
+    <p style="font-size:11px;color:rgba(255,255,255,.45);line-height:1.7"><strong style="color:rgba(255,255,255,.65)">Disclaimer:</strong> All data and results on this page are indicative only and for informational purposes. They do not constitute financial, legal or investment advice. Always consult a qualified financial advisor, RERA-registered agent or property lawyer before making any property purchase or investment decision. PropertyPointers is not liable for any decisions made based on this content. Data accurate as of May 2026 — verify independently. <a href="/disclaimer" style="color:rgba(201,168,76,.7);text-decoration:underline">Read full disclaimer</a></p>
+  </div>
+</div>
+<footer style="background:#0F2044;padding:36px 28px 22px;border-top:1px solid rgba(255,255,255,.08)">
+  <div style="max-width:1060px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:28px;margin-bottom:24px">
+    <div>
+      <div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#C9A84C;margin-bottom:8px">PropertyPointers</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.65;max-width:220px">India's Complete Real Estate Ecosystem — beyond listings.</div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">Insights</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <a href="/insights/market-trends" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Market Trends</a>
+        <a href="/insights/city-reports" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">City Reports</a>
+        <a href="/insights/ai-advisor" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">AI Advisor</a>
+        <a href="/blog" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Blog</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">Free Tools</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <a href="/tools/emi-calculator" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">EMI Calculator</a>
+        <a href="/tools/vastu-calculator" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">AI Vastu Calculator</a>
+        <a href="/tools/rera-check" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">RERA Check</a>
+        <a href="/tools/roi-calculator" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">ROI Calculator</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">Company</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <a href="/about" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">About Us</a>
+        <a href="/realty-advisors" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Advisors</a>
+        <a href="/disclaimer" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Disclaimer</a>
+        <a href="/privacy" style="font-size:12px;color:rgba(255,255,255,.5);text-decoration:none">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:1060px;margin:0 auto;padding-top:18px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <span style="font-size:11px;color:rgba(255,255,255,.3)">© 2026 PropertyPointers. All rights reserved.</span>
+    <span style="font-size:11px;color:rgba(255,255,255,.3)">propertypointers.com · +91 92174 34838</span>
+  </div>
+</footer>
+</body>
+</html>

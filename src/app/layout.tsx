@@ -5,6 +5,7 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import GeoTracker from "@/components/GeoTracker";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.propertypointers.com"),
   title: "PropertyPointers — Beyond Listings. India's Complete Real Estate Ecosystem",
   description:
     "Discover properties, compare developers, connect with realty advisors, explore real estate vendors, and make smarter property decisions with insights and tools.",

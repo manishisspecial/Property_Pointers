@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropertyPointers — Insights Mega Menu Component</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0F2044;--gold:#C9A84C;--white:#fff;--off:#f7f5f0;--slate:#64748b;--border:rgba(15,32,68,.1);--f:'Plus Jakarta Sans',sans-serif}
+body{font-family:var(--f);background:#e8e5de}
+
+/* ══════════════════════════════════════════════════════
+   NAVBAR — Copy this entire section into your site
+   ══════════════════════════════════════════════════════ */
+.pp-navbar{
+  background:var(--navy);
+  height:64px;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  position:relative;
+  z-index:1000;
+  gap:8px;
+}
+.pp-nav-logo{
+  font-size:18px;
+  font-weight:800;
+  color:var(--gold);
+  text-decoration:none;
+  margin-right:16px;
+  flex-shrink:0;
+}
+.pp-nav-items{
+  display:flex;
+  align-items:center;
+  gap:2px;
+  flex:1;
+}
+.pp-nav-item{
+  position:relative;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:600;
+  color:rgba(255,255,255,.65);
+  cursor:pointer;
+  border-radius:8px;
+  transition:all .2s;
+  white-space:nowrap;
+  user-select:none;
+}
+.pp-nav-item:hover,
+.pp-nav-item.active{
+  color:var(--white);
+  background:rgba(255,255,255,.08);
+}
+.pp-nav-item.insights-trigger{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.pp-nav-item.insights-trigger.open{
+  color:var(--gold);
+  background:rgba(201,168,76,.1);
+}
+.pp-caret{
+  font-size:10px;
+  transition:transform .25s;
+}
+.pp-nav-item.insights-trigger.open .pp-caret{
+  transform:rotate(180deg);
+}
+.pp-nav-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-left:auto;
+  flex-shrink:0;
+}
+.pp-btn-post{
+  padding:8px 16px;
+  background:var(--gold);
+  color:var(--navy);
+  border:none;
+  border-radius:8px;
+  font-family:var(--f);
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+}
+.pp-btn-post:hover{background:#e8c46a}
+.pp-btn-login{
+  padding:8px 14px;
+  background:transparent;
+  color:rgba(255,255,255,.7);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:8px;
+  font-family:var(--f);
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* ── MEGA MENU ──────────────────────────────────────── */
+.pp-mega{
+  position:absolute;
+  top:64px;
+  left:0;
+  right:0;
+  background:var(--white);
+  border-top:2px solid var(--gold);
+  box-shadow:0 24px 60px rgba(15,32,68,.2);
+  display:none;
+  z-index:999;
+}
+.pp-mega.open{display:block}
+
+.pp-mega-inner{
+  max-width:1200px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1.1fr 1fr 1fr 1.1fr;
+  gap:0;
+}
+
+/* Mega column */
+.pp-mega-col{
+  padding:24px 22px;
+  border-right:1px solid #f1f5f9;
+}
+.pp-mega-col:last-child{
+  border-right:none;
+  background:#fafbff;
+}
+.pp-mega-col-label{
+  font-size:10px;
+  font-weight:700;
+  color:var(--gold);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:14px;
+  padding-bottom:10px;
+  border-bottom:1px solid #f1f5f9;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+/* Mega item */
+.pp-mega-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:9px 8px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:background .15s;
+  margin-bottom:2px;
+  text-decoration:none;
+}
+.pp-mega-item:hover{background:#f8fafc}
+.pp-mega-item-icon{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  background:#f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  flex-shrink:0;
+  transition:background .15s;
+}
+.pp-mega-item:hover .pp-mega-item-icon{background:rgba(15,32,68,.08)}
+.pp-mega-item-body{flex:1;min-width:0}
+.pp-mega-item-name{
+  font-size:13px;
+  font-weight:600;
+  color:var(--navy);
+  margin-bottom:2px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.pp-mega-item-desc{
+  font-size:11px;
+  color:#94a3b8;
+  line-height:1.4;
+}
+
+/* Badges */
+.pp-badge{
+  font-size:9px;
+  font-weight:700;
+  padding:2px 6px;
+  border-radius:4px;
+  flex-shrink:0;
+}
+.pp-badge-new{background:#fef2f2;color:#dc2626}
+.pp-badge-ai{background:#f5f3ff;color:#7c3aed}
+.pp-badge-hot{background:#fef3c7;color:#d97706}
+.pp-badge-free{background:#f0fdf4;color:#16a34a}
+
+/* Column 4 special */
+.pp-trending-label{
+  font-size:10px;
+  font-weight:700;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin:14px 0 8px;
+}
+.pp-trending-item{
+  padding:7px 8px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:background .15s;
+  margin-bottom:2px;
+  text-decoration:none;
+  display:block;
+}
+.pp-trending-item:hover{background:#f8fafc}
+.pp-trending-text{
+  font-size:11px;
+  color:#475569;
+  line-height:1.45;
+  font-weight:500;
+}
+.pp-trending-text:hover{color:var(--navy)}
+
+.pp-ai-featured{
+  background:linear-gradient(135deg,#f5f3ff,#ede9fe);
+  border:1px solid #ddd6fe;
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:all .2s;
+  text-decoration:none;
+  display:block;
+}
+.pp-ai-featured:hover{
+  border-color:#a78bfa;
+  box-shadow:0 4px 12px rgba(124,58,237,.1);
+}
+.pp-ai-featured-title{
+  font-size:13px;
+  font-weight:700;
+  color:#5b21b6;
+  margin-bottom:4px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.pp-ai-featured-desc{
+  font-size:11px;
+  color:#7c3aed;
+  opacity:.8;
+  line-height:1.5;
+}
+
+.pp-latest-blog{
+  padding-top:10px;
+  border-top:1px solid #e2e8f0;
+  margin-top:6px;
+}
+.pp-latest-blog-label{
+  font-size:10px;
+  font-weight:700;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:6px;
+}
+.pp-latest-blog-title{
+  font-size:11px;
+  font-weight:600;
+  color:var(--navy);
+  line-height:1.5;
+  cursor:pointer;
+  text-decoration:none;
+  display:block;
+}
+.pp-latest-blog-title:hover{color:#1d4ed8;text-decoration:underline}
+
+/* Mega footer */
+.pp-mega-footer{
+  border-top:1px solid #f1f5f9;
+  padding:12px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#fafbff;
+  gap:12px;
+}
+.pp-mega-footer-text{
+  font-size:12px;
+  color:var(--slate);
+}
+.pp-mega-footer-text strong{color:var(--navy)}
+.pp-mega-footer-cta{
+  padding:8px 16px;
+  background:var(--navy);
+  color:var(--white);
+  border:none;
+  border-radius:8px;
+  font-family:var(--f);
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+.pp-mega-footer-cta:hover{background:#162a58}
+
+/* ── Preview area ── */
+.preview-note{
+  background:#0F2044;
+  color:rgba(255,255,255,.5);
+  padding:60px 24px;
+  text-align:center;
+  font-size:14px;
+}
+.preview-note strong{color:#C9A84C;display:block;font-size:20px;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     COMPLETE NAVBAR WITH INSIGHTS MEGA MENU
+     Developer: Copy from here to the closing </nav> tag
+     ══════════════════════════════════════════════════════ -->
+<nav class="pp-navbar" id="ppNavbar">
+
+  <a href="/" class="pp-nav-logo">PropertyPointers</a>
+
+  <div class="pp-nav-items">
+    <div class="pp-nav-item">Buy</div>
+    <div class="pp-nav-item">Rent</div>
+    <div class="pp-nav-item">Developers</div>
+    <div class="pp-nav-item">Partners</div>
+    <div class="pp-nav-item">Vendors</div>
+
+    <!-- ── INSIGHTS TRIGGER ──────────────────────────── -->
+    <div class="pp-nav-item insights-trigger" id="insightsTrigger" onclick="toggleMega()">
+      Insights
+      <span class="pp-caret">▾</span>
+    </div>
+    <!-- ── END TRIGGER ──────────────────────────────── -->
+
+  </div>
+
+  <div class="pp-nav-right">
+    <button class="pp-btn-post">+ Post Property</button>
+    <button class="pp-btn-login">Login</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       INSIGHTS MEGA MENU — Copy this entire block
+       ══════════════════════════════════════════════════ -->
+  <div class="pp-mega" id="ppMega">
+    <div class="pp-mega-inner">
+
+      <!-- COLUMN 1: Market Research -->
+      <div class="pp-mega-col">
+        <div class="pp-mega-col-label">📊 Market Research</div>
+
+        <a href="/insights/market-trends" class="pp-mega-item">
+          <div class="pp-mega-item-icon">📈</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Market Trends</div>
+            <div class="pp-mega-item-desc">Pricing direction & demand signals pan India</div>
+          </div>
+        </a>
+
+        <a href="/insights/city-reports" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🏙️</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">City Reports</div>
+            <div class="pp-mega-item-desc">Price bands & localities for 10+ cities</div>
+          </div>
+        </a>
+
+        <a href="/insights/price-history" class="pp-mega-item">
+          <div class="pp-mega-item-icon">📉</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Price History <span class="pp-badge pp-badge-new">New</span></div>
+            <div class="pp-mega-item-desc">12-month price trends per locality</div>
+          </div>
+        </a>
+
+        <a href="/insights/neighbourhood" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🏘️</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Neighbourhood Guide <span class="pp-badge pp-badge-new">New</span></div>
+            <div class="pp-mega-item-desc">Schools, metro, hospitals near any area</div>
+          </div>
+        </a>
+
+        <a href="/insights/nri-guide" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🌍</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">NRI Guide <span class="pp-badge pp-badge-hot">Hot</span></div>
+            <div class="pp-mega-item-desc">Buy property in India from abroad</div>
+          </div>
+        </a>
+
+        <a href="/insights/investment-guides" class="pp-mega-item">
+          <div class="pp-mega-item-icon">📚</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Investment Guides</div>
+            <div class="pp-mega-item-desc">ROI, yield & due diligence playbooks</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- COLUMN 2: Financial Tools -->
+      <div class="pp-mega-col">
+        <div class="pp-mega-col-label">🧮 Financial Tools</div>
+
+        <a href="/tools/emi-calculator" class="pp-mega-item">
+          <div class="pp-mega-item-icon">💰</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">EMI Calculator <span class="pp-badge pp-badge-free">Free</span></div>
+            <div class="pp-mega-item-desc">Monthly home loan payment in seconds</div>
+          </div>
+        </a>
+
+        <a href="/tools/home-loan-eligibility" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🏦</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Loan Eligibility <span class="pp-badge pp-badge-free">Free</span></div>
+            <div class="pp-mega-item-desc">How much loan can you get on your salary</div>
+          </div>
+        </a>
+
+        <a href="/tools/affordability" class="pp-mega-item">
+          <div class="pp-mega-item-icon">💡</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Affordability Check <span class="pp-badge pp-badge-new">New</span></div>
+            <div class="pp-mega-item-desc">Can I afford this property?</div>
+          </div>
+        </a>
+
+        <a href="/tools/stamp-duty-calculator" class="pp-mega-item">
+          <div class="pp-mega-item-icon">📋</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Stamp Duty Calculator</div>
+            <div class="pp-mega-item-desc">State-wise registration charges</div>
+          </div>
+        </a>
+
+        <a href="/tools/roi-calculator" class="pp-mega-item">
+          <div class="pp-mega-item-icon">📈</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">ROI Calculator</div>
+            <div class="pp-mega-item-desc">Return on investment for any city</div>
+          </div>
+        </a>
+
+        <a href="/tools/rental-yield-calculator" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🔑</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Rental Yield Calculator</div>
+            <div class="pp-mega-item-desc">Rental income potential city-wise</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- COLUMN 3: Property Tools -->
+      <div class="pp-mega-col">
+        <div class="pp-mega-col-label">🔧 Property Tools</div>
+
+        <a href="/tools/vastu-calculator" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🔮</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">AI Vastu Calculator <span class="pp-badge pp-badge-ai">AI</span></div>
+            <div class="pp-mega-item-desc">Upload floor plan — get Vastu score free</div>
+          </div>
+        </a>
+
+        <a href="/tools/rera-check" class="pp-mega-item">
+          <div class="pp-mega-item-icon">✅</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">RERA Check <span class="pp-badge pp-badge-new">New</span></div>
+            <div class="pp-mega-item-desc">Verify any project's RERA status instantly</div>
+          </div>
+        </a>
+
+        <a href="/insights/vastu" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🏠</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Vastu Guide</div>
+            <div class="pp-mega-item-desc">Practical Vastu for home buyers</div>
+          </div>
+        </a>
+
+        <a href="/insights/buyer-checklist" class="pp-mega-item">
+          <div class="pp-mega-item-icon">📝</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Buyer Checklist <span class="pp-badge pp-badge-new">New</span></div>
+            <div class="pp-mega-item-desc">25 things to check before buying</div>
+          </div>
+        </a>
+
+        <a href="/insights/developer-scores" class="pp-mega-item">
+          <div class="pp-mega-item-icon">🏗️</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Developer Scorecard <span class="pp-badge pp-badge-new">New</span></div>
+            <div class="pp-mega-item-desc">Builder track record & complaint history</div>
+          </div>
+        </a>
+
+        <a href="/blog" class="pp-mega-item">
+          <div class="pp-mega-item-icon">📖</div>
+          <div class="pp-mega-item-body">
+            <div class="pp-mega-item-name">Blog & Guides</div>
+            <div class="pp-mega-item-desc">Expert articles — RERA, loans, market news</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- COLUMN 4: AI + Trending -->
+      <div class="pp-mega-col">
+        <div class="pp-mega-col-label">🤖 AI & What's Hot</div>
+
+        <!-- AI Advisor feature -->
+        <a href="/insights/ai-advisor" class="pp-ai-featured">
+          <div class="pp-ai-featured-title">
+            🤖 Ask AI Property Advisor
+            <span class="pp-badge pp-badge-ai">India First</span>
+          </div>
+          <div class="pp-ai-featured-desc">Ask any property question in plain language. Gemini AI answers instantly with real market data.</div>
+        </a>
+
+        <!-- Trending questions -->
+        <div class="pp-trending-label">🔥 Trending Right Now</div>
+
+        <a href="/insights/market-trends" class="pp-trending-item">
+          <div class="pp-trending-text">Noida Sector 150 up 18% — is it too late to buy?</div>
+        </a>
+        <a href="/insights/city-reports/hyderabad" class="pp-trending-item">
+          <div class="pp-trending-text">Hyderabad vs Bangalore — best ROI in 2026?</div>
+        </a>
+        <a href="/insights/city-reports/greater-noida" class="pp-trending-item">
+          <div class="pp-trending-text">Jewar Airport effect on Greater Noida prices</div>
+        </a>
+        <a href="/insights/market-trends" class="pp-trending-item">
+          <div class="pp-trending-text">Mumbai stamp duty 3% for women — act now?</div>
+        </a>
+
+        <!-- Latest blog -->
+        <div class="pp-latest-blog">
+          <div class="pp-latest-blog-label">📖 Latest Article</div>
+          <a href="/blog/why-invest-in-sector-74-noida-in-2026-property-rates-roi-and-future-outlook" class="pp-latest-blog-title">
+            Why invest in Sector 74 Noida — rates, ROI & 2026 outlook →
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Mega menu footer -->
+    <div class="pp-mega-footer">
+      <span class="pp-mega-footer-text">
+        Not sure where to start?
+        <strong>Ask our AI Property Advisor</strong> — get personalised guidance in seconds
+      </span>
+      <a href="/insights/ai-advisor" class="pp-mega-footer-cta">🤖 Ask AI Advisor →</a>
+    </div>
+  </div>
+  <!-- ══════════════════════════════════════════════════
+       END INSIGHTS MEGA MENU
+       ══════════════════════════════════════════════════ -->
+
+</nav>
+
+<!-- Page preview area -->
+<div class="preview-note">
+  <strong>Click "Insights" in the navbar above to see the mega menu</strong>
+  This is the complete, production-ready HTML for the PropertyPointers Insights mega menu.<br>
+  Copy the navbar HTML above and paste into your site's navbar component.
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   INSIGHTS MEGA MENU JAVASCRIPT
+   Developer: Add this to your global JS file
+   ══════════════════════════════════════════════════════ */
+
+function toggleMega() {
+  var trigger = document.getElementById('insightsTrigger');
+  var mega    = document.getElementById('ppMega');
+  var isOpen  = mega.classList.contains('open');
+
+  if (isOpen) {
+    mega.classList.remove('open');
+    trigger.classList.remove('open');
+  } else {
+    mega.classList.add('open');
+    trigger.classList.add('open');
+  }
+}
+
+/* Close when clicking outside */
+document.addEventListener('click', function(e) {
+  var navbar = document.getElementById('ppNavbar');
+  if (!navbar.contains(e.target)) {
+    document.getElementById('ppMega').classList.remove('open');
+    document.getElementById('insightsTrigger').classList.remove('open');
+  }
+});
+
+/* Close on Escape */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('ppMega').classList.remove('open');
+    document.getElementById('insightsTrigger').classList.remove('open');
+  }
+});
+
+/* ══════════════════════════════════════════════════════
+   TRENDING QUESTIONS — Update weekly
+   Replace the <a href> links and text in Column 4
+   to show the most-searched queries that week.
+   ══════════════════════════════════════════════════════ */
+</script>
+
+</body>
+</html>

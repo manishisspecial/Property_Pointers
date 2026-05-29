@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Home Loan Eligibility Calculator India 2026 — How Much Loan Can I Get on My Salary? | PropertyPointers</title>
+<meta name="description" content="Check your exact home loan eligibility instantly. Enter salary, existing EMIs and tenure — get maximum loan amount, recommended property budget and city guidance. Free. propertypointers.com">
+<link rel="canonical" href="https://www.propertypointers.com/tools/home-loan-eligibility">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Home Loan Eligibility Calculator India","url":"https://www.propertypointers.com/tools/home-loan-eligibility","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"How much home loan can I get on Rs 50000 salary?","acceptedAnswer":{"@type":"Answer","text":"On Rs 50,000 monthly salary with no existing EMIs, you can get approximately Rs 23-26 lakh at 8.5% for 20 years. Banks allow 40-50% of income as total EMI."}},
+{"@type":"Question","name":"What is the minimum salary for home loan in India?","acceptedAnswer":{"@type":"Answer","text":"SBI requires minimum Rs 10,000, HDFC Rs 15,000, ICICI Rs 20,000 monthly salary. Salaried need 6 months employment, self-employed need 3 years ITR."}},
+{"@type":"Question","name":"Does adding co-applicant increase home loan eligibility?","acceptedAnswer":{"@type":"Answer","text":"Yes. Adding a working spouse increases eligibility 40-60%. Rs 90,000 combined income gives Rs 41-46 lakh vs Rs 23-26 lakh on single Rs 50,000 income."}},
+{"@type":"Question","name":"What CIBIL score for best home loan rate?","acceptedAnswer":{"@type":"Answer","text":"750+ CIBIL gets best rates (0.25-0.5% lower). 700-749 is acceptable. Below 650 makes approval difficult and rates are 1-2% higher adding significant monthly EMI."}},
+{"@type":"Question","name":"Can self-employed get home loan in India?","acceptedAnswer":{"@type":"Answer","text":"Yes. Self-employed need 3 years stable ITR, business continuity 3+ years, 12-month bank statements, CIBIL 700+. Eligibility is typically 3-4x annual net profit."}}
+]}</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,800;1,9..144,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   PropertyPointers — Shared Design System
+   Brand: Navy #0F2044  Gold #C9A84C  Off-white #F5F1E8
+   Fonts: Fraunces (headings)  DM Sans (body)
+   Version: May 2026
+   ══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --n:#0F2044; --n2:#162654; --n3:#1e3272;
+  --g:#C9A84C; --g2:#ddb96a; --g3:#f0d48e;
+  --w:#ffffff; --off:#F5F1E8; --off2:#EDE8DA; --off3:#E4DFC8;
+  --sl:#5a6a7e; --sl2:#8899aa;
+  --gr:#16a34a; --rd:#dc2626; --bl:#1d4ed8; --pu:#7c3aed;
+  --bd:rgba(15,32,68,.08); --bd2:rgba(15,32,68,.15);
+  --fh:'Fraunces',Georgia,serif;
+  --fb:'DM Sans',system-ui,sans-serif;
+  --s1:0 1px 4px rgba(15,32,68,.06);
+  --s2:0 4px 20px rgba(15,32,68,.10);
+  --s3:0 12px 40px rgba(15,32,68,.14);
+  --s4:0 24px 60px rgba(15,32,68,.18);
+  --r:12px; --r2:16px; --r3:20px;
+  --transition:.22s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--fb);background:var(--off);color:var(--n);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+button{cursor:pointer;font-family:var(--fb)}
+
+/* ── Update Strip ── */
+.pp-strip{background:var(--n);padding:9px 24px;display:flex;align-items:center;
+  justify-content:center;gap:10px;border-bottom:2px solid var(--g)}
+.pp-strip-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;
+  animation:pp-blink 2s infinite;flex-shrink:0}
+.pp-strip p{font-size:12px;font-weight:500;color:rgba(255,255,255,.7);letter-spacing:.01em}
+.pp-strip strong{color:var(--g);font-weight:700}
+@keyframes pp-blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Navbar ── */
+.pp-nav{background:var(--n);height:62px;display:flex;align-items:center;
+  padding:0 28px;position:sticky;top:0;z-index:1000;gap:4px;
+  border-bottom:1px solid rgba(201,168,76,.15)}
+.pp-logo{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--g);
+  margin-right:14px;flex-shrink:0;letter-spacing:-.3px}
+.pp-nav-links{display:flex;align-items:center;gap:2px;flex:1}
+.pp-ni{padding:7px 12px;font-size:12px;font-weight:500;
+  color:rgba(255,255,255,.58);border-radius:6px;transition:all var(--transition);
+  white-space:nowrap;border:none;background:none;font-family:var(--fb)}
+.pp-ni:hover,.pp-ni.on{color:var(--white);background:rgba(255,255,255,.08)}
+.pp-ni.on{color:var(--g)}
+.pp-nav-right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-shrink:0}
+.pp-post{padding:8px 16px;background:var(--g);color:var(--n);border:none;
+  border-radius:7px;font-family:var(--fb);font-size:12px;font-weight:700;
+  transition:all var(--transition);text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.pp-post:hover{background:var(--g2);transform:translateY(-1px)}
+.pp-login{padding:7px 14px;background:transparent;color:rgba(255,255,255,.65);
+  border:1px solid rgba(255,255,255,.18);border-radius:7px;font-family:var(--fb);
+  font-size:12px;font-weight:500;transition:all var(--transition);text-decoration:none}
+.pp-login:hover{color:var(--w);border-color:rgba(255,255,255,.4)}
+/* breadcrumb */
+.pp-bread{background:var(--off2);padding:10px 28px;display:flex;align-items:center;
+  gap:6px;font-size:12px;color:var(--sl);border-bottom:1px solid var(--bd)}
+.pp-bread a{color:var(--sl);transition:color var(--transition)}
+.pp-bread a:hover{color:var(--n)}
+.pp-bread span{color:var(--sl2)}
+
+/* ── Hero variants ── */
+.pp-hero{background:var(--n);padding:52px 28px 64px;position:relative;overflow:hidden}
+.pp-hero::before{content:'';position:absolute;top:-100px;right:-80px;
+  width:360px;height:360px;border-radius:50%;
+  background:rgba(201,168,76,.07);pointer-events:none}
+.pp-hero::after{content:'';position:absolute;bottom:-60px;left:-60px;
+  width:220px;height:220px;border-radius:50%;
+  background:rgba(201,168,76,.04);pointer-events:none}
+.pp-hero-inner{max-width:920px;margin:0 auto;position:relative;z-index:1}
+.pp-hero-badge{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.3);
+  border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--g);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.pp-hero-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;
+  animation:pp-blink 2s infinite}
+.pp-hero h1{font-family:var(--fh);font-size:clamp(24px,4.5vw,48px);color:var(--w);
+  line-height:1.12;margin-bottom:14px;font-weight:700;letter-spacing:-.3px}
+.pp-hero h1 em{color:var(--g);font-style:italic}
+.pp-hero-sub{font-size:15px;color:rgba(255,255,255,.52);max-width:520px;
+  line-height:1.75;margin-bottom:36px}
+/* hero stats bar */
+.pp-hero-stats{display:flex;flex-wrap:wrap;gap:0;margin-bottom:32px}
+.pp-hs{padding:12px 22px;border-right:1px solid rgba(255,255,255,.1);text-align:center}
+.pp-hs:last-child{border-right:none}
+.pp-hs-val{font-size:20px;font-weight:700;color:var(--g);line-height:1;display:block;margin-bottom:3px}
+.pp-hs-lbl{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;
+  letter-spacing:.06em;font-weight:500}
+
+/* ── Layout ── */
+.pp-wrap{max-width:1060px;margin:0 auto;padding:0 28px}
+.pp-section{padding:56px 0}
+.pp-eyebrow{font-size:11px;font-weight:700;color:var(--g);text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:7px}
+.pp-title{font-family:var(--fh);font-size:clamp(20px,3vw,32px);color:var(--n);
+  margin-bottom:7px;line-height:1.2;font-weight:700}
+.pp-sub{font-size:14px;color:var(--sl);margin-bottom:32px;max-width:540px;line-height:1.7}
+.pp-divider{border:none;border-top:1px solid var(--bd)}
+
+/* ── Cards ── */
+.pp-card{background:var(--w);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:24px;transition:all var(--transition)}
+.pp-card:hover{box-shadow:var(--s2);border-color:var(--bd2)}
+
+/* ── Calculator panels ── */
+.pp-calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.pp-calc-panel{background:var(--w);border:1px solid var(--bd);
+  border-radius:var(--r2);padding:26px}
+.pp-calc-title{font-size:15px;font-weight:700;color:var(--n);margin-bottom:18px;
+  padding-bottom:12px;border-bottom:2px solid var(--g);display:flex;
+  align-items:center;gap:8px}
+.pp-result-panel{background:var(--n);border-radius:var(--r2);padding:26px;color:var(--w)}
+.pp-re{font-size:11px;font-weight:700;color:var(--g);text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:5px}
+.pp-rm{font-family:var(--fh);font-size:36px;font-weight:700;color:var(--g);
+  line-height:1;margin-bottom:4px}
+.pp-rs{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:20px}
+.pp-rrow{background:rgba(255,255,255,.07);border-radius:8px;padding:11px 14px;
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.pp-rrl{font-size:12px;color:rgba(255,255,255,.5)}
+.pp-rrv{font-size:13px;font-weight:600;color:var(--w)}
+
+/* ── Form controls ── */
+.pp-fg{margin-bottom:15px}
+.pp-fl{font-size:12px;font-weight:600;color:var(--n);margin-bottom:5px;
+  display:flex;justify-content:space-between;align-items:center}
+.pp-fv{font-size:13px;font-weight:700;color:var(--g)}
+input[type=range]{width:100%;accent-color:var(--n);cursor:pointer;margin-top:5px;height:4px}
+.pp-select,.pp-input{width:100%;padding:10px 13px;border:1.5px solid #dde3ee;
+  border-radius:8px;font-family:var(--fb);font-size:13px;color:var(--n);
+  outline:none;background:var(--off);transition:border-color var(--transition)}
+.pp-select:focus,.pp-input:focus{border-color:var(--n);background:var(--w)}
+.pp-btn{width:100%;padding:13px;background:var(--n);color:var(--w);border:none;
+  border-radius:10px;font-family:var(--fb);font-size:14px;font-weight:700;
+  transition:all var(--transition);margin-top:6px;display:flex;align-items:center;
+  justify-content:center;gap:7px}
+.pp-btn:hover{background:var(--n2);transform:translateY(-1px);box-shadow:var(--s2)}
+.pp-advice{margin-top:14px;padding:13px;background:rgba(201,168,76,.13);
+  border:1px solid rgba(201,168,76,.28);border-radius:9px;font-size:12px;
+  color:var(--g);line-height:1.65}
+.pp-rcta{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.pp-rcta a{flex:1;padding:10px 12px;background:var(--g);color:var(--n);border:none;
+  border-radius:8px;font-family:var(--fb);font-size:12px;font-weight:700;
+  text-decoration:none;text-align:center;min-width:110px;transition:all var(--transition);
+  display:flex;align-items:center;justify-content:center;gap:4px}
+.pp-rcta a:hover{background:var(--g2);transform:translateY(-1px)}
+.pp-rcta a.sec{background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);
+  border:1px solid rgba(255,255,255,.18)}
+.pp-rcta a.sec:hover{background:rgba(255,255,255,.18);color:var(--w)}
+
+/* ── Tables ── */
+.pp-tbl-wrap{overflow-x:auto}
+.pp-tbl{width:100%;border-collapse:collapse;background:var(--w);
+  border-radius:var(--r2);overflow:hidden;box-shadow:var(--s1)}
+.pp-tbl th{padding:12px 15px;font-size:11px;font-weight:700;color:var(--sl);
+  text-transform:uppercase;letter-spacing:.07em;background:var(--off2);
+  border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+.pp-tbl td{padding:12px 15px;font-size:13px;border-bottom:1px solid var(--bd);
+  vertical-align:middle}
+.pp-tbl tr:last-child td{border-bottom:none}
+.pp-tbl tr:hover td{background:var(--off)}
+.pp-tbl strong{font-weight:700;color:var(--n)}
+
+/* ── FAQ ── */
+.pp-faq-bg{background:var(--off);padding:52px 28px}
+.pp-faq-inner{max-width:720px;margin:0 auto}
+.pp-fi{background:var(--w);border:1px solid var(--bd);border-radius:var(--r);
+  margin-bottom:8px;overflow:hidden;transition:box-shadow var(--transition)}
+.pp-fi:hover{box-shadow:var(--s1)}
+.pp-fq{width:100%;padding:16px 18px;background:transparent;border:none;
+  font-family:var(--fb);font-size:13px;font-weight:600;color:var(--n);
+  text-align:left;cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;gap:12px;line-height:1.4}
+.pp-ficon{width:24px;height:24px;border-radius:50%;background:var(--off2);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  color:var(--sl);transition:all var(--transition);flex-shrink:0;font-style:normal}
+.pp-fi.open .pp-ficon{background:var(--n);color:var(--w);transform:rotate(45deg)}
+.pp-fa{max-height:0;overflow:hidden;
+  transition:max-height .35s ease,padding .3s ease;padding:0 18px}
+.pp-fi.open .pp-fa{max-height:240px;padding:0 18px 18px}
+.pp-fa p{font-size:13px;color:var(--sl);line-height:1.75;
+  border-top:1px solid var(--bd);padding-top:14px}
+
+/* ── Tools strip ── */
+.pp-tools-bg{background:var(--n);padding:44px 28px}
+.pp-tools-grid{max-width:1060px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px}
+.pp-tc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r);padding:16px;transition:all var(--transition);
+  text-decoration:none;display:block}
+.pp-tc:hover{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.35);
+  transform:translateY(-2px)}
+.pp-tc-icon{font-size:22px;margin-bottom:9px;display:block}
+.pp-tc-name{font-size:12px;font-weight:700;color:var(--w);margin-bottom:3px}
+.pp-tc-desc{font-size:11px;color:rgba(255,255,255,.42);line-height:1.45;margin-bottom:9px}
+.pp-tc-cta{font-size:11px;font-weight:700;color:var(--g)}
+
+/* ── Disclaimer ── */
+.pp-disclaimer{background:var(--n);padding:20px 28px;border-top:1px solid rgba(255,255,255,.08)}
+.pp-disclaimer-inner{max-width:1060px;margin:0 auto;
+  display:flex;align-items:flex-start;gap:12px}
+.pp-disc-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.pp-disc-text{font-size:11px;color:rgba(255,255,255,.45);line-height:1.7}
+.pp-disc-text strong{color:rgba(255,255,255,.65)}
+.pp-disc-text a{color:rgba(201,168,76,.7);text-decoration:underline}
+.pp-disc-text a:hover{color:var(--g)}
+
+/* ── Footer ── */
+.pp-footer{background:var(--n);padding:40px 28px 24px;
+  border-top:1px solid rgba(255,255,255,.08)}
+.pp-footer-grid{max-width:1060px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px}
+.pp-footer-brand{font-family:var(--fh);font-size:20px;font-weight:700;
+  color:var(--g);margin-bottom:10px}
+.pp-footer-tagline{font-size:12px;color:rgba(255,255,255,.42);
+  line-height:1.65;max-width:220px}
+.pp-footer-heading{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);
+  text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px}
+.pp-footer-links{list-style:none;display:flex;flex-direction:column;gap:7px}
+.pp-footer-links a{font-size:12px;color:rgba(255,255,255,.55);
+  transition:color var(--transition)}
+.pp-footer-links a:hover{color:var(--g)}
+.pp-footer-bottom{max-width:1060px;margin:0 auto;padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.06);display:flex;
+  align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pp-footer-copy{font-size:11px;color:rgba(255,255,255,.3)}
+.pp-footer-legal{display:flex;gap:16px}
+.pp-footer-legal a{font-size:11px;color:rgba(255,255,255,.3);
+  transition:color var(--transition)}
+.pp-footer-legal a:hover{color:rgba(255,255,255,.6)}
+
+/* ── Badges / pills ── */
+.pp-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;
+  font-weight:700;padding:3px 8px;border-radius:6px}
+.pp-badge-new{background:#fef2f2;color:var(--rd)}
+.pp-badge-ai{background:#f5f3ff;color:var(--pu)}
+.pp-badge-hot{background:#fef3c7;color:#b45309}
+.pp-badge-free{background:#f0fdf4;color:var(--gr)}
+.pp-badge-up{background:#f0fdf4;color:var(--gr)}
+.pp-badge-mid{background:#fffbeb;color:#d97706}
+.pp-badge-down{background:#fef2f2;color:var(--rd)}
+
+/* ── Fade animations ── */
+.pp-fu{opacity:0;transform:translateY(20px);
+  transition:opacity .55s ease,transform .55s ease}
+.pp-fu.vis{opacity:1;transform:translateY(0)}
+.pp-fu-l{opacity:0;transform:translateX(-20px);
+  transition:opacity .55s ease,transform .55s ease}
+.pp-fu-l.vis{opacity:1;transform:translateX(0)}
+
+/* ── Responsive ── */
+@media(max-width:720px){
+  .pp-calc-grid{grid-template-columns:1fr}
+  .pp-footer-grid{grid-template-columns:1fr 1fr}
+  .pp-nav-links .pp-ni:not(.pp-insights-link){display:none}
+  .pp-hero-stats{display:grid;grid-template-columns:1fr 1fr}
+  .pp-hs{border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+}
+@media(max-width:480px){
+  .pp-footer-grid{grid-template-columns:1fr}
+  .pp-wrap{padding:0 18px}
+  .pp-hero{padding:36px 18px 48px}
+}
+</style>
+.pp-lock-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 20%,rgba(245,241,232,.97) 55%,var(--off) 100%);z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:32px;border-radius:0 0 var(--r2) var(--r2)}
+.pp-lock-card{background:var(--w);border:1.5px solid var(--bd2);border-radius:var(--r2);padding:26px 30px;text-align:center;max-width:360px;width:90%;box-shadow:var(--s3)}
+.pp-lock-icon{font-size:30px;margin-bottom:8px}
+.pp-lock-title{font-family:var(--fh);font-size:19px;font-weight:700;color:var(--n);margin-bottom:6px}
+.pp-lock-sub{font-size:13px;color:var(--sl);line-height:1.6;margin-bottom:16px}
+.pp-lock-features{display:flex;flex-direction:column;gap:5px;margin-bottom:18px;text-align:left}
+.pp-lock-feat{font-size:12px;color:var(--sl);display:flex;align-items:center;gap:7px}
+.pp-lock-feat span{color:var(--gr);font-weight:700}
+.pp-lock-cta{width:100%;padding:13px;background:var(--n);color:var(--w);border:none;border-radius:10px;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--transition);margin-bottom:10px}
+.pp-lock-cta:hover{background:var(--n2);transform:translateY(-1px)}
+.pp-lock-login{font-size:12px;color:var(--sl)}
+.pp-lock-login a{color:var(--n);font-weight:700;text-decoration:none}
+.pp-locked-section{position:relative;overflow:hidden;min-height:240px}
+.pp-blur{filter:blur(4px);pointer-events:none;user-select:none}
+.pp-free-badge{display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--gr)}
+.pp-pro-badge{display:inline-flex;align-items:center;gap:5px;background:#fdf8ec;border:1px solid rgba(201,168,76,.4);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#92621a}
+
+<style>
+.salary-card{background:var(--w);border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;transition:all var(--transition);cursor:pointer}
+.salary-card:hover{border-color:var(--n);box-shadow:var(--s1)}
+.salary-card.on{border-color:var(--g);background:rgba(201,168,76,.07)}
+.sc-salary{font-size:12px;font-weight:700;color:var(--n)}
+.sc-loan{font-size:15px;font-weight:800;color:var(--g);margin:3px 0}
+.sc-city{font-size:11px;color:var(--sl)}
+</style>
+</head>
+<body>
+
+<div class="pp-strip">
+  <div class="pp-strip-dot"></div>
+  <p><strong>May 2026 Update:</strong> AI Vastu Calculator live &nbsp;·&nbsp; Noida +14% YoY &nbsp;·&nbsp; RBI rate stable 6.25%</p>
+</div>
+<nav class="pp-nav" id="ppNav">
+  <a href="/" class="pp-logo">PropertyPointers</a>
+  <div class="pp-nav-links">
+    <a href="/properties?type=sale" class="pp-ni">Buy</a>
+    <a href="/properties?type=rent" class="pp-ni">Rent</a>
+    <a href="/developers" class="pp-ni">Developers</a>
+    <a href="/realty-advisors" class="pp-ni">Advisors</a>
+    <a href="/vendors" class="pp-ni">Vendors</a>
+    <a href="/insights" class="pp-ni pp-insights-link on">Insights</a>
+    <a href="/about" class="pp-ni">Company</a>
+  </div>
+  <div class="pp-nav-right">
+    <a href="/post-property" class="pp-post">+ Post Property</a>
+    <a href="/auth/login" class="pp-login">Login</a>
+  </div>
+</nav>
+
+<div class="pp-bread">
+  <a href="/">Home</a><span>›</span><a href="/insights">Tools</a><span>›</span><span>Loan Eligibility</span>
+</div>
+<section class="pp-hero">
+  <div class="pp-hero-inner">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+      <div class="pp-hero-badge"><span class="pp-hero-badge-dot"></span>Free Tool</div>
+      <div class="pp-free-badge">✓ Eligibility Check Free</div>
+      <div class="pp-pro-badge">🔐 Bank Comparison + CIBIL Guide — Free Account</div>
+    </div>
+    <h1>Home Loan <em>Eligibility Calculator</em></h1>
+    <p class="pp-hero-sub">Know the exact home loan amount you qualify for — salary, existing obligations, city and bank factored in. Salary-to-loan table, city guidance and bank comparison included.</p>
+    <div class="pp-hero-stats">
+      <div class="pp-hs"><span class="pp-hs-val">Instant</span><span class="pp-hs-lbl">Results</span></div>
+      <div class="pp-hs"><span class="pp-hs-val">8 Cities</span><span class="pp-hs-lbl">Market Guidance</span></div>
+      <div class="pp-hs"><span class="pp-hs-val">Salaried+SE</span><span class="pp-hs-lbl">Both Profiles</span></div>
+      <div class="pp-hs"><span class="pp-hs-val">Free</span><span class="pp-hs-lbl">No Registration</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="pp-wrap" style="padding-top:40px;padding-bottom:52px">
+  <div class="pp-calc-grid" style="margin-bottom:28px">
+    <div class="pp-calc-panel pp-fu">
+      <div class="pp-calc-title">💼 Your Profile</div>
+      <div class="pp-fg"><div class="pp-fl">Monthly Take-Home Salary<span class="pp-fv" id="sv">₹50,000</span></div><input type="range" id="ssl" min="10000" max="500000" step="5000" value="50000" oninput="calc()"></div>
+      <div class="pp-fg"><div class="pp-fl">Spouse / Co-applicant Income<span class="pp-fv" id="spv">₹0</span></div><input type="range" id="ssp" min="0" max="300000" step="5000" value="0" oninput="calc()"></div>
+      <div class="pp-fg"><div class="pp-fl">Existing Monthly EMIs<span class="pp-fv" id="ev">₹0</span></div><input type="range" id="sem" min="0" max="100000" step="2000" value="0" oninput="calc()"></div>
+      <div class="pp-fg"><label class="pp-fl" style="display:block;margin-bottom:6px">Loan Tenure Preference</label>
+        <select class="pp-select" id="sten" onchange="calc()">
+          <option value="20">20 years</option><option value="25">25 years</option><option value="30">30 years</option><option value="15">15 years</option>
+        </select></div>
+      <div class="pp-fg"><label class="pp-fl" style="display:block;margin-bottom:6px">Interest Rate</label>
+        <select class="pp-select" id="srate" onchange="calc()">
+          <option value="8.5">8.5% — SBI Current</option>
+          <option value="8.75">8.75% — HDFC</option>
+          <option value="9.0">9.0% — ICICI</option>
+          <option value="8.25">8.25% — CIBIL 800+</option>
+        </select></div>
+      <div class="pp-fg"><label class="pp-fl" style="display:block;margin-bottom:6px">Employment Type</label>
+        <select class="pp-select" id="semp" onchange="calc()">
+          <option value="0.45">Salaried — Private</option>
+          <option value="0.5">Salaried — Govt / PSU</option>
+          <option value="0.4">Self-Employed</option>
+        </select></div>
+      <button class="pp-btn" onclick="calc()">🏦 Check My Eligibility</button>
+    </div>
+    <div class="pp-result-panel pp-fu">
+      <div class="pp-re">Maximum Loan Eligible</div>
+      <div class="pp-rm" id="maxloan">₹23.4 Lakh</div>
+      <div class="pp-rs" id="loan-sub">At 8.5% for 20 years</div>
+      <div class="pp-rrow"><span class="pp-rrl">Total Household Income</span><span class="pp-rrv" id="rinc">₹50,000/month</span></div>
+      <div class="pp-rrow"><span class="pp-rrl">Max Affordable EMI (45%)</span><span class="pp-rrv" id="rmemi">₹22,500/month</span></div>
+      <div class="pp-rrow"><span class="pp-rrl">Available EMI (after deductions)</span><span class="pp-rrv" id="ravemi">₹22,500/month</span></div>
+      <div class="pp-rrow"><span class="pp-rrl">Loan Eligible</span><span class="pp-rrv" id="rloan" style="color:var(--g)">₹23.4 Lakh</span></div>
+      <div class="pp-rrow"><span class="pp-rrl">Monthly EMI on this loan</span><span class="pp-rrv" id="remi">₹20,285/month</span></div>
+      <div class="pp-rrow"><span class="pp-rrl">Minimum Down Payment (20%)</span><span class="pp-rrv" id="rdp">₹5.85 Lakh</span></div>
+      <div class="pp-rrow"><span class="pp-rrl">Recommended City / Zone</span><span class="pp-rrv" id="rzone" style="font-size:11px">Noida Extension, Jaipur</span></div>
+      <div class="pp-advice" id="radv">Based on your profile, you qualify for properties in the ₹28-32 lakh range in Greater Noida or Jaipur.</div>
+      <div class="pp-rcta">
+        <a href="/tools/emi-calculator">🧮 EMI Calculator</a>
+        <a href="/tools/affordability" class="sec">💡 Full Budget</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREE: Salary quick reference table -->
+  <div class="pp-fu" style="margin-bottom:28px">
+    <div class="pp-eyebrow">Quick Reference</div>
+    <div class="pp-title" style="font-size:18px;margin-bottom:14px">Salary to Loan Eligibility Table</div>
+    <p style="font-size:13px;color:var(--sl);margin-bottom:16px">@ 8.5% for 20 years · No existing EMIs · Salaried private sector</p>
+    <div style="overflow-x:auto"><table class="pp-tbl">
+      <thead><tr><th>Monthly Salary</th><th>Max Loan</th><th>Monthly EMI</th><th>Property Budget</th><th>Best Cities</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:700">₹20,000</td><td>₹9–10 Lakh</td><td>₹9,000</td><td>₹11–13 Lakh</td><td>Tier-3, outskirts</td></tr><tr><td style="font-weight:700">₹30,000</td><td>₹13–15 Lakh</td><td>₹13,500</td><td>₹16–19 Lakh</td><td>Jaipur entry, Ghaziabad</td></tr><tr><td style="font-weight:700">₹50,000</td><td>₹23–25 Lakh</td><td>₹22,500</td><td>₹28–31 Lakh</td><td>Greater Noida, Jaipur</td></tr><tr><td style="font-weight:700">₹75,000</td><td>₹34–37 Lakh</td><td>₹33,750</td><td>₹42–46 Lakh</td><td>Noida mid, Pune outskirts</td></tr><tr><td style="font-weight:700">₹1,00,000</td><td>₹46–50 Lakh</td><td>₹45,000</td><td>₹57–62 Lakh</td><td>Noida Sec 62, Hyd entry</td></tr><tr><td style="font-weight:700">₹1,50,000</td><td>₹69–75 Lakh</td><td>₹67,500</td><td>₹86–93 Lakh</td><td>Gurugram, Blr Whitefield</td></tr><tr><td style="font-weight:700">₹2,00,000+</td><td>₹92L+</td><td>₹90,000</td><td>₹1.15 Cr+</td><td>Noida Sec 150, Mumbai</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- LOCKED: Bank comparison -->
+  <div class="pp-fu" style="margin-bottom:28px">
+    <div class="pp-eyebrow">Compare Banks</div>
+    <div class="pp-title" style="font-size:18px;margin-bottom:6px">Your Eligibility at 12 Banks</div>
+    <p class="pp-sub">Same salary — see how much each bank will lend and at what rate.</p>
+    <div class="pp-locked-section">
+      <div class="pp-blur"><table class="pp-tbl">
+        <thead><tr><th>Bank</th><th>Rate</th><th>Max Loan</th><th>Monthly EMI</th><th>Processing Fee</th></tr></thead>
+        <tbody><tr><td style="font-weight:700">SBI</td><td>8.25%</td><td>₹24.8L</td><td>₹21,340</td><td>0.35% (₹2K min)</td></tr><tr><td style="font-weight:700">HDFC</td><td>8.5%</td><td>₹23.4L</td><td>₹20,285</td><td>0.5%+GST</td></tr><tr><td style="font-weight:700">ICICI</td><td>9.0%</td><td>₹22.1L</td><td>₹19,900</td><td>0.5%</td></tr><tr><td style="font-weight:700">PNB</td><td>8.4%</td><td>₹24.2L</td><td>₹20,900</td><td>0.25%</td></tr><tr><td style="font-weight:700">Axis</td><td>9.25%</td><td>₹21.5L</td><td>₹19,600</td><td>1%+GST</td></tr></tbody>
+      </table></div>
+      <div class="pp-lock-overlay">
+  <div class="pp-lock-card">
+    <div class="pp-lock-icon">🔐</div>
+    <div class="pp-lock-title">Unlock Bank-wise Eligibility</div>
+    <div class="pp-lock-sub">Create a free account to unlock detailed analysis, save results and access advanced features.</div>
+    <div class="pp-lock-features"><div class="pp-lock-feat"><span>✓</span>Loan eligibility at 12 major Indian banks</div><div class="pp-lock-feat"><span>✓</span>Processing fee comparison</div><div class="pp-lock-feat"><span>✓</span>Best bank recommendation for your profile</div><div class="pp-lock-feat"><span>✓</span>One-click loan application links</div><div class="pp-lock-feat"><span>✓</span>Save and share results with family</div></div>
+    <button class="pp-lock-cta" onclick="window.location='/auth/signup?ref=tool'">🔓 Create Free Account</button>
+    <div class="pp-lock-login">Already a member? <a href="/auth/login">Log in</a></div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <!-- LOCKED: CIBIL impact -->
+  <div class="pp-fu">
+    <div class="pp-eyebrow">Maximise Your Eligibility</div>
+    <div class="pp-title" style="font-size:18px;margin-bottom:6px">CIBIL Score Impact on Your Loan</div>
+    <p class="pp-sub">See how improving your CIBIL score changes your loan amount and interest rate.</p>
+    <div class="pp-locked-section">
+      <div class="pp-blur" style="padding:20px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div style="background:var(--off);border-radius:var(--r);padding:14px;text-align:center"><div style="font-size:13px;font-weight:700;color:var(--n);margin-bottom:4px">CIBIL Below 700</div><div style="font-size:11px;color:var(--sl);margin-bottom:8px">High Risk</div><div style="font-size:16px;font-weight:700;color:var(--n)">₹20L @ 9.5%</div></div><div style="background:var(--off);border-radius:var(--r);padding:14px;text-align:center"><div style="font-size:13px;font-weight:700;color:var(--n);margin-bottom:4px">CIBIL 700–749</div><div style="font-size:11px;color:var(--sl);margin-bottom:8px">Acceptable</div><div style="font-size:16px;font-weight:700;color:var(--n)">₹22L @ 9.0%</div></div><div style="background:var(--off);border-radius:var(--r);padding:14px;text-align:center"><div style="font-size:13px;font-weight:700;color:var(--n);margin-bottom:4px">CIBIL 750+</div><div style="font-size:11px;color:var(--sl);margin-bottom:8px">Best Rate</div><div style="font-size:16px;font-weight:700;color:var(--n)">₹25L @ 8.25%</div></div>
+        </div>
+      </div>
+      <div class="pp-lock-overlay">
+  <div class="pp-lock-card">
+    <div class="pp-lock-icon">🔐</div>
+    <div class="pp-lock-title">Unlock CIBIL Optimiser</div>
+    <div class="pp-lock-sub">Create a free account to unlock detailed analysis, save results and access advanced features.</div>
+    <div class="pp-lock-features"><div class="pp-lock-feat"><span>✓</span>CIBIL score vs eligibility impact chart</div><div class="pp-lock-feat"><span>✓</span>90-day CIBIL improvement plan</div><div class="pp-lock-feat"><span>✓</span>Free CIBIL score check integration</div><div class="pp-lock-feat"><span>✓</span>Rate negotiation tips by bank</div></div>
+    <button class="pp-lock-cta" onclick="window.location='/auth/signup?ref=tool'">🔓 Create Free Account</button>
+    <div class="pp-lock-login">Already a member? <a href="/auth/login">Log in</a></div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>
+
+<div class="pp-faq-bg"><div class="pp-faq-inner">
+  <div style="text-align:center;margin-bottom:32px">
+    <div class="pp-eyebrow" style="text-align:center">People Also Ask</div>
+    <div class="pp-title" style="text-align:center;font-family:var(--fh)">Loan Eligibility FAQ</div>
+  </div>
+  <div class="pp-fi" onclick="ppFAQ(this)"><button class="pp-fq">How much home loan can I get on ₹50,000 salary? <i class="pp-ficon">+</i></button><div class="pp-fa"><p>On ₹50,000 take-home with no existing EMIs, you qualify for approximately ₹23-26 lakh at 8.5% for 20 years. Banks allow 40-50% of income as total EMI. Adding a working spouse increases this to ₹40-46 lakh combined.</p></div></div><div class="pp-fi" onclick="ppFAQ(this)"><button class="pp-fq">What is the minimum salary for home loan in India? <i class="pp-ficon">+</i></button><div class="pp-fa"><p>SBI minimum is ₹10,000/month, HDFC ₹15,000, ICICI ₹20,000. Salaried employees need 6 months at current employer. Self-employed need 3 years of ITR. Government employees typically get better terms.</p></div></div><div class="pp-fi" onclick="ppFAQ(this)"><button class="pp-fq">Does adding co-applicant increase loan eligibility? <i class="pp-ficon">+</i></button><div class="pp-fa"><p>Yes — significantly. Adding a working spouse increases eligibility 40-60%. ₹50,000 individual income gives ₹23L eligibility. Add spouse earning ₹40,000 and combined ₹90,000 gives ₹41-46L. Co-applicant also gets separate tax benefits on EMI.</p></div></div><div class="pp-fi" onclick="ppFAQ(this)"><button class="pp-fq">What CIBIL score is needed for best home loan rate? <i class="pp-ficon">+</i></button><div class="pp-fa"><p>CIBIL 750+ gets best rates — often 0.25-0.5% lower than standard. On ₹50L for 20 years, 0.5% lower saves ₹3,600/month and ₹8.6L total interest. Check CIBIL for free at cibil.com before applying.</p></div></div><div class="pp-fi" onclick="ppFAQ(this)"><button class="pp-fq">Can self-employed person get home loan in India? <i class="pp-ficon">+</i></button><div class="pp-fa"><p>Yes. Self-employed need: 3 years stable ITR showing income, business continuity of 3+ years, 12-month bank statements, CIBIL 700+. Eligibility typically calculated at 3-4× annual net profit. Some banks use gross receipts.</p></div></div><div class="pp-fi" onclick="ppFAQ(this)"><button class="pp-fq">What documents are needed for home loan? <i class="pp-ficon">+</i></button><div class="pp-fa"><p>Salaried: salary slips (3 months), Form 16, bank statements (6 months), Aadhaar, PAN, employment letter. Self-employed: ITR (3 years), P&L and balance sheet. Property: sale agreement, chain of title deeds, approved building plan.</p></div></div>
+</div></div>
+
+<div class="pp-tools-bg">
+  <div style="max-width:1060px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:22px">
+      <div class="pp-eyebrow" style="color:var(--g)">Free Tools</div>
+      <div style="font-family:var(--fh);font-size:22px;color:var(--w);font-weight:700">Use Our Other Free Tools</div>
+    </div>
+    <div class="pp-tools-grid">
+      <a href="/tools/emi-calculator" class="pp-tc">
+        <span class="pp-tc-icon">🧮</span>
+        <div class="pp-tc-name">EMI Calculator</div>
+        <div class="pp-tc-desc">Monthly home loan EMI</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/affordability" class="pp-tc">
+        <span class="pp-tc-icon">💡</span>
+        <div class="pp-tc-name">Affordability</div>
+        <div class="pp-tc-desc">Can I afford this property?</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/stamp-duty-calculator" class="pp-tc">
+        <span class="pp-tc-icon">📋</span>
+        <div class="pp-tc-name">Stamp Duty</div>
+        <div class="pp-tc-desc">State-wise registration charges</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/roi-calculator" class="pp-tc">
+        <span class="pp-tc-icon">📈</span>
+        <div class="pp-tc-name">ROI Calculator</div>
+        <div class="pp-tc-desc">Return on investment</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/rental-yield-calculator" class="pp-tc">
+        <span class="pp-tc-icon">🔑</span>
+        <div class="pp-tc-name">Rental Yield</div>
+        <div class="pp-tc-desc">Rental income potential</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/vastu-calculator" class="pp-tc">
+        <span class="pp-tc-icon">🔮</span>
+        <div class="pp-tc-name">AI Vastu Calculator</div>
+        <div class="pp-tc-desc">Upload floor plan — free score</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/rera-check" class="pp-tc">
+        <span class="pp-tc-icon">✅</span>
+        <div class="pp-tc-name">RERA Check</div>
+        <div class="pp-tc-desc">Verify any project instantly</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/construction-cost" class="pp-tc">
+        <span class="pp-tc-icon">🏗️</span>
+        <div class="pp-tc-name">Construction Cost</div>
+        <div class="pp-tc-desc">Estimate building costs</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a><a href="/tools/rent-vs-buy" class="pp-tc">
+        <span class="pp-tc-icon">🏠</span>
+        <div class="pp-tc-name">Rent vs Buy</div>
+        <div class="pp-tc-desc">Which is better for you?</div>
+        <div class="pp-tc-cta">Use free →</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="pp-disclaimer">
+  <div class="pp-disclaimer-inner">
+    <div class="pp-disc-icon">⚠️</div>
+    <div class="pp-disc-text">
+      <strong>Important Disclaimer:</strong>
+      Results from the Home Loan Eligibility Calculator are <strong>indicative only</strong> and provided for informational purposes.
+      They do not constitute financial, legal or investment advice.
+      Actual figures may vary based on lender policies, government rates, market conditions and individual circumstances.
+      Loan eligibility figures are indicative estimates based on standard banking formulas. Actual approval depends on individual bank policies, credit score, property valuation, employment history and other factors. PropertyPointers is not a bank or loan DSA. Results do not guarantee loan approval. Consult your bank or a licensed loan advisor for final eligibility confirmation.
+      Always consult a qualified financial advisor, RERA-registered agent or property lawyer before making any purchase, investment or financial commitment.
+      PropertyPointers is not liable for any decisions made based on these results.
+      Data accurate as of May 2026 — verify current rates independently.
+      <a href="/disclaimer">Read full disclaimer</a> · <a href="/trust-and-safety">Trust & Safety</a>
+    </div>
+  </div>
+</div>
+
+<footer class="pp-footer">
+  <div class="pp-footer-grid">
+    <div>
+      <div class="pp-footer-brand">PropertyPointers</div>
+      <div class="pp-footer-tagline">India's Complete Real Estate Ecosystem — beyond listings. Buyers, sellers, developers, advisors and vendors, all in one place.</div>
+    </div>
+    <div>
+      <div class="pp-footer-heading">Insights</div>
+      <ul class="pp-footer-links">
+        <li><a href="/insights/market-trends">Market Trends</a></li>
+        <li><a href="/insights/city-reports">City Reports</a></li>
+        <li><a href="/insights/vastu">Vastu Guide</a></li>
+        <li><a href="/blog">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="pp-footer-heading">Free Tools</div>
+      <ul class="pp-footer-links">
+        <li><a href="/tools/emi-calculator">EMI Calculator</a></li>
+        <li><a href="/tools/vastu-calculator">AI Vastu Calculator</a></li>
+        <li><a href="/tools/rera-check">RERA Check</a></li>
+        <li><a href="/tools/stamp-duty-calculator">Stamp Duty</a></li>
+        <li><a href="/tools/roi-calculator">ROI Calculator</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="pp-footer-heading">Company</div>
+      <ul class="pp-footer-links">
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/realty-advisors">Realty Advisors</a></li>
+        <li><a href="/developers">Developers</a></li>
+        <li><a href="/careers">Careers</a></li>
+        <li><a href="/trust-and-safety">Trust & Safety</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pp-footer-bottom">
+    <div class="pp-footer-copy">© 2026 PropertyPointers. All rights reserved. India's Complete Real Estate Ecosystem.</div>
+    <div class="pp-footer-legal">
+      <a href="/disclaimer">Disclaimer</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/sitemap.xml">Sitemap</a>
+    </div>
+  </div>
+</footer>
+<script>
+function fmt(n){if(n>=10000000)return'₹'+(n/10000000).toFixed(2)+' Cr';if(n>=100000)return'₹'+(n/100000).toFixed(1)+' Lakh';return'₹'+Math.round(n).toLocaleString('en-IN')}function fmtM(n){return'₹'+Math.round(n).toLocaleString('en-IN')+'/month'}
+var ZONES=[{max:1500000,z:'Tier-3 cities, town outskirts'},{max:2500000,z:'Jaipur entry, Greater Noida'},{max:4000000,z:'Noida Extension, Pune outskirts'},{max:6500000,z:'Noida Sec 62-75, Hyd entry'},{max:10000000,z:'Gurugram, Bangalore Whitefield'},{max:Infinity,z:'Noida Sec 150, Mumbai Thane'}];
+function calc(){
+  var sal=parseInt(document.getElementById('ssl').value);
+  var sp=parseInt(document.getElementById('ssp').value);
+  var existEMI=parseInt(document.getElementById('sem').value);
+  var yr=parseInt(document.getElementById('sten').value);
+  var rate=parseFloat(document.getElementById('srate').value)/12/100;
+  var pct=parseFloat(document.getElementById('semp').value);
+  document.getElementById('sv').textContent=fmt(sal);
+  document.getElementById('spv').textContent=fmt(sp);
+  document.getElementById('ev').textContent=fmt(existEMI);
+  var total=sal+sp,maxEMI=total*pct,avail=Math.max(0,maxEMI-existEMI);
+  var n=yr*12,loan=avail*((1-Math.pow(1+rate,-n))/rate);
+  loan=Math.floor(loan/10000)*10000;
+  var actualEMI=loan*rate*Math.pow(1+rate,n)/(Math.pow(1+rate,n)-1);
+  var dp=loan*0.2,budget=loan+dp;
+  var zone=(ZONES.find(z=>budget<z.max)||ZONES[ZONES.length-1]).z;
+  document.getElementById('rinc').textContent=fmt(total)+'/month';
+  document.getElementById('rmemi').textContent=fmt(Math.round(maxEMI))+'/month';
+  document.getElementById('ravemi').textContent=fmt(Math.round(avail))+'/month';
+  document.getElementById('maxloan').textContent=fmt(loan);
+  document.getElementById('rloan').textContent=fmt(loan);
+  document.getElementById('remi').textContent=fmt(Math.round(actualEMI))+'/month';
+  document.getElementById('rdp').textContent=fmt(Math.round(dp));
+  document.getElementById('rzone').textContent=zone;
+  document.getElementById('loan-sub').textContent='At '+document.getElementById('srate').options[document.getElementById('srate').selectedIndex].text.split('—')[0].trim()+' for '+yr+' years';
+  var adv=loan<1500000?'Your budget suits Tier-3 cities. Increase salary or add co-applicant to access bigger markets.':loan<4000000?'Budget suitable for Greater Noida, Jaipur and Noida Extension — strong growing markets.':loan<7000000?'Good budget for Noida Sec 62-75, Hyderabad entry and Bangalore outer belt.':'Strong eligibility. Access Noida Sector 150, Gurugram DXP and Bangalore Whitefield — top appreciation zones.';
+  document.getElementById('radv').textContent=adv;
+}
+calc();
+</script>
+
+<script>
+function ppFAQ(el){
+  var o=el.classList.contains('open');
+  document.querySelectorAll('.pp-fi.open').forEach(i=>i.classList.remove('open'));
+  if(!o)el.classList.add('open');
+}
+var ppObs=new IntersectionObserver(function(e){
+  e.forEach(function(x){
+    if(x.isIntersecting){x.target.classList.add('vis');ppObs.unobserve(x.target);}
+  });
+},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.pp-fu,.pp-fu-l').forEach(function(el,i){
+  el.style.transitionDelay=(i%5)*.08+'s';ppObs.observe(el);
+});
+</script>
+</body></html>

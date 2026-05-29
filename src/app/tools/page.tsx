@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Calculator, TrendingUp, IndianRupee, Sprout, Compass, ArrowRight } from "lucide-react";
+import { TrendingUp, IndianRupee, Compass, ArrowRight, Landmark, PieChart, Wallet, FileText, Hammer, Home, ShieldCheck } from "lucide-react";
 
 const TOOLS = [
-  { title: "EMI Calculator", href: "/calculator?tool=emi", icon: <Calculator size={18} className="text-blue-600" />, desc: "Calculate your monthly EMI" },
-  { title: "ROI Calculator", href: "/calculator?tool=roi", icon: <TrendingUp size={18} className="text-emerald-600" />, desc: "Return on investment" },
-  { title: "Rental Yield", href: "/calculator?tool=rental-yield", icon: <IndianRupee size={18} className="text-gold-600" />, desc: "Rental yield analysis" },
-  { title: "Vastu Score Calculator", href: "/tools/vastu-calculator", icon: <Compass size={18} className="text-green-600" />, desc: "Room-wise Vastu analysis" },
-  { title: "Vastu AI Advisor", href: "/insights/vastu", icon: <Sprout size={18} className="text-emerald-600" />, desc: "AI-powered floor plan analysis" },
+  { title: "EMI Calculator", href: "/tools/emi-calculator", icon: <Landmark size={18} className="text-blue-600" />, desc: "Monthly home loan EMI" },
+  { title: "Home Loan Eligibility", href: "/tools/home-loan-eligibility", icon: <PieChart size={18} className="text-emerald-600" />, desc: "How much loan can I get?" },
+  { title: "Affordability", href: "/tools/affordability", icon: <Wallet size={18} className="text-gold-600" />, desc: "Can I afford this property?" },
+  { title: "Stamp Duty", href: "/tools/stamp-duty-calculator", icon: <FileText size={18} className="text-purple-600" />, desc: "State-wise registration charges" },
+  { title: "ROI Calculator", href: "/tools/roi-calculator", icon: <TrendingUp size={18} className="text-emerald-600" />, desc: "Return on investment" },
+  { title: "Rental Yield", href: "/tools/rental-yield-calculator", icon: <IndianRupee size={18} className="text-gold-600" />, desc: "Rental income potential" },
+  { title: "Construction Cost", href: "/tools/construction-cost", icon: <Hammer size={18} className="text-orange-600" />, desc: "Estimate building cost" },
+  { title: "Rent vs Buy", href: "/tools/rent-vs-buy", icon: <Home size={18} className="text-blue-600" />, desc: "Which is better for you?" },
+  { title: "AI Vastu Calculator", href: "/tools/vastu-calculator", icon: <Compass size={18} className="text-green-600" />, desc: "Upload floor plan — free score" },
+  { title: "RERA Check", href: "/tools/rera-check", icon: <ShieldCheck size={18} className="text-emerald-600" />, desc: "Verify any project" },
 ];
 
 export default function ToolsPage() {

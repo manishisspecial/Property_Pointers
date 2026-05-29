@@ -13,9 +13,9 @@ const INSIGHTS = [
 ];
 
 const CALCULATORS = [
-  { title: "EMI", href: "/calculator?tool=emi", icon: <Calculator size={18} className="text-blue-600" /> },
-  { title: "ROI", href: "/calculator?tool=roi", icon: <TrendingUp size={18} className="text-emerald-600" /> },
-  { title: "Rental Yield", href: "/calculator?tool=rental-yield", icon: <IndianRupee size={18} className="text-gold-600" /> },
+  { title: "EMI", href: "/tools/emi-calculator", icon: <Calculator size={18} className="text-blue-600" /> },
+  { title: "ROI", href: "/tools/roi-calculator", icon: <TrendingUp size={18} className="text-emerald-600" /> },
+  { title: "Rental Yield", href: "/tools/rental-yield-calculator", icon: <IndianRupee size={18} className="text-gold-600" /> },
   { title: "Vastu guide", href: "/insights/vastu", icon: <Sprout size={18} className="text-green-600" /> },
 ];
 
