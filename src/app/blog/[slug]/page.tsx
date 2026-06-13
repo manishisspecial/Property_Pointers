@@ -104,14 +104,6 @@ export default async function BlogPostPage({ params }: Props) {
       {post.coverImage && (
         <div className="h-[300px] md:h-[450px] relative bg-gray-200">
           <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          <div className="absolute bottom-6 left-0 right-0">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <span className="px-3 py-1 bg-gold-500 text-white text-sm font-semibold rounded-full capitalize">
-                {post.category.replace("-", " ")}
-              </span>
-            </div>
-          </div>
         </div>
       )}
 
@@ -148,11 +140,9 @@ export default async function BlogPostPage({ params }: Props) {
 
               {/* Meta */}
               <div className="flex flex-wrap items-center gap-3 mb-6">
-                {!post.coverImage && (
-                  <span className="px-3 py-1 bg-gold-100 text-gold-700 text-sm font-semibold rounded-full capitalize">
-                    {post.category.replace("-", " ")}
-                  </span>
-                )}
+                <span className="px-3 py-1 bg-gold-100 text-gold-700 text-sm font-semibold rounded-full capitalize">
+                  {post.category.replace("-", " ")}
+                </span>
                 <span className="text-sm text-gray-400 flex items-center gap-1">
                   <Calendar size={14} /> {formatDate(post.createdAt)}
                 </span>

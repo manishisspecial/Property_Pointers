@@ -135,11 +135,22 @@
   @apply text-gold-600 hover:text-gold-700 underline;
 }
 
-.blog-content ul,
+.blog-content ul {
+  @apply mb-4 ml-6 list-disc;
+}
+
 .blog-content ol {
-  @apply mb-4 ml-6;
+  @apply mb-4 ml-6 list-decimal;
 }
 
 .blog-content li {
-  @apply text-gray-700 mb-2 leading-relaxed;
+  @apply text-gray-700 mb-2 leading-relaxed pl-1;
+}
+
+.blog-content ul ul {
+  @apply list-[circle] mt-2;
+}
+
+.blog-content ul ul ul {
+  @apply list-[square] mt-2;
 }
