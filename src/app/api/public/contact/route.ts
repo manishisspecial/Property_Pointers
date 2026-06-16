@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const DEFAULT_ID = "default";
 
 /** Digits only, with country code (e.g. 91XXXXXXXXXX for India). */
