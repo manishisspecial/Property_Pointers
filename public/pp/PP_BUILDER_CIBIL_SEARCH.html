@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Builder CIBIL Score — Check Any Builder's Trust Score | PropertyPointers</title>
+<meta name="description" content="Search any Indian real estate developer and see their Builder CIBIL Score (300-900) based on RERA delivery data, complaint records and buyer reviews. Free.">
+<link rel="canonical" href="https://www.propertypointers.com/builder-cibil-score">
+<meta name="geo.region" content="IN">
+<meta name="geo.placename" content="Noida, Uttar Pradesh, India">
+<meta name="geo.position" content="28.5355;77.3910">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,700;1,9..144,800&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F8FA;--w:#fff;--navy:#080E1C;--n2:#111827;--n3:#1F2937;
+  --blue:#1847C4;--blue2:#2563EB;--bBg:#EEF2FF;--bBd:#C7D2FE;
+  --gold:#C49A2A;--goldL:#E8C97A;
+  --green:#15803D;--gBg:#F0FDF4;--gBd:#BBF7D0;--gDk:#166534;
+  --amber:#B45309;--aBg:#FFFBEB;--aBd:#FDE68A;
+  --red:#B91C1C;--rBg:#FEF2F2;--rBd:#FECACA;
+  --purple:#5B21B6;--purBg:#F5F3FF;--purBd:#C4B5FD;
+  --teal:#0D9488;--tBg:#F0FDFA;--tBd:#99F6E4;
+  --slate:#4B5563;--mid:#9CA3AF;--bd:#E5E7EB;--bd2:#D1D5DB;
+  --fh:"Fraunces",Georgia,serif;
+  --ff:"DM Sans",-apple-system,sans-serif;
+  --fm:"JetBrains Mono",monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--navy);-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--ff);cursor:pointer}
+img{max-width:100%}
+input,select,textarea{font-family:var(--ff)}
+
+/* NAVBAR */
+.nav{background:var(--w);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:300;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nav-logo{font-family:var(--fh);font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--navy);white-space:nowrap;flex-shrink:0}
+.nav-logo em{color:var(--gold);font-style:normal}
+.nav-links{display:flex;gap:0;align-items:center}
+.nav-link{position:relative;font-size:14px;font-weight:500;color:var(--slate);padding:8px 13px;border-radius:9px;transition:.15s;display:flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer;border:none;background:none}
+.nav-link:hover,.nav-link.on{color:var(--navy);background:#F3F4F6}
+.nav-link.on{color:var(--blue);background:var(--bBg);font-weight:700}
+.nav-link .arr{font-size:10px;color:var(--mid);transition:.2s}
+.nav-link:hover .arr{transform:rotate(180deg);color:var(--slate)}
+.nav-ctas{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.btn-login{padding:8px 16px;border-radius:99px;font-size:13px;font-weight:600;border:1.5px solid var(--bd2);background:var(--w);color:var(--navy);cursor:pointer;white-space:nowrap}
+.btn-signup{padding:8px 16px;border-radius:99px;font-size:13px;font-weight:700;border:1.5px solid var(--blue);background:var(--bBg);color:var(--blue);cursor:pointer;white-space:nowrap}
+.btn-post{padding:8px 16px;border-radius:99px;font-size:13px;font-weight:700;border:none;background:var(--blue);color:#fff;cursor:pointer;white-space:nowrap}
+.hamburger{display:none;width:38px;height:38px;border-radius:10px;border:1.5px solid var(--bd);background:var(--w);align-items:center;justify-content:center;font-size:18px;color:var(--navy);flex-shrink:0;cursor:pointer}
+
+/* MEGA MENU (desktop) */
+.mega{position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--w);border:1px solid var(--bd);border-radius:18px;box-shadow:0 16px 48px rgba(0,0,0,.14);display:none;z-index:400;min-width:820px;max-width:90vw;padding:8px;overflow:hidden}
+.mega::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
+.mega.show{display:flex;animation:mDrop .18s ease}
+@keyframes mDrop{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.mega-col{flex:1;padding:14px 10px;min-width:0}
+.mega-col+.mega-col{border-left:1px solid var(--bd)}
+.mega-col-hd{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--mid);padding:0 8px 10px;display:block}
+.mega-item{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border-radius:10px;transition:.15s;cursor:pointer}
+.mega-item:hover{background:var(--bg)}
+.mega-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.mega-title{font-size:13px;font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:2px}
+.mega-desc{font-size:11px;color:var(--mid);line-height:1.45}
+.mega-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:4px;vertical-align:middle}
+.mega-footer{border-top:1px solid var(--bd);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.mega-footer span{font-size:12px;color:var(--mid)}
+.mega-footer a{font-size:12px;font-weight:700;color:var(--blue)}
+
+/* MOBILE DRAWER */
+.mob-backdrop{display:none;position:fixed;inset:0;background:rgba(8,14,28,.5);z-index:490}
+.mob-backdrop.show{display:block}
+.mob-drawer{position:fixed;top:0;right:-100%;width:86%;max-width:360px;height:100%;background:var(--w);z-index:500;transition:right .25s ease;overflow-y:auto;box-shadow:-8px 0 32px rgba(0,0,0,.18)}
+.mob-drawer.show{right:0}
+.mob-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--bd)}
+.mob-logo{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--navy)}
+.mob-logo em{color:var(--gold);font-style:normal}
+.mob-close{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--bd);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer}
+.mob-body{padding:10px 10px 24px}
+.mob-acc{border-bottom:1px solid var(--bd)}
+.mob-acc-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 10px;font-size:15px;font-weight:700;color:var(--navy);cursor:pointer}
+.mob-acc-hd .car{font-size:12px;color:var(--mid);transition:.2s}
+.mob-acc-hd.open .car{transform:rotate(180deg)}
+.mob-acc-body{display:none;padding:0 10px 14px}
+.mob-acc-body.open{display:block}
+.mob-sub-item{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:9px;font-size:13px;color:var(--slate)}
+.mob-sub-item:hover{background:var(--bg)}
+.mob-plain{display:block;padding:14px 10px;font-size:15px;font-weight:700;color:var(--navy);border-bottom:1px solid var(--bd)}
+.mob-ctas{display:flex;flex-direction:column;gap:8px;padding:16px 10px 0}
+.mob-ctas a,.mob-ctas button{width:100%;text-align:center;padding:12px;border-radius:99px;font-size:14px;font-weight:700;font-family:var(--ff);cursor:pointer}
+
+/* SECTION NAV (sub-nav) */
+.snav{background:var(--w);border-bottom:1px solid var(--bd);padding:0 24px;position:sticky;top:64px;z-index:200}
+.snav-inner{max-width:1200px;margin:0 auto;height:48px;display:flex;align-items:center;gap:4px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.snav-inner::-webkit-scrollbar{display:none}
+.snav-link{padding:5px 14px;border-radius:99px;font-size:13px;font-weight:600;border:1.5px solid transparent;color:var(--slate);white-space:nowrap;transition:.15s;cursor:pointer}
+.snav-link:hover{background:var(--bg);color:var(--navy)}
+.snav-link.on{border-color:var(--bBd);background:var(--bBg);color:var(--blue)}
+.snav-link.on-g{border-color:var(--gBd);background:var(--gBg);color:var(--green)}
+.snav-link.on-gold{border-color:var(--aBd);background:var(--aBg);color:var(--amber)}
+.snav-link.on-pur{border-color:var(--purBd);background:var(--purBg);color:var(--purple)}
+.snav-sep{width:1px;height:22px;background:var(--bd);flex-shrink:0;margin:0 4px}
+
+/* BREADCRUMB */
+.bc{background:var(--w);border-bottom:1px solid var(--bd);padding:9px 24px}
+.bc-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mid);flex-wrap:wrap}
+.bc-inner a{color:var(--mid);transition:.15s}.bc-inner a:hover{color:var(--blue)}
+.bc-inner strong{color:var(--navy);font-weight:600}
+
+/* TYPOGRAPHY */
+h1{font-family:var(--fh);font-size:clamp(28px,4.5vw,54px);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:12px;color:var(--navy)}
+h1 em{color:var(--blue);font-style:italic}
+h2{font-family:var(--fh);font-size:clamp(20px,3vw,34px);font-weight:800;letter-spacing:-.03em;line-height:1.15;color:var(--navy);margin-bottom:6px}
+h2 em{color:var(--blue);font-style:italic}
+h3{font-family:var(--fh);font-size:clamp(15px,2vw,20px);font-weight:800;letter-spacing:-.02em;line-height:1.25;color:var(--navy);margin-bottom:5px}
+.stag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:8px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.badge-blue{background:var(--bBg);color:var(--blue);border:1px solid var(--bBd)}
+.badge-green{background:var(--gBg);color:var(--green);border:1px solid var(--gBd)}
+.badge-gold{background:var(--aBg);color:var(--amber);border:1px solid var(--aBd)}
+.badge-navy{background:var(--n2);color:#fff}
+
+/* LAYOUT */
+.W{max-width:1200px;margin:0 auto;padding:0 24px}
+.sec{padding:44px 0}
+.sec-sm{padding:28px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;min-width:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;min-width:0}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;min-width:0}
+.grid2>*,.grid3>*,.grid4>*{min-width:0}
+.hero2{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
+.kpi4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;min-width:160px}
+.formgrid2{display:grid;grid-template-columns:1fr 1fr;gap:32px;min-width:0}
+.podium3{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:12px;align-items:end}
+.statbar7{display:grid;grid-template-columns:repeat(7,1fr);gap:0}
+
+/* CARDS */
+.card{background:var(--w);border:1px solid var(--bd);border-radius:16px;overflow:hidden;transition:all .22s}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.09)}
+.card-accent{border-top:3px solid var(--cc,var(--blue))}
+
+/* STAT BOXES */
+.stat-box{background:var(--w);border:1px solid var(--bd);border-radius:14px;padding:18px;text-align:center;border-top:3px solid var(--sc,var(--blue))}
+.stat-val{font-family:var(--fm);font-size:26px;font-weight:800;color:var(--sc,var(--blue))}
+.stat-lbl{font-size:10px;color:var(--mid);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--bd);border-radius:14px;overflow:hidden;min-width:560px}
+.tbl th{background:var(--n2);color:rgba(255,255,255,.6);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:11px 16px;text-align:center}
+.tbl th:first-child{text-align:left;color:rgba(255,255,255,.4)}
+.tbl td{padding:11px 16px;border-bottom:1px solid var(--bd);text-align:center;font-weight:500}
+.tbl td:first-child{text-align:left;font-weight:600;color:var(--navy)}
+.tbl tr:last-child td{border:none}
+.tbl tr:nth-child(even) td{background:#FAFBFF}
+.tbl .win{color:var(--green);font-weight:700}
+.tbl .lose{color:var(--red)}
+.tbl .partial{color:var(--amber)}
+.tbl-hd{background:var(--bBg);color:var(--blue)!important}
+
+/* DISCLAIMER */
+.disc{background:var(--aBg);border:1px solid var(--aBd);border-radius:13px;padding:15px 19px;display:flex;gap:11px;align-items:flex-start;margin:24px 0}
+.disc p{font-size:12px;color:#78350F;line-height:1.85;margin:0}
+
+/* FOOTER */
+footer{background:var(--navy);padding:48px 0 0;margin-top:32px}
+.ft-g{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:32px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.1)}
+.ft-logo{font-family:var(--fh);font-size:19px;font-weight:800;color:#fff;margin-bottom:8px}
+.ft-logo em{color:var(--goldL);font-style:normal}
+.ft-p{font-size:12px;color:rgba(255,255,255,.45);line-height:1.85;margin-bottom:12px;max-width:230px}
+.ft-ct{font-size:11px;color:rgba(255,255,255,.3);line-height:2.1}
+.ft-col h4{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px}
+.ft-col a{display:block;font-size:12px;color:rgba(255,255,255,.5);padding:3px 0;transition:.15s}
+.ft-col a:hover{color:#fff}
+.ft-bot{display:flex;align-items:center;justify-content:space-between;padding:15px 0;flex-wrap:wrap;gap:8px}
+.ft-cp{font-size:11px;color:rgba(255,255,255,.25)}
+.ft-badges{display:flex;gap:7px}
+.ft-b1{padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(191,90,242,.12);border:1px solid rgba(191,90,242,.25);color:#D8B4FE}
+.ft-b2{padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.2);color:#86EFAC}
+.ft-disc-bar{border-top:1px solid rgba(255,255,255,.07);padding:10px 0 16px}
+.ft-disc-bar p{font-size:10px;color:rgba(255,255,255,.2);line-height:1.85}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .nav-links{display:none}
+  .btn-login,.btn-signup{display:none}
+  .hamburger{display:flex}
+  .ft-g{grid-template-columns:1fr 1fr;gap:22px}
+  .grid4{grid-template-columns:1fr 1fr}
+  .kpi4{grid-template-columns:1fr 1fr}
+  .statbar7{grid-template-columns:repeat(4,1fr)}
+  .hero2{grid-template-columns:1fr}
+  .podium3{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .grid3,.grid2,.formgrid2{grid-template-columns:1fr}
+  .ft-g{grid-template-columns:1fr 1fr}
+  .W{padding:0 16px}
+  .snav{padding:0 16px}
+  .bc{padding:8px 16px}
+  .sec{padding:32px 0}
+  .nav-inner{padding:0 16px}
+}
+@media(max-width:560px){
+  .ft-g{grid-template-columns:1fr}
+  .grid4{grid-template-columns:1fr 1fr}
+  .kpi4{grid-template-columns:1fr 1fr}
+  .statbar7{grid-template-columns:1fr 1fr}
+  .btn-post{padding:7px 12px;font-size:12px}
+  .nav-logo{font-size:17px}
+}
+@keyframes lpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}</style>
+  <!-- Google Analytics 4 | ACTION NEEDED: Replace G-8LQN9CSJZT with your Measurement ID from analytics.google.com/analytics/web/ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8LQN9CSJZT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8LQN9CSJZT', {
+      page_title: document.title,
+      page_location: window.location.href
+    });
+    // Track tool usage
+    function ppTrack(event, params) {
+      if(typeof gtag !== 'undefined') gtag('event', event, params || {});
+    }
+  </script>
+  <script defer src="/pp-shell.js"></script>
+</head>
+<body>
+<header class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="/">Property<em>.</em>Pointers</a>
+    <nav class="nav-links" id="nav-links">
+
+      <div class="nav-item" onmouseenter="showMega('tools')" onmouseleave="hideMega('tools')">
+        <button class="nav-link" onclick="toggleMega('tools')">Tools <span class="arr">v</span></button>
+        <div class="mega" id="mega-tools">
+          <div class="mega-col">
+            <span class="mega-col-hd">Financial</span>
+            <a href="/tools/emi-calculator" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">EMI</div><div><div class="mega-title">EMI Calculator</div><div class="mega-desc">Live 2026 bank rates</div></div></a>
+            <a href="/tools/home-loan-eligibility" class="mega-item"><div class="mega-icon" style="background:#E0F2FE">LE</div><div><div class="mega-title">Loan Eligibility</div><div class="mega-desc">FOIR-based instant result</div></div></a>
+            <a href="/tools/affordability-calculator" class="mega-item"><div class="mega-icon" style="background:#FFF7ED">AF</div><div><div class="mega-title">Affordability</div><div class="mega-desc">True budget with hidden costs</div></div></a>
+            <a href="/tools/stamp-duty-calculator" class="mega-item"><div class="mega-icon" style="background:#F5F3FF">SD</div><div><div class="mega-title">Stamp Duty</div><div class="mega-desc">6 states - women discount</div></div></a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-col-hd">Investment</span>
+            <a href="/tools/roi-calculator" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">ROI</div><div><div class="mega-title">ROI Calculator</div><div class="mega-desc">Yield + capital gain</div></div></a>
+            <a href="/tools/rental-yield-calculator" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">RY</div><div><div class="mega-title">Rental Yield</div><div class="mega-desc">Gross + net + vacancy</div></div></a>
+            <a href="/tools/rent-vs-buy" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">RB</div><div><div class="mega-title">Rent vs Buy</div><div class="mega-desc">10-year comparison</div></div></a>
+            <a href="/tools/construction-cost" class="mega-item"><div class="mega-icon" style="background:#FFFBEB">CC</div><div><div class="mega-title">Construction Cost</div><div class="mega-desc">3 grades - 7 cities</div></div></a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-col-hd">Legal & AI</span>
+            <a href="/tools/rera-check" class="mega-item"><div class="mega-icon" style="background:#FEF2F2">OK</div><div><div class="mega-title">RERA Check <span class="mega-badge" style="background:#F0FDF4;color:#15803D">.gov.in</span></div><div class="mega-desc">8 official portals</div></div></a>
+            <a href="/tools/area-converter" class="mega-item"><div class="mega-icon" style="background:#F0FDFA">AC</div><div><div class="mega-title">Area Converter</div><div class="mega-desc">14 units - Bigha types</div></div></a>
+            <a href="/tools/vastu-calculator" class="mega-item"><div class="mega-icon" style="background:#F5F3FF">VA</div><div><div class="mega-title">AI Vastu</div><div class="mega-desc">8 directions - AI analysis</div></div></a>
+            <a href="/tools/ai-advisor" class="mega-item"><div class="mega-icon" style="background:#0D1117">AI</div><div><div class="mega-title" style="color:#fff">AI Advisor <span class="mega-badge" style="background:rgba(196,154,42,.2);color:#E8C97A">AI Advisor</span></div><div class="mega-desc" style="color:#9CA3AF">Hindi + English - 24/7</div></div></a>
+          </div>
+          <div class="mega-footer">
+            <span>12 free tools - No login - No paywall</span>
+            <a href="/tools">All Tools &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-item" onmouseenter="showMega('insights')" onmouseleave="hideMega('insights')">
+        <button class="nav-link" onclick="toggleMega('insights')">Insights <span class="arr">v</span></button>
+        <div class="mega" id="mega-insights">
+          <div class="mega-col">
+            <span class="mega-col-hd">Market Intelligence</span>
+            <a href="/insights/market-trends" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">MT</div><div><div class="mega-title">Market Trends</div><div class="mega-desc">Q1 2026 - 7 cities</div></div></a>
+            <a href="/insights/city-reports" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">CR</div><div><div class="mega-title">City Reports</div><div class="mega-desc">Locality-level data</div></div></a>
+            <a href="/insights/market-news" class="mega-item"><div class="mega-icon" style="background:#FFFBEB">MN</div><div><div class="mega-title">Market News</div><div class="mega-desc">RBI - RERA - Infra</div></div></a>
+            <a href="/insights/rera-updates" class="mega-item"><div class="mega-icon" style="background:#FEF2F2">RU</div><div><div class="mega-title">RERA Updates</div><div class="mega-desc">Latest rulings & news</div></div></a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-col-hd">Guides & Blog</span>
+            <a href="/insights/investment-guides" class="mega-item"><div class="mega-icon" style="background:#F5F3FF">IG</div><div><div class="mega-title">Investment Guides</div><div class="mega-desc">First home - NRI - RERA rights</div></div></a>
+            <a href="/insights/blog" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">BL</div><div><div class="mega-title">Blog</div><div class="mega-desc">Expert articles & tips</div></div></a>
+            <a href="/insights/nri-corner" class="mega-item"><div class="mega-icon" style="background:#FFFBEB">NRI</div><div><div class="mega-title">NRI Corner</div><div class="mega-desc">FEMA - NRE/NRO - tax</div></div></a>
+            <a href="/insights/ai-advisor" class="mega-item"><div class="mega-icon" style="background:#0D1117">AI</div><div><div class="mega-title" style="color:#fff">AI Advisor</div><div class="mega-desc" style="color:#9CA3AF">AI-powered Q&A</div></div></a>
+          </div>
+          <div class="mega-footer">
+            <span>Free - Updated Q1 2026 - AI Powered</span>
+            <a href="/insights">All Insights &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-item" onmouseenter="showMega('devs')" onmouseleave="hideMega('devs')">
+        <button class="nav-link" onclick="toggleMega('devs')">Developers <span class="arr">v</span></button>
+        <div class="mega" id="mega-devs">
+          <div class="mega-col">
+            <span class="mega-col-hd">Find Builders</span>
+            <a href="/developers" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">AD</div><div><div class="mega-title">All Developers</div><div class="mega-desc">500+ verified builders</div></div></a>
+            <a href="/developers/top" class="mega-item"><div class="mega-icon" style="background:#FFFBEB">TR</div><div><div class="mega-title">Top Rated</div><div class="mega-desc">Ranked by delivery & rating</div></div></a>
+            <a href="/developers/rera-verified" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">OK</div><div><div class="mega-title">RERA Verified Only <span class="mega-badge" style="background:#F0FDF4;color:#15803D">Verified</span></div><div class="mega-desc">Direct .gov.in confirmed</div></div></a>
+            <a href="/developers/explore" class="mega-item"><div class="mega-icon" style="background:#F5F3FF">EX</div><div><div class="mega-title">Explore & Filter</div><div class="mega-desc">By city - type - delivery</div></div></a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-col-hd">Research</span>
+            <a href="/developers/compare" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">CMP</div><div><div class="mega-title">Compare Builders</div><div class="mega-desc">Side-by-side analysis</div></div></a>
+            <a href="/developers/reviews" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">RV</div><div><div class="mega-title">Buyer Reviews</div><div class="mega-desc">Verified purchase reviews</div></div></a>
+            <a href="/developers/delivery-tracker" class="mega-item"><div class="mega-icon" style="background:#FEF2F2">DT</div><div><div class="mega-title">Delivery Tracker <span class="mega-badge" style="background:#FEF2F2;color:#B91C1C">Unique</span></div><div class="mega-desc">On-time % for every builder</div></div></a>
+            <a href="/developers/join" class="mega-item"><div class="mega-icon" style="background:#FFFBEB">+</div><div><div class="mega-title">List Your Project</div><div class="mega-desc">48-hr onboarding - free</div></div></a>
+          </div>
+          <div class="mega-footer">
+            <span>RERA verified - Delivery tracked - No paid rankings</span>
+            <a href="/developers">All Developers &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-item" onmouseenter="showMega('advisors')" onmouseleave="hideMega('advisors')">
+        <button class="nav-link" onclick="toggleMega('advisors')">Advisors <span class="arr">v</span></button>
+        <div class="mega" id="mega-advisors">
+          <div class="mega-col">
+            <span class="mega-col-hd">Find Advisor</span>
+            <a href="/realty-advisors" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">AA</div><div><div class="mega-title">All Advisors</div><div class="mega-desc">500+ RERA registered</div></div></a>
+            <a href="/realty-advisors/top" class="mega-item"><div class="mega-icon" style="background:#FFFBEB">TR</div><div><div class="mega-title">Top Rated</div><div class="mega-desc">Ranked by deals & reviews</div></div></a>
+            <a href="/realty-advisors/verified" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">OK</div><div><div class="mega-title">RERA Verified <span class="mega-badge" style="background:#F0FDF4;color:#15803D">Verified</span></div><div class="mega-desc">Registration confirmed</div></div></a>
+            <a href="/realty-advisors/nri" class="mega-item"><div class="mega-icon" style="background:#F5F3FF">NRI</div><div><div class="mega-title">NRI Specialists</div><div class="mega-desc">FEMA - POA - repatriation</div></div></a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-col-hd">Tools & Research</span>
+            <a href="/realty-advisors/find" class="mega-item"><div class="mega-icon" style="background:#EEF2FF">FC</div><div><div class="mega-title">Find by City</div><div class="mega-desc">Locality specialists</div></div></a>
+            <a href="/realty-advisors/compare" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">CMP</div><div><div class="mega-title">Compare Advisors</div><div class="mega-desc">Side-by-side comparison</div></div></a>
+            <a href="/realty-advisors/reviews" class="mega-item"><div class="mega-icon" style="background:#F0FDF4">RV</div><div><div class="mega-title">Reviews</div><div class="mega-desc">Verified buyer reviews</div></div></a>
+            <a href="/realty-advisors/join" class="mega-item"><div class="mega-icon" style="background:#FFFBEB">+</div><div><div class="mega-title">Join as Advisor</div><div class="mega-desc">Free RERA profile - 24hr</div></div></a>
+          </div>
+          <div class="mega-footer">
+            <span>RERA verified - Free for buyers - No commission</span>
+            <a href="/realty-advisors">All Advisors &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <a href="/vendors" class="nav-link">Vendors</a>
+    </nav>
+    <div class="nav-ctas">
+      <a href="/login" class="btn-login">Login</a>
+      <a href="/signup" class="btn-signup">Sign Up</a>
+      <a href="/post-property" class="btn-post">+ Post Property</a>
+      <button class="hamburger" onclick="openMobile()" aria-label="Open menu">=</button>
+    </div>
+  </div>
+</header>
+
+<div id="mega-backdrop" onclick="closeAllMega()" style="display:none;position:fixed;inset:0;z-index:250"></div>
+
+<div class="mob-backdrop" id="mob-backdrop" onclick="closeMobile()"></div>
+<div class="mob-drawer" id="mob-drawer">
+  <div class="mob-hd">
+    <span class="mob-logo">Property<em>.</em>Pointers</span>
+    <button class="mob-close" onclick="closeMobile()" aria-label="Close menu">X</button>
+  </div>
+  <div class="mob-body">
+
+    <div class="mob-acc">
+      <div class="mob-acc-hd" onclick="toggleAcc(this)">Tools <span class="car">v</span></div>
+      <div class="mob-acc-body">
+        <a href="/tools" class="mob-sub-item" style="font-weight:700;color:var(--blue)">All Tools &rarr;</a>
+        <a href="/tools/emi-calculator" class="mob-sub-item">EMI Calculator</a>
+        <a href="/tools/roi-calculator" class="mob-sub-item">ROI Calculator</a>
+        <a href="/tools/stamp-duty-calculator" class="mob-sub-item">Stamp Duty</a>
+        <a href="/tools/home-loan-eligibility" class="mob-sub-item">Loan Eligibility</a>
+        <a href="/tools/rental-yield-calculator" class="mob-sub-item">Rental Yield</a>
+        <a href="/tools/affordability-calculator" class="mob-sub-item">Affordability</a>
+        <a href="/tools/rent-vs-buy" class="mob-sub-item">Rent vs Buy</a>
+        <a href="/tools/construction-cost" class="mob-sub-item">Construction Cost</a>
+        <a href="/tools/rera-check" class="mob-sub-item">RERA Check</a>
+        <a href="/tools/area-converter" class="mob-sub-item">Area Converter</a>
+        <a href="/tools/vastu-calculator" class="mob-sub-item">AI Vastu</a>
+        <a href="/tools/ai-advisor" class="mob-sub-item">AI Advisor</a>
+      </div>
+    </div>
+
+    <div class="mob-acc">
+      <div class="mob-acc-hd" onclick="toggleAcc(this)">Insights <span class="car">v</span></div>
+      <div class="mob-acc-body">
+        <a href="/insights" class="mob-sub-item" style="font-weight:700;color:var(--blue)">All Insights &rarr;</a>
+        <a href="/insights/market-trends" class="mob-sub-item">Market Trends</a>
+        <a href="/insights/city-reports" class="mob-sub-item">City Reports</a>
+        <a href="/insights/market-news" class="mob-sub-item">Market News</a>
+        <a href="/insights/rera-updates" class="mob-sub-item">RERA Updates</a>
+        <a href="/insights/investment-guides" class="mob-sub-item">Investment Guides</a>
+        <a href="/insights/blog" class="mob-sub-item">Blog</a>
+        <a href="/insights/nri-corner" class="mob-sub-item">NRI Corner</a>
+        <a href="/insights/ai-advisor" class="mob-sub-item">AI Advisor</a>
+      </div>
+    </div>
+
+    <div class="mob-acc">
+      <div class="mob-acc-hd" onclick="toggleAcc(this)">Developers <span class="car">v</span></div>
+      <div class="mob-acc-body">
+        <a href="/developers" class="mob-sub-item" style="font-weight:700;color:var(--blue)">All Developers &rarr;</a>
+        <a href="/developers/top" class="mob-sub-item">Top Rated</a>
+        <a href="/developers/explore" class="mob-sub-item">Explore & Filter</a>
+        <a href="/developers/rera-verified" class="mob-sub-item">RERA Verified</a>
+        <a href="/developers/compare" class="mob-sub-item">Compare Builders</a>
+        <a href="/developers/reviews" class="mob-sub-item">Buyer Reviews</a>
+        <a href="/developers/delivery-tracker" class="mob-sub-item">Delivery Tracker</a>
+        <a href="/developers/join" class="mob-sub-item">List Your Project</a>
+      </div>
+    </div>
+
+    <div class="mob-acc">
+      <div class="mob-acc-hd" onclick="toggleAcc(this)">Advisors <span class="car">v</span></div>
+      <div class="mob-acc-body">
+        <a href="/realty-advisors" class="mob-sub-item" style="font-weight:700;color:var(--blue)">All Advisors &rarr;</a>
+        <a href="/realty-advisors/top" class="mob-sub-item">Top Rated</a>
+        <a href="/realty-advisors/verified" class="mob-sub-item">RERA Verified</a>
+        <a href="/realty-advisors/nri" class="mob-sub-item">NRI Specialists</a>
+        <a href="/realty-advisors/find" class="mob-sub-item">Find by City</a>
+        <a href="/realty-advisors/compare" class="mob-sub-item">Compare Advisors</a>
+        <a href="/realty-advisors/reviews" class="mob-sub-item">Reviews</a>
+        <a href="/realty-advisors/join" class="mob-sub-item" style="font-weight:700;color:var(--green)">Join as Advisor &rarr;</a>
+      </div>
+    </div>
+
+    <a href="/vendors" class="mob-plain">Vendors</a>
+
+    <div class="mob-ctas">
+      <a href="/signup" style="background:var(--blue);color:#fff">Sign Up Free</a>
+      <a href="/login" style="background:var(--bg);color:var(--navy);border:1.5px solid var(--bd)">Login</a>
+      <a href="/post-property" style="background:var(--gold);color:var(--navy)">+ Post Property</a>
+    </div>
+  </div>
+</div>
+
+<div class="bc"><div class="bc-inner"><a href="/">Home</a><span>/</span><strong>Builder CIBIL Score</strong></div></div><div style="background:var(--navy);border-bottom:1px solid rgba(255,255,255,.08);padding:9px 0"><div style="max-width:1200px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;gap:0"><div style="display:flex;align-items:center;gap:7px;padding:4px 16px;font-size:11px;color:rgba(255,255,255,.7);font-weight:600;border-right:1px solid rgba(255,255,255,.1)"><div style="width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:lpulse 1.6s ease-in-out infinite"></div><span><span id="bcslv" style="font-family:var(--fm);font-weight:800;color:#fff">24</span> people viewing now</span></div><div style="display:flex;align-items:center;gap:7px;padding:4px 16px;font-size:11px;color:rgba(255,255,255,.7);font-weight:600;border-right:1px solid rgba(255,255,255,.1)"><div style="width:6px;height:6px;border-radius:50%;background:#60A5FA;flex-shrink:0"></div><span style="font-family:var(--fm);font-weight:800;color:#fff">18,234</span><span style="color:rgba(255,255,255,.65)"> views this week</span></div><div style="display:flex;align-items:center;gap:7px;padding:4px 16px;font-size:11px;color:rgba(255,255,255,.7);font-weight:600"><div style="width:6px;height:6px;border-radius:50%;background:#FBBF24;flex-shrink:0;animation:lpulse 1.6s ease-in-out infinite"></div><span><span id="bcseq" style="font-family:var(--fm);font-weight:800;color:#fff">156</span> checks today</span></div></div></div>
+
+<section style="background:var(--navy);min-height:340px;padding:56px 24px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">
+  <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--gold)"></div>
+  <span style="display:inline-block;background:rgba(196,154,42,.15);color:var(--goldL);padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px;border:1px solid rgba(196,154,42,.3)">India First · RERA + Delivery Data</span>
+  <h1 style="font-family:var(--fh);font-size:clamp(28px,5vw,54px);font-weight:900;color:#fff;letter-spacing:-.04em;margin-bottom:8px;text-align:center">Builder CIBIL <em style="color:var(--gold);font-style:italic">Score.</em></h1>
+  <p style="font-size:15px;color:rgba(255,255,255,.55);margin-bottom:28px;text-align:center;max-width:480px;line-height:1.7">Like CIBIL for people — but for builders. 300-900 score based on RERA delivery data, complaint records and buyer reviews. Search any developer.</p>
+  <div id="cs_wrap" style="position:relative;width:100%;max-width:560px">
+    <div style="display:flex;gap:10px">
+      <input id="cs_inp" type="text" placeholder="Search builder name or city..." oninput="suggest(this.value)" onkeydown="if(event.key==='Enter'){document.getElementById('cs_sugg').style.display='none';search();}"
+        style="flex:1;padding:16px 22px;border-radius:99px;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:16px;outline:none;font-family:var(--ff);transition:.2s"
+        onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(255,255,255,.15)'">
+      <button onclick="document.getElementById('cs_sugg').style.display='none';search()" style="padding:16px 28px;background:var(--gold);color:var(--navy);border:none;border-radius:99px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--ff)">Search</button>
+    </div>
+    <div id="cs_sugg" style="display:none;position:absolute;top:calc(100% + 8px);left:0;right:80px;background:var(--w);border:1px solid var(--bd);border-radius:16px;z-index:999;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.15)"></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px"><button onclick="document.getElementById('cs_inp').value='DLF Limited';search('DLF Limited')" style="padding:7px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;color:rgba(255,255,255,.8);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:.15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">DLF Limited</button><button onclick="document.getElementById('cs_inp').value='Godrej Properties';search('Godrej Properties')" style="padding:7px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;color:rgba(255,255,255,.8);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:.15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">Godrej Properties</button><button onclick="document.getElementById('cs_inp').value='Prestige Group';search('Prestige Group')" style="padding:7px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;color:rgba(255,255,255,.8);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:.15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">Prestige Group</button><button onclick="document.getElementById('cs_inp').value='Lodha Group';search('Lodha Group')" style="padding:7px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;color:rgba(255,255,255,.8);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:.15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">Lodha Group</button><button onclick="document.getElementById('cs_inp').value='Supertech Limited';search('Supertech Limited')" style="padding:7px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;color:rgba(255,255,255,.8);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:.15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">Supertech Limited</button><button onclick="document.getElementById('cs_inp').value='Gaurs Group';search('Gaurs Group')" style="padding:7px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;color:rgba(255,255,255,.8);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:.15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">Gaurs Group</button></div>
+</section>
+
+<section style="padding:32px 24px"><div style="max-width:780px;margin:0 auto">
+  <div id="cs_nf" style="display:none;text-align:center;padding:40px;background:var(--bg);border-radius:16px;border:1px solid var(--bd);margin-bottom:20px">
+    <div style="font-size:36px;margin-bottom:12px">🔍</div>
+    <h3 style="color:var(--navy);margin-bottom:8px">Builder not found</h3>
+    <p style="color:var(--mid);font-size:14px;line-height:1.65">We're adding builders daily. This builder may not be in our database yet.<br>Try another name or <a href="/contact" style="color:var(--blue)">request a builder to be added</a>.</p>
+  </div>
+  <div id="cs_list" style="display:none;background:var(--w);border:1px solid var(--bd);border-radius:18px;overflow:hidden;margin-bottom:20px"></div>
+  <div id="cs_result" style="display:none">
+    <div id="cs_warn" style="display:none;background:#FEF2F2;border:1.5px solid #FECACA;border-radius:14px;padding:16px 20px;margin-bottom:18px">
+      <div style="font-size:14px;font-weight:800;color:var(--red);margin-bottom:6px">⚠️ CRITICAL WARNING</div>
+      <div style="font-size:13px;color:#991B1B;line-height:1.65">This builder has a very low CIBIL score. We strongly advise against booking any new property with this developer without thorough legal verification. Check the details below carefully.</div>
+    </div>
+    <div style="background:var(--navy);border-radius:20px;padding:28px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 id="cs_name" style="font-family:var(--fh);font-size:26px;font-weight:900;color:#fff;margin:0 0 4px"></h2>
+          <div id="cs_city" style="font-size:13px;color:rgba(255,255,255,.5)"></div>
+        </div>
+        <div style="text-align:right">
+          <div id="cs_score" style="font-family:var(--fh);font-size:56px;font-weight:900;line-height:1"></div>
+          <div id="cs_grade" style="font-size:13px;font-weight:700;margin-top:4px"></div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.08);height:8px;border-radius:99px;margin-bottom:20px;overflow:hidden">
+        <div id="cs_bar" style="height:100%;border-radius:99px;transition:.8s width"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">On-Time Delivery</div>
+          <div id="cs_ot" style="font-family:var(--fm);font-size:20px;font-weight:800;color:#4ADE80"></div>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">Projects Tracked</div>
+          <div id="cs_pr" style="font-family:var(--fm);font-size:20px;font-weight:800;color:#fff"></div>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">RERA Complaints</div>
+          <div id="cs_cp" style="font-family:var(--fm);font-size:20px;font-weight:800"></div>
+        </div>
+      </div>
+      <div id="cs_note" style="margin-top:18px;padding:14px;background:rgba(255,255,255,.06);border-radius:10px;border-left:3px solid #4ADE80;font-size:13px;color:rgba(255,255,255,.75);line-height:1.7"></div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <div style="font-size:11px;color:rgba(255,255,255,.4)">RERA No:</div>
+        <div id="cs_rr" style="font-size:11px;color:var(--goldL);font-family:var(--fm)"></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="background:var(--bBg);border:1px solid var(--bBd);border-radius:14px;padding:16px">
+        <h4 style="font-size:13px;color:var(--blue);margin-bottom:10px">How Score is Calculated</h4>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--slate);padding:5px 0;border-bottom:1px solid var(--bBd)">On-time delivery history<span style="color:var(--blue);font-weight:700">35%</span></div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--slate);padding:5px 0;border-bottom:1px solid var(--bBd)">RERA complaint count<span style="color:var(--blue);font-weight:700">25%</span></div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--slate);padding:5px 0;border-bottom:1px solid var(--bBd)">Complaint resolution rate<span style="color:var(--blue);font-weight:700">15%</span></div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--slate);padding:5px 0;border-bottom:1px solid var(--bBd)">Buyer reviews verified<span style="color:var(--blue);font-weight:700">15%</span></div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--slate);padding:5px 0;border-bottom:1px solid var(--bBd)">Financial health signals<span style="color:var(--blue);font-weight:700">10%</span></div>
+      </div>
+      <div style="background:var(--gBg);border:1px solid var(--gBd);border-radius:14px;padding:16px">
+        <h4 style="font-size:13px;color:var(--green);margin-bottom:10px">Score Guide</h4>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--gBd)"><span style="color:#4ADE80;font-weight:700">800-900</span><span style="color:var(--slate)">Excellent — High trust</span></div><div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--gBd)"><span style="color:#86EFAC;font-weight:700">700-799</span><span style="color:var(--slate)">Good — Generally reliable</span></div><div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--gBd)"><span style="color:#FBBF24;font-weight:700">600-699</span><span style="color:var(--slate)">Average — Verify carefully</span></div><div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--gBd)"><span style="color:#F97316;font-weight:700">500-599</span><span style="color:var(--slate)">Below avg — High caution</span></div><div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--gBd)"><span style="color:#F87171;font-weight:700">300-499</span><span style="color:var(--slate)">Poor — Do not book</span></div>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <a href="/developers/trust-score" style="flex:1;padding:12px;background:var(--navy);color:#fff;border-radius:99px;text-align:center;font-size:13px;font-weight:700;text-decoration:none">View All Builder Scores →</a>
+      <a href="/tools/possession-probability" style="flex:1;padding:12px;background:var(--bg);color:var(--navy);border:1.5px solid var(--bd);border-radius:99px;text-align:center;font-size:13px;font-weight:700;text-decoration:none">Check Possession Probability →</a>
+    </div>
+  </div>
+  <div style="background:var(--bg);border-radius:14px;padding:18px;margin-top:20px;text-align:center;border:1px solid var(--bd)">
+    <div style="font-size:13px;color:var(--mid)">Score based on RERA filings, delivery records and verified buyer complaints. Updated monthly. <a href="/transparency-report" style="color:var(--blue);font-weight:700">See our methodology →</a></div>
+  </div>
+</div></section>
+  <!-- Email Capture | ACTION NEEDED: 
+       1. Go to formspree.io → Create free account → New Form → Copy your Form ID
+       2. Replace YOUR_FORM_ID below with your actual form ID (looks like: xkndjwpz)
+       3. Also replace 919217434838 with your WhatsApp number -->
+  <section style="padding:0 24px 40px">
+    <div style="max-width:600px;margin:0 auto;background:linear-gradient(135deg,#1A1A4E 0%,#6B2FBE 100%);border-radius:18px;padding:28px;text-align:center">
+      <div style="font-size:22px;margin-bottom:8px">📩</div>
+      <h3 style="font-size:17px;font-weight:800;color:#fff;margin:0 0 6px;font-family:Georgia,serif">Yeh result apne aap ko bhejo</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.65);margin:0 0 18px;line-height:1.6">Email karo aur baad mein dekho. Plus — PropertyPointers ke weekly market updates bhi milenge. Free.</p>
+      <form id="pp-email-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" 
+            onsubmit="ppEmailSubmit(event)" style="display:flex;gap:8px;max-width:420px;margin:0 auto 12px">
+        <input type="hidden" name="page" value="PP Tool Page">
+        <input type="hidden" name="result_data" id="pp-result-data" value="">
+        <input type="email" name="email" id="pp-email-inp" required placeholder="aapka@email.com"
+          style="flex:1;padding:11px 16px;border-radius:99px;border:none;font-size:14px;font-family:inherit;outline:none;color:#1A1A4E">
+        <button type="submit" 
+          style="padding:11px 22px;background:#D42C9A;color:#fff;border:none;border-radius:99px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
+          onmouseover="this.style.background='#B52284'" onmouseout="this.style.background='#D42C9A'">
+          Send →
+        </button>
+      </form>
+      <div id="pp-email-success" style="display:none;background:rgba(74,222,128,.15);border-radius:10px;padding:12px;margin-top:8px">
+        <span style="color:#4ADE80;font-weight:700;font-size:14px">✓ Bhej diya! Inbox check karo.</span>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">Aur bhi sawaal hain?
+          <a href="https://wa.me/919217434838?text=Hi!%20I%20just%20used%20your%20calculator%20on%20PropertyPointers." 
+             target="_blank" style="color:#25D366;font-weight:700;text-decoration:none"> WhatsApp karo →</a>
+        </div>
+      </div>
+      <p style="font-size:11px;color:rgba(255,255,255,.35);margin:10px 0 0">No spam. Kabhi nahi. Unsubscribe anytime.</p>
+    </div>
+  </section>
+  <script>
+  function ppEmailSubmit(e) {
+    e.preventDefault();
+    var form = document.getElementById('pp-email-form');
+    var email = document.getElementById('pp-email-inp').value;
+    if(!email) return;
+    // Capture current page result summary
+    var resultText = document.body.innerText.substring(0,500);
+    document.getElementById('pp-result-data').value = 'Page: '+window.location.href+' | '+resultText;
+    // Submit to Formspree
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    }).then(function(r) {
+      if(r.ok) {
+        form.style.display = 'none';
+        document.getElementById('pp-email-success').style.display = 'block';
+        if(typeof ppTrack !== 'undefined') ppTrack('email_capture', {page: document.title});
+      }
+    }).catch(function() {
+      // Fallback: open mailto
+      window.location.href = 'mailto:hello@propertypointers.com?subject=PP%20Tool%20Result&body=Please%20email%20me%20my%20result%20from:%20'+encodeURIComponent(window.location.href);
+    });
+  }
+  </script>
+  <footer>
+  <div class="W">
+    <div class="ft-g">
+      <div>
+        <div class="ft-logo">Property<em>.</em>Pointers</div>
+        <p class="ft-p">India's complete real estate ecosystem - free tools, RERA verified advisors, live market intelligence and AI-powered guidance.</p>
+        <div class="ft-ct">+91 92174 34838<br>hello@propertypointers.com<br>Noida, Uttar Pradesh, India</div>
+      </div>
+      <div class="ft-col"><h4>Free Tools</h4>
+        <a href="/tools/emi-calculator">EMI Calculator</a>
+        <a href="/tools/roi-calculator">ROI Calculator</a>
+        <a href="/tools/stamp-duty-calculator">Stamp Duty</a>
+        <a href="/tools/rera-check">RERA Check</a>
+        <a href="/tools/area-converter">Area Converter</a>
+        <a href="/tools">All 12 Tools &rarr;</a>
+      </div>
+      <div class="ft-col"><h4>Insights</h4>
+        <a href="/insights/market-trends">Market Trends</a>
+        <a href="/insights/city-reports">City Reports</a>
+        <a href="/insights/market-news">Market News</a>
+        <a href="/insights/blog">Blog</a>
+        <a href="/insights/investment-guides">Guides</a>
+        <a href="/insights/ai-advisor">AI Advisor</a>
+      </div>
+      <div class="ft-col"><h4>Developers</h4>
+        <a href="/developers">All Builders</a>
+        <a href="/developers/top">Top Rated</a>
+        <a href="/developers/rera-verified">RERA Verified</a>
+        <a href="/developers/compare">Compare</a>
+        <a href="/developers/delivery-tracker">Delivery Tracker</a>
+        <a href="/developers/join">List Project</a>
+      </div>
+      <div class="ft-col"><h4>Advisors</h4>
+        <a href="/realty-advisors">All Advisors</a>
+        <a href="/realty-advisors/top">Top Rated</a>
+        <a href="/realty-advisors/verified">RERA Verified</a>
+        <a href="/realty-advisors/nri">NRI Specialists</a>
+        <a href="/realty-advisors/compare">Compare</a>
+        <a href="/realty-advisors/join">Join Free</a>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span class="ft-cp">&copy; 2026 PropertyPointers Technologies Pvt. Ltd.</span>
+      <div class="ft-badges"><span class="ft-b1">AI Powered</span><span class="ft-b2">Free for Buyers</span></div>
+    </div>
+    <div class="ft-disc-bar">
+      <p><strong>Disclaimer:</strong> All content is for informational purposes only. Not financial, legal or investment advice. PropertyPointers is not a SEBI registered advisor. Always consult qualified professionals before property decisions. Data sourced from JLL, Anarock and official RERA portals.</p>
+    </div>
+  </div>
+</footer>
+<script>
+var _openMega = null;
+function showMega(id){if(_openMega===id)return;closeAllMega();
+  var m = document.getElementById('mega-'+id);
+  if(m){ m.classList.add('show'); _openMega=id; document.getElementById('mega-backdrop').style.display='block'; }
+}
+function hideMega(id){setTimeout(function(){var ni=document.querySelector('.nav-item:hover');var mg=document.querySelector('.mega:hover');if(!ni&&!mg){closeAllMega();}},150);}
+function closeAllMega(){
+  document.querySelectorAll('.mega').forEach(function(m){ m.classList.remove('show'); });
+  document.getElementById('mega-backdrop').style.display='none';
+  _openMega=null;
+}
+function toggleMega(id){ _openMega===id ? closeAllMega() : showMega(id); }
+window.addEventListener('scroll', closeAllMega, {passive:true});
+
+function openMobile(){
+  document.getElementById('mob-drawer').classList.add('show');
+  document.getElementById('mob-backdrop').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeMobile(){
+  document.getElementById('mob-drawer').classList.remove('show');
+  document.getElementById('mob-backdrop').classList.remove('show');
+  document.body.style.overflow='';
+}
+function toggleAcc(hd){
+  var body = hd.nextElementSibling;
+  var isOpen = body.classList.contains('open');
+  document.querySelectorAll('.mob-acc-body').forEach(function(b){b.classList.remove('open');});
+  document.querySelectorAll('.mob-acc-hd').forEach(function(h){h.classList.remove('open');});
+  if(!isOpen){ body.classList.add('open'); hd.classList.add('open'); }
+}
+
+var DB=[{"n":"DLF Limited","c":"Gurugram","sc":891,"ot":"96%","pr":"22 projects","cp":0,"rr":"RCRERA012345","note":"Excellent track record. Consistent delivery. India's most trusted builder."},{"n":"Godrej Properties","c":"Mumbai","sc":824,"ot":"93%","pr":"18 projects","cp":1,"rr":"MHREAERA34567","note":"Strong delivery record. 1 minor RERA complaint resolved. Premium quality."},{"n":"Prestige Group","c":"Bengaluru","sc":812,"ot":"94%","pr":"31 projects","cp":1,"rr":"PRM/KA/RERA/123","note":"South India's most reliable developer. 94% on-time in 8 years."},{"n":"Lodha Group","c":"Mumbai","sc":763,"ot":"89%","pr":"24 projects","cp":4,"rr":"MHREAERA56789","note":"Good overall. A few delayed towers but compensated buyers with interest."},{"n":"Sobha Developers","c":"Bengaluru","sc":748,"ot":"88%","pr":"16 projects","cp":2,"rr":"SB/KA/RERA/456","note":"Quality construction. Generally on time. Small disputes resolved."},{"n":"Gaurs Group","c":"Noida","sc":654,"ot":"78%","pr":"14 projects","cp":8,"rr":"UPRERAPRJ11111","note":"Average track record. Some delays. Active in NCR market."},{"n":"Mahagun Group","c":"Noida","sc":541,"ot":"64%","pr":"9 projects","cp":21,"rr":"UPRERAPRJ22222","note":"Multiple delays. 21 RERA complaints. Verify carefully before booking."},{"n":"Supertech Limited","c":"Noida","sc":287,"ot":"38%","pr":"42 projects","cp":156,"rr":"UPRERAPRJ98765","note":"CRITICAL WARNING: Under NCLT proceedings. 156 complaints. Do not book."},{"n":"Amrapali Group","c":"Noida","sc":124,"ot":"18%","pr":"31 projects","cp":847,"rr":"UPRERAPRJ00001","note":"CRITICAL WARNING: Supreme Court case. Buyers affected. NBCC taking over."},{"n":"Puravankara","c":"Bengaluru","sc":782,"ot":"91%","pr":"19 projects","cp":3,"rr":"PV/KA/RERA/789","note":"Reliable Bengaluru developer. Good on-time delivery in South India."},{"n":"Kolte-Patil","c":"Pune","sc":741,"ot":"87%","pr":"22 projects","cp":4,"rr":"PUNRERA078912","note":"Solid Pune developer. Mostly on time with minor delays."},{"n":"Brigade Group","c":"Bengaluru","sc":798,"ot":"92%","pr":"28 projects","cp":2,"rr":"BG/KA/RERA/234","note":"Strong Bengaluru presence. 92% delivery on time. Good quality."}];
+var shown=false;
+
+function search(q){
+  q=(q||document.getElementById("cs_inp").value).toLowerCase().trim();
+  if(!q)return;
+  var results=DB.filter(function(b){return b.n.toLowerCase().includes(q)||b.c.toLowerCase().includes(q);});
+  if(results.length===0){
+    document.getElementById("cs_result").style.display="none";
+    document.getElementById("cs_list").style.display="none";
+    document.getElementById("cs_nf").style.display="block";
+    return;
+  }
+  document.getElementById("cs_nf").style.display="none";
+  if(results.length===1){showBuilder(results[0]);document.getElementById("cs_list").style.display="none";}
+  else{
+    document.getElementById("cs_result").style.display="none";
+    var html=results.map(function(b){
+      var col=b.sc>=800?"#4ADE80":b.sc>=700?"#86EFAC":b.sc>=600?"#FBBF24":b.sc>=500?"#F97316":"#F87171";
+      return'<div onclick="showBuilder(DB.filter(function(x){return x.n===\''+b.n+'\';})[0])" style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--bd);cursor:pointer" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'"><div><div style="font-size:14px;font-weight:700;color:var(--navy)">'+b.n+'</div><div style="font-size:12px;color:var(--mid)">'+b.c+'</div></div><div style="font-family:var(--fm);font-size:20px;font-weight:900;color:'+col+'">'+b.sc+'</div></div>';
+    }).join("");
+    document.getElementById("cs_list").innerHTML=html;
+    document.getElementById("cs_list").style.display="block";
+  }
+}
+
+function showBuilder(b){
+  document.getElementById("cs_list").style.display="none";
+  var col=b.sc>=800?"#4ADE80":b.sc>=700?"#86EFAC":b.sc>=600?"#FBBF24":b.sc>=500?"#F97316":"#F87171";
+  var grade=b.sc>=800?"Excellent":b.sc>=700?"Good":b.sc>=600?"Average":b.sc>=500?"Below Average":"Poor / Risky";
+  var warn=b.sc<400;
+  document.getElementById("cs_name").textContent=b.n;
+  document.getElementById("cs_city").textContent=b.c;
+  document.getElementById("cs_score").textContent=b.sc;
+  document.getElementById("cs_score").style.color=col;
+  document.getElementById("cs_grade").textContent=grade;
+  document.getElementById("cs_grade").style.color=col;
+  document.getElementById("cs_ot").textContent=b.ot;
+  document.getElementById("cs_pr").textContent=b.pr;
+  document.getElementById("cs_cp").textContent=b.cp+" complaints";
+  document.getElementById("cs_cp").style.color=b.cp===0?"#4ADE80":b.cp<=5?"#FBBF24":"#F87171";
+  document.getElementById("cs_rr").textContent=b.rr;
+  document.getElementById("cs_note").textContent=b.note;
+  document.getElementById("cs_note").style.borderLeftColor=col;
+  var bar=document.getElementById("cs_bar");
+  bar.style.width=(b.sc/9)+'%';bar.style.background=col;
+  document.getElementById("cs_warn").style.display=warn?"block":"none";
+  document.getElementById("cs_result").style.display="block";
+  document.getElementById("cs_result").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function suggest(val){
+  val=val.toLowerCase();
+  if(val.length<2){document.getElementById("cs_sugg").style.display="none";return;}
+  var matches=DB.filter(function(b){return b.n.toLowerCase().startsWith(val)||b.c.toLowerCase().startsWith(val);}).slice(0,5);
+  if(matches.length===0){document.getElementById("cs_sugg").style.display="none";return;}
+  document.getElementById("cs_sugg").innerHTML=matches.map(function(b){
+    return'<div onclick="document.getElementById(\'cs_inp\').value=\''+b.n+'\';document.getElementById(\'cs_sugg\').style.display=\'none\';search(\''+b.n+'\')" style="padding:10px 16px;cursor:pointer;font-size:13px;color:var(--navy);border-bottom:1px solid var(--bd)" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'"><strong>'+b.n+'</strong><span style="color:var(--mid);margin-left:8px">'+b.c+'</span></div>';
+  }).join("");
+  document.getElementById("cs_sugg").style.display="block";
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+  document.getElementById("cs_inp").addEventListener("keydown",function(e){
+    if(e.key==="Enter"){document.getElementById("cs_sugg").style.display="none";search();}
+  });
+  document.addEventListener("click",function(e){
+    if(!e.target.closest("#cs_wrap"))document.getElementById("cs_sugg").style.display="none";
+  });
+});
+
+(function(){var b=24;setInterval(function(){b=Math.min(48,Math.max(22,b+(Math.random()>.5?1:-1)));var e=document.getElementById("bcslv");if(e)e.textContent=b;},13000);})();</script>
+  <!-- WhatsApp Floating Button | ACTION NEEDED: Replace 919217434838 with your WhatsApp number -->
+  <a href="https://wa.me/919217434838?text=Hi%20PropertyPointers!%20I%20found%20you%20through%20your%20website.%20Please%20help%20me%20with%20my%20property%20search." 
+     target="_blank" rel="noopener" id="pp-wa-btn"
+     title="Chat on WhatsApp"
+     style="position:fixed;bottom:24px;right:24px;width:54px;height:54px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.45);z-index:9999;text-decoration:none;transition:transform .2s,box-shadow .2s"
+     onmouseover="this.style.transform='scale(1.12)';this.style.boxShadow='0 6px 28px rgba(37,211,102,.6)'" 
+     onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 20px rgba(37,211,102,.45)'">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+  <style>
+    @keyframes waPulse{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.45)}50%{box-shadow:0 4px 28px rgba(37,211,102,.7),0 0 0 8px rgba(37,211,102,.12)}}
+    #pp-wa-btn{animation:waPulse 2.5s ease-in-out infinite}
+  </style>
+</body>
+</html>

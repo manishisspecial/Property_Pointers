@@ -283,3 +283,159 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ===========================================================================
+// Interactive features backing the client-provided PP_* pages.
+// These models power the forms in public/pp/*.html (via public/pp-shell.js).
+// ===========================================================================
+
+/// Community Q&A — buyers can post real estate questions, admins/experts answer.
+/// Powers PP_COMMUNITY_QA.html.
+model CommunityQuestion {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  body        String
+  category    String   @default("general")
+  city        String?
+  locality    String?
+  authorId    String?  @db.ObjectId
+  authorName  String
+  authorEmail String?
+  /// pending -> approved -> rejected. Only approved shows on public feed.
+  status      String   @default("pending")
+  featured    Boolean  @default(false)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  answers CommunityAnswer[]
+}
+
+model CommunityAnswer {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  questionId String   @db.ObjectId
+  body       String
+  authorId   String?  @db.ObjectId
+  authorName String
+  authorRole String   @default("user")
+  upvotes    Int      @default(0)
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question CommunityQuestion @relation(fields: [questionId], references: [id])
+}
+
+/// Society Reviews — reviews of specific residential societies (buildings).
+/// Powers PP_SOCIETY_REVIEWS.html.
+model SocietyReview {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  societyName   String
+  city          String
+  locality      String
+  builderName   String?
+  authorId      String?  @db.ObjectId
+  authorName    String
+  authorEmail   String?
+  ratingOverall Int
+  ratingConstr  Int?
+  ratingAmen    Int?
+  ratingMaint   Int?
+  ratingSafety  Int?
+  pros          String?
+  cons          String?
+  comment       String
+  yearsResiding Int?
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+/// Scam Reporter — public form for flagging fraudulent builders / listings /
+/// advisors. Powers PP_SCAM_REPORTER.html and feeds admin triage.
+model ScamReport {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  subjectType   String
+  subjectName   String
+  city          String?
+  locality      String?
+  incidentDate  DateTime?
+  amount        Float?
+  currency      String    @default("INR")
+  description   String
+  evidenceUrls  String    @default("[]")
+  reporterName  String
+  reporterEmail String
+  reporterPhone String?
+  anonymous     Boolean   @default(false)
+  status        String    @default("pending")
+  adminNotes    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+/// Builder Watchlist — authenticated user's saved developers to track.
+/// Powers PP_BUILDER_WATCHLIST.html.
+model BuilderWatchlistItem {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  developerSlug String
+  developerName String
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, developerSlug])
+}
+
+/// Buyer PP Score — a persistent research credibility score per user.
+/// Powers PP_BUYER_SCORE.html and PP_BUYER_READINESS_QUIZ.html.
+model BuyerScore {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String?  @db.ObjectId
+  sessionId     String?
+  name          String?
+  email         String?
+  score         Int
+  readinessBand String
+  answers       String   @default("[]")
+  city          String?
+  budget        Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+/// Locality Content — structured data for /localities/[slug] pages.
+/// Currently the client HTML is hardcoded; this model lets admins later
+/// override / extend individual localities without editing HTML.
+model LocalityContent {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug              String   @unique
+  name              String
+  city              String
+  state             String
+  summary           String?
+  avgPricePerSqft   Float?
+  yoyGrowthPct      Float?
+  rentalYieldPct    Float?
+  livabilityScore   Int?
+  connectivityScore Int?
+  safetyScore       Int?
+  socialInfraScore  Int?
+  featured          Boolean  @default(false)
+  updatedByAdmin    Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+/// Locality Request — user request for a new locality guide.
+model LocalityRequest {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  city           String
+  requesterName  String
+  requesterEmail String
+  requesterPhone String?
+  notes          String?
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

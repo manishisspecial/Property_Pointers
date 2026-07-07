@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Building2, Users, BarChart3, MessageCircle, Settings,
-  Activity, ChevronRight, LogOut, Menu, X, Shield, BookOpen, Landmark, ExternalLink, Gauge, Mail
+  Activity, ChevronRight, LogOut, Menu, X, Shield, BookOpen, Landmark, ExternalLink, Gauge, Mail,
+  HelpCircle, Star, AlertOctagon, MapPin
 } from "lucide-react";
 import Logo from "@/components/Logo";
 
@@ -16,7 +17,11 @@ const SIDEBAR_ITEMS = [
   { href: "/admin/developers", icon: Shield, label: "Developers" },
   { href: "/admin/users", icon: Users, label: "Users" },
   { href: "/admin/inquiries", icon: MessageCircle, label: "Inquiries" },
-  { href: "/admin/community", icon: MessageCircle, label: "Community" },
+  { href: "/admin/community", icon: MessageCircle, label: "Community (legacy)" },
+  { href: "/admin/qa", icon: HelpCircle, label: "Community Q&A" },
+  { href: "/admin/society-reviews", icon: Star, label: "Society Reviews" },
+  { href: "/admin/trust-safety", icon: AlertOctagon, label: "Trust & Safety" },
+  { href: "/admin/localities", icon: MapPin, label: "Localities" },
   { href: "/admin/blog", icon: BookOpen, label: "Blog" },
   { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
   { href: "/admin/performance", icon: Gauge, label: "Performance" },
